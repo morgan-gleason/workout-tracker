@@ -687,6 +687,187 @@
   .drag-handle:hover { color: var(--text); background: rgba(255,255,255,.05); }
   .drag-handle:active { cursor: grabbing; }
   .drag-handle svg { width: 17px; height: 17px; }
+
+  /* Editor stat cards */
+  .editor-stats { display: flex; gap: 10px; margin-bottom: 18px; }
+  .editor-stat {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 14px;
+    min-width: 0;
+  }
+  .editor-stat-icon {
+    width: 34px; height: 34px;
+    border-radius: 9px;
+    background: rgba(109,140,255,.15);
+    color: var(--accent);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .editor-stat-icon svg { width: 17px; height: 17px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .editor-stat .val { font-weight: 800; font-size: 15px; line-height: 1.2; }
+  .editor-stat .lbl { color: var(--muted); font-size: 11px; margin-top: 1px; }
+
+  /* Link-style buttons (Add Exercise / Add Set / Set Options) */
+  .link-btn {
+    background: none;
+    border: none;
+    color: var(--accent);
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 2px;
+    min-height: 32px;
+  }
+  .link-btn svg { width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-width: 2.3; stroke-linecap: round; stroke-linejoin: round; }
+  .link-btn:hover { filter: brightness(1.15); }
+
+  .exercises-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .exercises-header label { margin: 0; }
+
+  /* Collapsible exercise cards */
+  .ex-card-header { display: flex; align-items: center; gap: 10px; cursor: pointer; padding: 2px 0; }
+  .ex-number-badge {
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: white;
+    font-size: 12px;
+    font-weight: 800;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .ex-card-title-wrap { flex: 1; min-width: 0; }
+  .ex-card-title { font-weight: 700; font-size: 14.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .ex-card-subtitle { color: var(--muted); font-size: 11.5px; margin-top: 1px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .ex-card-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+  .ex-set-count { color: var(--muted); font-size: 12px; white-space: nowrap; }
+  .ex-chevron { width: 16px; height: 16px; stroke: var(--muted); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; transition: transform .15s ease; flex-shrink: 0; }
+  .routine-ex-card.open .ex-chevron { transform: rotate(180deg); }
+  .ex-card-body { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); }
+
+  /* Per-set table inside an expanded exercise card */
+  .set-table-head {
+    display: grid;
+    grid-template-columns: 32px 1fr 1fr 28px;
+    gap: 8px;
+    padding: 0 2px 6px;
+    font-size: 10px;
+    font-weight: 800;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: .04em;
+  }
+  .set-table-row {
+    display: grid;
+    grid-template-columns: 32px 1fr 1fr 28px;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  .set-num {
+    width: 28px; height: 40px;
+    border-radius: 8px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700; color: var(--muted);
+  }
+  .set-type-wrap { position: relative; }
+  .set-type-wrap select { padding-left: 26px; min-height: 40px; }
+  .set-type-dot {
+    position: absolute;
+    left: 11px; top: 50%;
+    transform: translateY(-50%);
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--accent-2);
+    pointer-events: none;
+    z-index: 1;
+  }
+  .set-type-dot[data-type="warmup"] { background: var(--warn); }
+  .set-type-dot[data-type="working"] { background: var(--accent-2); }
+  .setPlanReps { min-height: 40px; }
+  .setPlanRemove {
+    background: none; border: none; color: var(--muted); cursor: pointer;
+    width: 28px; height: 40px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 8px;
+  }
+  .setPlanRemove:hover { color: var(--danger); background: rgba(255,107,122,.1); }
+  .ex-body-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 4px; }
+  .set-options-wrap { position: relative; }
+  .set-options-dropdown {
+    position: absolute;
+    bottom: 38px; right: 0;
+    background: var(--panel);
+    border: 1px solid var(--border-light);
+    border-radius: 10px;
+    box-shadow: var(--shadow-md);
+    z-index: 20;
+    min-width: 220px;
+    overflow: hidden;
+  }
+  .set-options-dropdown button {
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: none;
+    border: none;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+    padding: 10px 13px;
+    font-size: 12.5px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .set-options-dropdown button:last-child { border-bottom: none; }
+  .set-options-dropdown button:hover { background: rgba(109,140,255,.1); }
+
+  /* Add-exercise picker */
+  .ex-picker {
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    background: var(--panel-2);
+    padding: 14px;
+    margin: 6px 0 18px;
+  }
+  .ex-picker-head { display: flex; gap: 10px; align-items: center; margin-bottom: 10px; }
+  .ex-picker-head input { flex: 1; }
+  .ex-picker-list { max-height: 260px; overflow-y: auto; }
+  .ex-picker-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 10px 4px;
+    border-bottom: 1px solid var(--border);
+  }
+  .ex-picker-row:last-child { border-bottom: none; }
+  .ex-picker-info { min-width: 0; }
+  .ex-picker-info .t { font-weight: 700; font-size: 13.5px; }
+  .ex-picker-info .s { color: var(--muted); font-size: 11.5px; margin-top: 1px; }
+  .ex-picker-add {
+    width: 30px; height: 30px;
+    border-radius: 9px;
+    background: rgba(109,140,255,.15);
+    border: none;
+    color: var(--accent);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    font-size: 16px;
+    font-weight: 800;
+  }
+  .ex-picker-add:hover { background: rgba(109,140,255,.25); }
   .plan-item {
     display: flex;
     justify-content: space-between;
@@ -977,15 +1158,30 @@
             <label>Color</label>
             <div class="color-picker-row" id="colorPickerRow"></div>
           </div>
-          <label>Exercises</label>
-          <p class="caption">
-            <strong>Warm-up sets</strong> prime the muscle without much fatigue and don't need to be near max effort.
-            <strong>Working sets</strong> are your real effort — the ones that drive progress. Typical rep ranges:
-            strength 3–5, hypertrophy 8–12, endurance 15–20+. Drag the handle to reorder exercises,
-            and "Quick fill" to auto-fill sets/reps for a goal.
-          </p>
+          <div class="editor-stats" id="editorStats"></div>
+
+          <div class="exercises-header">
+            <label>Exercises</label>
+            <button type="button" class="link-btn" id="addRoutineExBtn">
+              <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Add Exercise
+            </button>
+          </div>
           <div id="routineExRows"></div>
-          <button class="btn secondary" id="addRoutineExBtn" type="button">+ Add Exercise</button>
+          <div class="empty" id="noExercisesHint" style="display:none;">
+            <span class="empty-icon">🏋️</span>No exercises yet — tap "Add Exercise" to get started.
+          </div>
+
+          <div class="ex-picker" id="exercisePicker" style="display:none;">
+            <div class="ex-picker-head">
+              <input type="text" id="exercisePickerSearch" placeholder="Search exercises…">
+              <button class="modal-close-btn" id="exercisePickerCloseBtn" type="button" title="Done">
+                <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+              </button>
+            </div>
+            <div class="btn-row" id="exercisePickerChips" style="margin-bottom:10px;"></div>
+            <div class="ex-picker-list" id="exercisePickerList"></div>
+          </div>
 
           <div class="btn-row" style="margin-top:14px;">
             <button class="btn" id="saveRoutineBtn" type="button">✓ Save Template</button>
@@ -1327,7 +1523,18 @@
     pencil: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>',
     dots: '<svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/></svg>',
     arrow: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>',
-    grip: '<svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="9" cy="6" r="1.6"/><circle cx="15" cy="6" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="18" r="1.6"/><circle cx="15" cy="18" r="1.6"/></svg>'
+    grip: '<svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="9" cy="6" r="1.6"/><circle cx="15" cy="6" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="18" r="1.6"/><circle cx="15" cy="18" r="1.6"/></svg>',
+    chevronDown: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>',
+    gear: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>',
+    plus: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>'
+  };
+  const EXERCISE_TYPE = {
+    'Bench Press': 'Compound', 'Incline Bench Press': 'Compound', 'Decline Bench Press': 'Compound', 'Dumbbell Bench Press': 'Compound', 'Incline Dumbbell Press': 'Compound', 'Chest Fly': 'Isolation', 'Cable Crossover': 'Isolation', 'Push-Up': 'Compound', 'Chest Dip': 'Compound',
+    'Deadlift': 'Compound', 'Pull-Up': 'Compound', 'Chin-Up': 'Compound', 'Lat Pulldown': 'Compound', 'Seated Cable Row': 'Compound', 'Bent-Over Row': 'Compound', 'T-Bar Row': 'Compound', 'Single-Arm Dumbbell Row': 'Compound', 'Face Pull': 'Isolation',
+    'Overhead Press': 'Compound', 'Dumbbell Shoulder Press': 'Compound', 'Arnold Press': 'Compound', 'Lateral Raise': 'Isolation', 'Front Raise': 'Isolation', 'Rear Delt Fly': 'Isolation', 'Upright Row': 'Compound', 'Shrug': 'Isolation',
+    'Back Squat': 'Compound', 'Front Squat': 'Compound', 'Leg Press': 'Compound', 'Walking Lunge': 'Compound', 'Bulgarian Split Squat': 'Compound', 'Romanian Deadlift': 'Compound', 'Leg Curl': 'Isolation', 'Leg Extension': 'Isolation', 'Calf Raise': 'Isolation', 'Hip Thrust': 'Compound',
+    'Barbell Curl': 'Isolation', 'Dumbbell Curl': 'Isolation', 'Hammer Curl': 'Isolation', 'Preacher Curl': 'Isolation', 'Tricep Pushdown': 'Isolation', 'Skull Crusher': 'Isolation', 'Overhead Tricep Extension': 'Isolation', 'Close-Grip Bench Press': 'Compound',
+    'Plank': 'Isolation', 'Hanging Leg Raise': 'Isolation', 'Cable Crunch': 'Isolation', 'Russian Twist': 'Isolation', 'Ab Wheel Rollout': 'Compound', 'Sit-Up': 'Isolation'
   };
   const COLOR_SWATCHES = {
     indigo: 'linear-gradient(135deg,#7c5cff,#5b8cff)',
@@ -1363,8 +1570,19 @@
     return [...groups];
   }
   function estimateDuration(routine) {
-    const totalSets = routine.exercises.reduce((s, e) => s + (e.warmupSets || 0) + (e.workingSets || 0), 0);
+    const totalSets = routine.exercises.reduce((s, e) => s + (e.sets ? e.sets.length : 0), 0);
     return Math.max(15, Math.round((totalSets * 2.5) / 5) * 5);
+  }
+  // Convert legacy {warmupSets, workingSets, repRange} exercises into the newer {sets:[{type,reps}]} shape.
+  function migrateExercise(ex) {
+    if (ex.sets) return ex;
+    const sets = [];
+    const warm = parseInt(ex.warmupSets) || 0;
+    const work = parseInt(ex.workingSets) || 0;
+    for (let i = 0; i < warm; i++) sets.push({ type: 'warmup', reps: ex.repRange || '' });
+    for (let i = 0; i < work; i++) sets.push({ type: 'working', reps: ex.repRange || '' });
+    if (sets.length === 0) sets.push({ type: 'working', reps: '' });
+    return { ...ex, sets };
   }
 
   function uid() {
@@ -1386,28 +1604,34 @@
     }, 2200);
   }
 
+  function mkSets(warm, work, reps) {
+    const sets = [];
+    for (let i = 0; i < warm; i++) sets.push({ type: 'warmup', reps });
+    for (let i = 0; i < work; i++) sets.push({ type: 'working', reps });
+    return sets;
+  }
   function defaultRoutines() {
     return [
       { id: uid(), name: 'Push Day', category: 'Push', exercises: [
-        { id: uid(), exercise: 'Bench Press', equipment: 'Barbell', warmupSets: 2, workingSets: 4, repRange: '6-8' },
-        { id: uid(), exercise: 'Overhead Press', equipment: 'Barbell', warmupSets: 1, workingSets: 3, repRange: '8-10' },
-        { id: uid(), exercise: 'Incline Dumbbell Press', equipment: 'Dumbbell', warmupSets: 1, workingSets: 3, repRange: '10-12' },
-        { id: uid(), exercise: 'Lateral Raise', equipment: 'Dumbbell', warmupSets: 0, workingSets: 3, repRange: '12-15' },
-        { id: uid(), exercise: 'Tricep Pushdown', equipment: 'Cable', warmupSets: 0, workingSets: 3, repRange: '12-15' }
+        { id: uid(), exercise: 'Bench Press', equipment: 'Barbell', sets: mkSets(2, 4, '6-8') },
+        { id: uid(), exercise: 'Overhead Press', equipment: 'Barbell', sets: mkSets(1, 3, '8-10') },
+        { id: uid(), exercise: 'Incline Dumbbell Press', equipment: 'Dumbbell', sets: mkSets(1, 3, '10-12') },
+        { id: uid(), exercise: 'Lateral Raise', equipment: 'Dumbbell', sets: mkSets(0, 3, '12-15') },
+        { id: uid(), exercise: 'Tricep Pushdown', equipment: 'Cable', sets: mkSets(0, 3, '12-15') }
       ]},
       { id: uid(), name: 'Pull Day', category: 'Pull', exercises: [
-        { id: uid(), exercise: 'Deadlift', equipment: 'Barbell', warmupSets: 2, workingSets: 3, repRange: '5' },
-        { id: uid(), exercise: 'Pull-Up', equipment: 'Bodyweight', warmupSets: 0, workingSets: 3, repRange: '8-10' },
-        { id: uid(), exercise: 'Bent-Over Row', equipment: 'Barbell', warmupSets: 1, workingSets: 3, repRange: '8-10' },
-        { id: uid(), exercise: 'Face Pull', equipment: 'Cable', warmupSets: 0, workingSets: 3, repRange: '15' },
-        { id: uid(), exercise: 'Barbell Curl', equipment: 'Barbell', warmupSets: 0, workingSets: 3, repRange: '10-12' }
+        { id: uid(), exercise: 'Deadlift', equipment: 'Barbell', sets: mkSets(2, 3, '5') },
+        { id: uid(), exercise: 'Pull-Up', equipment: 'Bodyweight', sets: mkSets(0, 3, '8-10') },
+        { id: uid(), exercise: 'Bent-Over Row', equipment: 'Barbell', sets: mkSets(1, 3, '8-10') },
+        { id: uid(), exercise: 'Face Pull', equipment: 'Cable', sets: mkSets(0, 3, '15') },
+        { id: uid(), exercise: 'Barbell Curl', equipment: 'Barbell', sets: mkSets(0, 3, '10-12') }
       ]},
       { id: uid(), name: 'Leg Day', category: 'Legs', exercises: [
-        { id: uid(), exercise: 'Back Squat', equipment: 'Barbell', warmupSets: 2, workingSets: 4, repRange: '6-8' },
-        { id: uid(), exercise: 'Romanian Deadlift', equipment: 'Barbell', warmupSets: 1, workingSets: 3, repRange: '8-10' },
-        { id: uid(), exercise: 'Leg Press', equipment: 'Machine', warmupSets: 1, workingSets: 3, repRange: '10-12' },
-        { id: uid(), exercise: 'Leg Curl', equipment: 'Machine', warmupSets: 0, workingSets: 3, repRange: '12' },
-        { id: uid(), exercise: 'Calf Raise', equipment: 'Machine', warmupSets: 0, workingSets: 4, repRange: '15' }
+        { id: uid(), exercise: 'Back Squat', equipment: 'Barbell', sets: mkSets(2, 4, '6-8') },
+        { id: uid(), exercise: 'Romanian Deadlift', equipment: 'Barbell', sets: mkSets(1, 3, '8-10') },
+        { id: uid(), exercise: 'Leg Press', equipment: 'Machine', sets: mkSets(1, 3, '10-12') },
+        { id: uid(), exercise: 'Leg Curl', equipment: 'Machine', sets: mkSets(0, 3, '12') },
+        { id: uid(), exercise: 'Calf Raise', equipment: 'Machine', sets: mkSets(0, 4, '15') }
       ]}
     ];
   }
@@ -1442,6 +1666,7 @@
       if (!s.plannedWorkouts) s.plannedWorkouts = {};
       if (s.weeklyGoal === undefined) s.weeklyGoal = null;
     }
+    s.routines.forEach(r => { r.exercises = (r.exercises || []).map(migrateExercise); });
     return s;
   }
   const state = load();
@@ -1471,9 +1696,13 @@
     return REP_PRESETS.map(p => `<option value="${p.value}">${escapeHtml(p.label)}</option>`).join('');
   }
   function formatExPlan(ex) {
+    const sets = ex.sets || [];
+    const warm = sets.filter(s => s.type === 'warmup').length;
+    const work = sets.filter(s => s.type === 'working').length;
+    const workReps = sets.find(s => s.type === 'working' && s.reps);
     const bits = [];
-    if (ex.warmupSets) bits.push(`<span class="pill y">${ex.warmupSets} warm-up</span>`);
-    if (ex.workingSets) bits.push(`<span class="pill g">${ex.workingSets}×${escapeHtml(ex.repRange || '?')}</span>`);
+    if (warm) bits.push(`<span class="pill y">${warm} warm-up</span>`);
+    if (work) bits.push(`<span class="pill g">${work} working${workReps ? ` · ${escapeHtml(workReps.reps)}` : ''}</span>`);
     return bits.join(' ');
   }
 
@@ -1525,15 +1754,6 @@
       if (input) {
         input.value = t.value;
         input.dispatchEvent(new Event('input'));
-      }
-      t.value = '';
-    } else if (t.classList.contains('routineExPreset')) {
-      const preset = REP_PRESETS.find(p => p.value === t.value);
-      const card = t.closest('.routine-ex-card');
-      if (preset && preset.value && card) {
-        card.querySelector('.routineExWarmup').value = preset.warmup;
-        card.querySelector('.routineExWorking').value = preset.working;
-        card.querySelector('.routineExReps').value = preset.reps;
       }
       t.value = '';
     }
@@ -1639,11 +1859,8 @@
   }
   function setRowsFromPlanExercise(ex) {
     setRows.innerHTML = '';
-    const warm = Math.max(0, parseInt(ex.warmupSets) || 0);
-    let work = Math.max(0, parseInt(ex.workingSets) || 0);
-    if (warm === 0 && work === 0) work = 3;
-    for (let i = 0; i < warm; i++) addSetRow(undefined, undefined, 'warmup');
-    for (let i = 0; i < work; i++) addSetRow(undefined, undefined, 'working');
+    const sets = ex.sets && ex.sets.length ? ex.sets : [{ type: 'working' }, { type: 'working' }, { type: 'working' }];
+    sets.forEach(s => addSetRow(undefined, undefined, s.type));
   }
   document.getElementById('addSetBtn').addEventListener('click', () => addSetRow());
   addSetRow(); addSetRow(); addSetRow();
@@ -1867,47 +2084,195 @@
     dragState = null;
   }
 
-  function addRoutineExRow(ex) {
+  // ---------- Exercise cards (collapsible, per-set table) ----------
+  function setTypeDotHtml(type) { return `<span class="set-type-dot" data-type="${type === 'warmup' ? 'warmup' : 'working'}"></span>`; }
+  function setRowHtml(idx, s) {
+    s = s || { type: 'working', reps: '' };
+    return `
+      <div class="set-table-row">
+        <div class="set-num">${idx + 1}</div>
+        <div class="set-type-wrap">
+          ${setTypeDotHtml(s.type)}
+          <select class="setPlanType">
+            <option value="working" ${s.type !== 'warmup' ? 'selected' : ''}>Working</option>
+            <option value="warmup" ${s.type === 'warmup' ? 'selected' : ''}>Warm-up</option>
+          </select>
+        </div>
+        <input type="text" class="setPlanReps" placeholder="e.g. 8-10" value="${escapeHtml(s.reps || '')}">
+        <button type="button" class="setPlanRemove" title="Remove set">✕</button>
+      </div>`;
+  }
+  function bindSetRow(row) {
+    row.querySelector('.setPlanType').addEventListener('change', (e) => {
+      row.querySelector('.set-type-dot').setAttribute('data-type', e.target.value === 'warmup' ? 'warmup' : 'working');
+    });
+    row.querySelector('.setPlanRemove').addEventListener('click', () => {
+      const card = row.closest('.routine-ex-card');
+      row.remove();
+      renumberSetRows(card);
+      updateCardSummary(card);
+      refreshEditorStats();
+    });
+  }
+  function renumberSetRows(card) {
+    card.querySelectorAll('.set-table-row').forEach((row, i) => { row.querySelector('.set-num').textContent = i + 1; });
+  }
+  function cardSetsData(card) {
+    return [...card.querySelectorAll('.set-table-row')].map(row => ({
+      type: row.querySelector('.setPlanType').value,
+      reps: row.querySelector('.setPlanReps').value.trim()
+    }));
+  }
+  function updateCardSummary(card) {
+    const name = card.querySelector('.routineExInput').value.trim();
+    const group = EXERCISE_TO_GROUP[name] || '';
+    const type = EXERCISE_TYPE[name] || '';
+    const subtitleParts = [group, type].filter(Boolean);
+    card.querySelector('.ex-card-title').textContent = name || 'New Exercise';
+    card.querySelector('.ex-card-subtitle').textContent = subtitleParts.join(' • ') || 'Custom exercise';
+    const count = card.querySelectorAll('.set-table-row').length;
+    card.querySelector('.ex-set-count').textContent = `${count} set${count === 1 ? '' : 's'}`;
+  }
+  function renumberExerciseCards() {
+    routineExRows.querySelectorAll('.routine-ex-card').forEach((card, i) => {
+      const badge = card.querySelector('.ex-number-badge');
+      if (badge) badge.textContent = i + 1;
+    });
+  }
+  function refreshEditorStats() {
+    const cards = [...routineExRows.querySelectorAll('.routine-ex-card')];
+    const exCount = cards.length;
+    const setCount = cards.reduce((s, c) => s + c.querySelectorAll('.set-table-row').length, 0);
+    const mins = Math.max(15, Math.round((setCount * 2.5) / 5) * 5);
+    document.getElementById('editorStats').innerHTML = `
+      <div class="editor-stat">
+        <div class="editor-stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 14"/></svg></div>
+        <div><div class="val">~${mins} min</div><div class="lbl">Est. Duration</div></div>
+      </div>
+      <div class="editor-stat">
+        <div class="editor-stat-icon">${ICON_SVGS.dumbbell}</div>
+        <div><div class="val">${exCount}</div><div class="lbl">Exercise${exCount === 1 ? '' : 's'}</div></div>
+      </div>`;
+    document.getElementById('noExercisesHint').style.display = exCount === 0 ? 'block' : 'none';
+  }
+  function toggleExCard(card, forceOpen) {
+    const isOpen = card.classList.contains('open');
+    const open = forceOpen !== undefined ? forceOpen : !isOpen;
+    card.classList.toggle('open', open);
+    card.querySelector('.ex-card-body').style.display = open ? 'block' : 'none';
+  }
+  function closeSetOptionsMenus() {
+    routineExRows.querySelectorAll('.set-options-dropdown').forEach(d => d.remove());
+  }
+
+  function addRoutineExRow(ex, autoOpen) {
     ex = ex || {};
+    const sets = ex.sets && ex.sets.length ? ex.sets : [{ type: 'working', reps: '' }, { type: 'working', reps: '' }, { type: 'working', reps: '' }];
     const rowId = uid();
     const inputId = `routineExInput-${rowId}`;
     const card = document.createElement('div');
     card.className = 'routine-ex-card';
     card.innerHTML = `
-      <div class="routine-ex-head">
+      <div class="ex-card-header">
         <button class="drag-handle" type="button" title="Drag to reorder">${ICON_SVGS.grip}</button>
-        <div class="combo-row">
+        <div class="ex-number-badge">1</div>
+        <div class="ex-card-title-wrap">
+          <div class="ex-card-title">${escapeHtml(ex.exercise || 'New Exercise')}</div>
+          <div class="ex-card-subtitle">Custom exercise</div>
+        </div>
+        <div class="ex-card-right">
+          <span class="ex-set-count">${sets.length} sets</span>
+          <span class="ex-chevron">${ICON_SVGS.chevronDown}</span>
+          <div class="template-menu">
+            <button type="button" class="template-menu-btn ex-menu-btn" title="More options">${ICON_SVGS.dots}</button>
+            <div class="template-menu-dropdown ex-menu-dropdown" style="display:none;">
+              <button type="button" class="ex-remove-btn">Remove Exercise</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="ex-card-body" style="display:none;">
+        <div class="combo-row" style="margin-bottom:10px;">
           <input type="text" class="routineExInput" id="${inputId}" list="exerciseList" placeholder="Exercise (type or browse →)" value="${escapeHtml(ex.exercise || '')}">
           <select class="browseExercise" data-target="${inputId}"><option value="">Browse…</option></select>
         </div>
-        <button class="rm" type="button" title="Remove exercise">✕</button>
-      </div>
-      <div class="grid">
         <div class="field">
           <label>Equipment</label>
           <select class="routineExEquip">${equipmentOptionsHtml(ex.equipment)}</select>
         </div>
-        <div class="field">
-          <label>Warm-up sets</label>
-          <input type="number" class="routineExWarmup" min="0" value="${ex.warmupSets ?? 0}">
+        <div class="set-table-head"><span>SET</span><span>TYPE</span><span>REPS</span><span></span></div>
+        <div class="set-table-rows">${sets.map((s, i) => setRowHtml(i, s)).join('')}</div>
+        <div class="ex-body-actions">
+          <button type="button" class="link-btn addSetRowBtn">${ICON_SVGS.plus} Add Set</button>
+          <div class="set-options-wrap">
+            <button type="button" class="link-btn setOptionsBtn">${ICON_SVGS.gear} Set Options</button>
+          </div>
         </div>
-        <div class="field">
-          <label>Working sets</label>
-          <input type="number" class="routineExWorking" min="0" value="${ex.workingSets ?? 3}">
-        </div>
-        <div class="field">
-          <label>Rep range</label>
-          <input type="text" class="routineExReps" placeholder="e.g. 8-12" value="${escapeHtml(ex.repRange || '')}">
-        </div>
-      </div>
-      <div class="field" style="margin-bottom:0;">
-        <select class="routineExPreset">${presetOptionsHtml()}</select>
       </div>
     `;
-    card.querySelector('.rm').addEventListener('click', () => { card.remove(); });
-    initDragHandle(card.querySelector('.drag-handle'));
     routineExRows.appendChild(card);
+    initDragHandle(card.querySelector('.drag-handle'));
+    card.querySelectorAll('.set-table-row').forEach(row => bindSetRow(row));
+
+    const header = card.querySelector('.ex-card-header');
+    header.addEventListener('click', (e) => {
+      if (e.target.closest('.drag-handle') || e.target.closest('.template-menu')) return;
+      toggleExCard(card);
+    });
+    const menuBtn = card.querySelector('.ex-menu-btn');
+    const menuDropdown = card.querySelector('.ex-menu-dropdown');
+    menuBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isOpen = menuDropdown.style.display === 'block';
+      document.querySelectorAll('.ex-menu-dropdown').forEach(d => d.style.display = 'none');
+      menuDropdown.style.display = isOpen ? 'none' : 'block';
+    });
+    card.querySelector('.ex-remove-btn').addEventListener('click', (e) => {
+      e.stopPropagation();
+      card.remove();
+      renumberExerciseCards();
+      refreshEditorStats();
+    });
+    card.querySelector('.routineExInput').addEventListener('input', () => updateCardSummary(card));
+    card.querySelector('.addSetRowBtn').addEventListener('click', () => {
+      const rowsEl = card.querySelector('.set-table-rows');
+      const idx = rowsEl.querySelectorAll('.set-table-row').length;
+      rowsEl.insertAdjacentHTML('beforeend', setRowHtml(idx, { type: 'working', reps: '' }));
+      bindSetRow(rowsEl.lastElementChild);
+      updateCardSummary(card);
+      refreshEditorStats();
+    });
+    card.querySelector('.setOptionsBtn').addEventListener('click', (e) => {
+      e.stopPropagation();
+      closeSetOptionsMenus();
+      const wrap = card.querySelector('.set-options-wrap');
+      const menu = document.createElement('div');
+      menu.className = 'set-options-dropdown';
+      menu.innerHTML = REP_PRESETS.filter(p => p.value).map(p => `<button type="button" data-preset="${p.value}">${escapeHtml(p.label)}</button>`).join('');
+      wrap.appendChild(menu);
+      menu.querySelectorAll('button').forEach(btn => {
+        btn.addEventListener('click', (ev) => {
+          ev.stopPropagation();
+          const preset = REP_PRESETS.find(p => p.value === btn.dataset.preset);
+          const newSets = [...Array(preset.warmup)].map(() => ({ type: 'warmup', reps: preset.reps }))
+            .concat([...Array(preset.working)].map(() => ({ type: 'working', reps: preset.reps })));
+          const rowsEl = card.querySelector('.set-table-rows');
+          rowsEl.innerHTML = newSets.map((s, i) => setRowHtml(i, s)).join('');
+          rowsEl.querySelectorAll('.set-table-row').forEach(row => bindSetRow(row));
+          updateCardSummary(card);
+          refreshEditorStats();
+          closeSetOptionsMenus();
+        });
+      });
+    });
+
+    updateCardSummary(card);
+    if (autoOpen) toggleExCard(card, true);
+    return card;
   }
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.set-options-wrap')) closeSetOptionsMenus();
+  });
 
   let selectedIcon = 'dumbbell';
   let selectedColor = 'indigo';
@@ -1948,9 +2313,10 @@
     routineExRows.innerHTML = '';
     if (routine && routine.exercises.length) {
       routine.exercises.forEach(ex => addRoutineExRow(ex));
-    } else {
-      addRoutineExRow();
     }
+    renumberExerciseCards();
+    refreshEditorStats();
+    document.getElementById('exercisePicker').style.display = 'none';
     document.getElementById('deleteRoutineBtn').style.display = routine ? 'inline-block' : 'none';
     const overlay = document.getElementById('routineEditorOverlay');
     overlay.style.display = 'flex';
@@ -1964,9 +2330,70 @@
     document.body.style.overflow = '';
   }
 
+  // ---------- Add-exercise picker ----------
+  let exercisePickerQuery = '';
+  let exercisePickerCategory = 'All';
+  function renderExercisePicker() {
+    const chipsEl = document.getElementById('exercisePickerChips');
+    const cats = ['All', ...Object.keys(EXERCISE_CATALOG)];
+    chipsEl.innerHTML = cats.map(c => `<button type="button" class="cat-chip ${exercisePickerCategory === c ? 'active' : ''}" data-cat="${c}">${c}</button>`).join('');
+    chipsEl.querySelectorAll('.cat-chip').forEach(chip => {
+      chip.addEventListener('click', () => { exercisePickerCategory = chip.dataset.cat; renderExercisePicker(); });
+    });
+
+    const q = exercisePickerQuery.trim().toLowerCase();
+    let names = exercisePickerCategory === 'All' ? Object.values(EXERCISE_CATALOG).flat() : (EXERCISE_CATALOG[exercisePickerCategory] || []);
+    if (q) names = names.filter(n => n.toLowerCase().includes(q));
+
+    const listEl = document.getElementById('exercisePickerList');
+    let html = '';
+    const trimmedQuery = exercisePickerQuery.trim();
+    const isExactMatch = Object.values(EXERCISE_CATALOG).flat().some(n => n.toLowerCase() === q);
+    if (trimmedQuery && !isExactMatch) {
+      html += `
+        <div class="ex-picker-row">
+          <div class="ex-picker-info"><div class="t">Add "${escapeHtml(trimmedQuery)}"</div><div class="s">Custom exercise</div></div>
+          <button type="button" class="ex-picker-add" data-name="${escapeHtml(trimmedQuery)}">+</button>
+        </div>`;
+    }
+    html += names.map(n => `
+      <div class="ex-picker-row">
+        <div class="ex-picker-info"><div class="t">${escapeHtml(n)}</div><div class="s">${escapeHtml(EXERCISE_TO_GROUP[n] || '')}${EXERCISE_TYPE[n] ? ' • ' + escapeHtml(EXERCISE_TYPE[n]) : ''}</div></div>
+        <button type="button" class="ex-picker-add" data-name="${escapeHtml(n)}">+</button>
+      </div>`).join('');
+    listEl.innerHTML = html || '<div class="empty">No matches.</div>';
+
+    listEl.querySelectorAll('.ex-picker-add').forEach(btn => {
+      btn.addEventListener('click', () => {
+        addRoutineExRow({ exercise: btn.dataset.name }, true);
+        renumberExerciseCards();
+        refreshEditorStats();
+        showToast(`${btn.dataset.name} added`, 'success');
+      });
+    });
+  }
+  document.getElementById('addRoutineExBtn').addEventListener('click', () => {
+    const picker = document.getElementById('exercisePicker');
+    const opening = picker.style.display === 'none';
+    picker.style.display = opening ? 'block' : 'none';
+    if (opening) {
+      exercisePickerQuery = '';
+      exercisePickerCategory = 'All';
+      document.getElementById('exercisePickerSearch').value = '';
+      renderExercisePicker();
+      picker.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+  });
+  document.getElementById('exercisePickerCloseBtn').addEventListener('click', () => {
+    document.getElementById('exercisePicker').style.display = 'none';
+  });
+  document.getElementById('exercisePickerSearch').addEventListener('input', (e) => {
+    exercisePickerQuery = e.target.value;
+    renderExercisePicker();
+  });
+
   document.getElementById('createTemplateRow').addEventListener('click', () => openRoutineEditor(null));
   document.getElementById('planHeaderAddBtn').addEventListener('click', () => openRoutineEditor(null));
-  document.getElementById('addRoutineExBtn').addEventListener('click', () => addRoutineExRow());
   document.getElementById('cancelRoutineBtn').addEventListener('click', closeRoutineEditor);
   document.getElementById('closeRoutineEditorBtn').addEventListener('click', closeRoutineEditor);
   document.getElementById('routineEditorOverlay').addEventListener('click', (e) => {
@@ -1994,9 +2421,7 @@
       id: uid(),
       exercise: card.querySelector('.routineExInput').value.trim(),
       equipment: card.querySelector('.routineExEquip').value,
-      warmupSets: parseInt(card.querySelector('.routineExWarmup').value) || 0,
-      workingSets: parseInt(card.querySelector('.routineExWorking').value) || 0,
-      repRange: card.querySelector('.routineExReps').value.trim()
+      sets: cardSetsData(card)
     })).filter(ex => ex.exercise);
 
     if (exercises.length === 0) {
@@ -2123,7 +2548,7 @@
           category: orig.category || 'Custom',
           icon: orig.icon,
           color: orig.color,
-          exercises: orig.exercises.map(ex => ({ ...ex, id: uid() }))
+          exercises: orig.exercises.map(ex => ({ ...ex, id: uid(), sets: (ex.sets || []).map(s => ({ ...s })) }))
         };
         state.routines.push(clone);
         save();
@@ -2285,6 +2710,10 @@
     let streak = 0;
     let d = new Date(todayStr() + 'T00:00:00');
     let isFirstDay = true;
+    // daysChecked is an unconditional safety cap: if every day resolves to a "rest day"
+    // (e.g. no weekly schedule set and nothing logged yet, such as right after Clear All
+    // Data), the loop would otherwise never reach a break condition and hang the tab.
+    let daysChecked = 0;
     while (true) {
       const iso = d.toISOString().slice(0, 10);
       const hasLog = logged.has(iso);
@@ -2299,7 +2728,8 @@
       }
       isFirstDay = false;
       d.setDate(d.getDate() - 1);
-      if (streak > 3650) break;
+      daysChecked++;
+      if (daysChecked > 3650) break;
     }
     return streak;
   }
