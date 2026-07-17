@@ -22,6 +22,7 @@
     --radius-sm: 10px;
     --shadow-sm: 0 1px 3px rgba(0,0,0,.35);
     --shadow-md: 0 8px 24px rgba(0,0,0,.4);
+    --sidebar-w: 236px;
   }
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   html { -webkit-text-size-adjust: 100%; }
@@ -71,7 +72,28 @@
     white-space: nowrap;
   }
 
-  /* ---------- Bottom tab bar ---------- */
+  /* ---------- Page headers (per-view) ---------- */
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 18px;
+    flex-wrap: wrap;
+  }
+  .page-title {
+    font-size: 24px;
+    font-weight: 800;
+    margin: 0 0 4px;
+    letter-spacing: -.01em;
+  }
+  .page-subtitle {
+    color: var(--muted);
+    font-size: 13.5px;
+    margin: 0;
+  }
+
+  /* ---------- Nav (bottom bar on mobile, sidebar on desktop) ---------- */
   nav {
     position: fixed;
     left: 0; right: 0; bottom: 0;
@@ -84,6 +106,8 @@
     z-index: 100;
     gap: 2px;
   }
+  .nav-links { display: flex; gap: 2px; width: 100%; }
+  .nav-brand, .nav-footer { display: none; }
   nav button {
     flex: 1;
     display: flex;
@@ -100,7 +124,7 @@
     font-weight: 700;
     letter-spacing: .01em;
     cursor: pointer;
-    transition: color .15s ease, transform .1s ease;
+    transition: color .15s ease, transform .1s ease, background .15s ease;
     min-width: 0;
   }
   nav button span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; }
@@ -108,6 +132,67 @@
   nav button.active { color: var(--accent); }
   nav button.active svg { transform: translateY(-1px) scale(1.08); }
   nav button:active { transform: scale(.9); }
+
+  @media (min-width: 768px) {
+    nav {
+      left: 0; right: auto; top: 0; bottom: 0;
+      width: var(--sidebar-w);
+      flex-direction: column;
+      align-items: stretch;
+      padding: 18px 14px;
+      gap: 0;
+      border-top: none;
+      border-right: 1px solid var(--border);
+      background: var(--panel);
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+    }
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 6px 8px 20px;
+    }
+    .nav-brand-icon { font-size: 24px; line-height: 1; }
+    .nav-brand-title { font-size: 15px; font-weight: 800; letter-spacing: -.01em; }
+    .nav-links { display: flex; flex-direction: column; gap: 3px; width: 100%; }
+    nav button {
+      flex: 0 0 auto;
+      flex-direction: row;
+      justify-content: flex-start;
+      gap: 12px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      font-size: 14px;
+    }
+    nav button span { font-size: 13.5px; font-weight: 600; }
+    nav button svg { width: 19px; height: 19px; }
+    nav button.active { background: rgba(109,140,255,.14); }
+    nav button.active svg { transform: none; }
+    nav button:active { transform: none; }
+    .nav-footer {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: auto;
+      padding: 14px 8px 4px;
+      border-top: 1px solid var(--border);
+    }
+    .nav-avatar {
+      width: 30px; height: 30px;
+      border-radius: 50%;
+      background: linear-gradient(135deg,#6d8cff,#8b6cff);
+      color: white;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 800;
+      flex-shrink: 0;
+    }
+    .nav-footer-text { font-size: 13px; font-weight: 700; }
+    header { display: none; }
+    main { margin-left: var(--sidebar-w); max-width: none; padding: 28px 32px 40px; }
+    .footer-note { margin-left: var(--sidebar-w); padding-bottom: 24px !important; }
+    #toastContainer { left: var(--sidebar-w); }
+  }
 
   /* ---------- Sub nav (in-page tabs, e.g. Plan) ---------- */
   .subnav {
@@ -140,7 +225,7 @@
     margin: 0 auto;
     padding: 18px 16px calc(96px + env(safe-area-inset-bottom));
   }
-  @media (min-width: 640px) {
+  @media (min-width: 640px) and (max-width: 767px) {
     main { padding-left: 24px; padding-right: 24px; }
   }
   .view { display: none; }
@@ -193,7 +278,7 @@
   .field { margin-bottom: 14px; }
   .caption { color: var(--muted); font-size: 12.5px; margin: -6px 0 14px; line-height: 1.55; }
   .btn {
-    background: var(--accent);
+    background: linear-gradient(135deg, #6d8cff, #8b6cff);
     color: white;
     border: none;
     padding: 12px 20px;
@@ -215,6 +300,18 @@
   .btn.danger { background: var(--danger); }
   .btn.small { padding: 8px 14px; font-size: 12.5px; margin-top: 0; min-height: 36px; }
   .btn-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .icon-btn {
+    width: 36px; height: 36px;
+    border-radius: 9px;
+    background: var(--panel-2);
+    border: 1px solid var(--border-light);
+    color: var(--muted);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  .icon-btn:hover { color: var(--text); }
+  .icon-btn svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
   .set-rows { margin-bottom: 10px; }
   .set-row {
     display: grid;
@@ -348,35 +445,78 @@
   select#trendExercise { max-width: 280px; }
 
   /* Templates */
-  .routine-card {
+  .cat-chip {
+    background: none;
     border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    padding: 14px 15px;
-    margin-bottom: 10px;
-    background: var(--panel-2);
+    color: var(--muted);
+    padding: 7px 14px;
+    border-radius: 999px;
+    font-size: 12.5px;
+    font-weight: 600;
+    cursor: pointer;
+    min-height: 36px;
   }
-  .routine-card .top {
+  .cat-chip:hover { color: var(--text); border-color: var(--border-light); }
+  .cat-chip.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: white;
+    font-weight: 700;
+  }
+  .template-card-v2 {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
     flex-wrap: wrap;
-    gap: 8px;
+    gap: 14px;
+    padding: 16px;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    background: var(--panel-2);
+    margin-bottom: 12px;
   }
-  .routine-card .top .name { font-weight: 800; font-size: 15px; }
-  .routine-card .ex-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+  .template-icon-badge {
+    width: 46px; height: 46px;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    color: white;
+  }
+  .template-icon-badge svg { width: 23px; height: 23px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .template-main { flex: 1; min-width: 200px; }
+  .template-main .name-row { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; flex-wrap: wrap; }
+  .template-main .name { font-weight: 800; font-size: 15px; }
+  .template-meta { color: var(--muted); font-size: 12px; margin-bottom: 9px; }
+  .template-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .template-actions { display: flex; gap: 6px; align-items: center; flex-shrink: 0; }
   .ex-tag {
     background: rgba(255,255,255,.05);
     border: 1px solid var(--border);
     border-radius: 999px;
-    padding: 5px 11px 5px 13px;
-    font-size: 12px;
+    padding: 4px 11px;
+    font-size: 11.5px;
     color: var(--text);
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
   }
-  .ex-tag .equip { color: var(--muted); }
+  .pro-tip {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    background: rgba(109,140,255,.08);
+    border: 1px solid rgba(109,140,255,.25);
+    border-radius: 12px;
+    padding: 13px 15px;
+    font-size: 12.5px;
+    color: var(--text);
+    line-height: 1.5;
+    margin-top: 4px;
+  }
+  .pro-tip button {
+    margin-left: auto;
+    background: none;
+    border: none;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
   .routine-ex-card {
     border: 1px solid var(--border);
     border-radius: var(--radius-sm);
@@ -406,24 +546,6 @@
   }
   .reorder-btns button:hover { color: var(--text); }
   .reorder-btns button:disabled { opacity: .3; cursor: default; }
-  .cat-chip {
-    background: none;
-    border: 1px solid var(--border);
-    color: var(--muted);
-    padding: 7px 14px;
-    border-radius: 999px;
-    font-size: 12.5px;
-    font-weight: 600;
-    cursor: pointer;
-    min-height: 36px;
-  }
-  .cat-chip:hover { color: var(--text); border-color: var(--border-light); }
-  .cat-chip.active {
-    background: var(--accent);
-    border-color: var(--accent);
-    color: white;
-    font-weight: 700;
-  }
   .plan-item {
     display: flex;
     justify-content: space-between;
@@ -586,6 +708,12 @@
 
   <!-- PLAN -->
   <div class="view" id="view-plan">
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Plan</h1>
+        <p class="page-subtitle">Prepare for successful workouts before you arrive at the gym.</p>
+      </div>
+    </div>
     <div class="subnav">
       <button class="subnav-btn active" data-sub="templates" type="button">Templates</button>
       <button class="subnav-btn" data-sub="planning" type="button">Planning</button>
@@ -600,8 +728,16 @@
         <div class="btn-row" style="margin-bottom:12px;">
           <button class="btn" id="newRoutineBtn" type="button">+ New Template</button>
         </div>
+        <div class="field" style="margin-bottom:10px;">
+          <input type="text" id="templateSearch" placeholder="Search templates…">
+        </div>
         <div id="templateCategoryChips" class="btn-row" style="margin-bottom:12px;"></div>
         <div id="routineList"><div class="empty">No templates yet.</div></div>
+        <div class="pro-tip" id="proTipBanner" style="display:none;">
+          <span>💡</span>
+          <div><strong>Pro tip:</strong> Duplicate a template to quickly create a variation, or set categories so you can filter faster.</div>
+          <button type="button" id="proTipDismiss" aria-label="Dismiss">✕</button>
+        </div>
       </div>
 
       <div class="card" id="routineEditorCard" style="display:none;">
@@ -695,6 +831,13 @@
 
   <!-- LOG WORKOUT -->
   <div class="view active" id="view-log">
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Log Workout</h1>
+        <p class="page-subtitle">Track exercises, sets, and reps in the moment.</p>
+      </div>
+    </div>
+
     <div class="card">
       <h2>Today's Plan</h2>
       <p class="caption" id="scheduleHint"></p>
@@ -751,9 +894,15 @@
 
   <!-- HOW I FEEL -->
   <div class="view" id="view-feel">
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">How I Feel</h1>
+        <p class="page-subtitle">Capture how your body's responding, right after training or the morning after.</p>
+      </div>
+    </div>
+
     <div class="card">
       <h2>How Do You Feel Today?</h2>
-      <p style="color:var(--muted); font-size:13px; margin-top:-8px;">Log this the morning after a workout to track recovery over time.</p>
       <div class="field">
         <label>Date</label>
         <input type="date" id="feelDate">
@@ -785,6 +934,13 @@
 
   <!-- HISTORY -->
   <div class="view" id="view-history">
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">History</h1>
+        <p class="page-subtitle">Browse everything you've logged.</p>
+      </div>
+    </div>
+
     <div class="card">
       <h2>Workout History</h2>
       <div class="field">
@@ -797,6 +953,13 @@
 
   <!-- TRENDS -->
   <div class="view" id="view-trends">
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Trends</h1>
+        <p class="page-subtitle">See your progress over time.</p>
+      </div>
+    </div>
+
     <div class="card">
       <h2>Progress Over Time</h2>
       <div class="field">
@@ -818,6 +981,13 @@
 
   <!-- DATA -->
   <div class="view" id="view-data">
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Data</h1>
+        <p class="page-subtitle">Back up, restore, or clear your data.</p>
+      </div>
+    </div>
+
     <div class="card">
       <h2>Backup & Restore</h2>
       <p style="color:var(--muted); font-size:13px;">All data is stored locally in your browser. Export a backup regularly, or move it to another device.</p>
@@ -835,30 +1005,43 @@
 <p class="footer-note" style="padding-bottom: calc(90px + env(safe-area-inset-bottom));">Your data stays in this browser's local storage — nothing is sent anywhere.</p>
 
 <nav>
-  <button data-view="plan" type="button">
-    <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="3" x2="8" y2="7"/><line x1="16" y1="3" x2="16" y2="7"/></svg>
-    <span>Plan</span>
-  </button>
-  <button data-view="log" class="active" type="button">
-    <svg viewBox="0 0 24 24"><rect x="1" y="9" width="4" height="6" rx="1"/><rect x="19" y="9" width="4" height="6" rx="1"/><rect x="5" y="10" width="3" height="4"/><rect x="16" y="10" width="3" height="4"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
-    <span>Log</span>
-  </button>
-  <button data-view="feel" type="button">
-    <svg viewBox="0 0 24 24"><path d="M12 21s-7.5-4.6-10-9.3C.5 8 2 4.5 5.5 4c2-.3 3.7.6 4.9 2.2C11.6 4.6 13.3 3.7 15.3 4c3.5.5 5 4 3.5 7.7C19.5 16.4 12 21 12 21z"/></svg>
-    <span>Feel</span>
-  </button>
-  <button data-view="history" type="button">
-    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 14"/></svg>
-    <span>History</span>
-  </button>
-  <button data-view="trends" type="button">
-    <svg viewBox="0 0 24 24"><polyline points="3 17 9 11 13 15 21 6"/><polyline points="15 6 21 6 21 12"/></svg>
-    <span>Trends</span>
-  </button>
-  <button data-view="data" type="button">
-    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><path d="M4 12a8 8 0 0 1 .3-2.2l-1.7-1.3 1.5-2.6 2 .7a8 8 0 0 1 3.8-2.2l.3-2.1h3l.3 2.1a8 8 0 0 1 3.8 2.2l2-.7 1.5 2.6-1.7 1.3a8 8 0 0 1 0 4.4l1.7 1.3-1.5 2.6-2-.7a8 8 0 0 1-3.8 2.2l-.3 2.1h-3l-.3-2.1a8 8 0 0 1-3.8-2.2l-2 .7-1.5-2.6 1.7-1.3A8 8 0 0 1 4 12z"/></svg>
-    <span>Data</span>
-  </button>
+  <div class="nav-brand">
+    <span class="nav-brand-icon">🏋️</span>
+    <div>
+      <div class="nav-brand-title">Workout Tracker</div>
+      <span class="header-streak-badge" id="sidebarStreak" style="display:none; margin-top:4px;"></span>
+    </div>
+  </div>
+  <div class="nav-links">
+    <button data-view="plan" type="button">
+      <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="3" x2="8" y2="7"/><line x1="16" y1="3" x2="16" y2="7"/></svg>
+      <span>Plan</span>
+    </button>
+    <button data-view="log" class="active" type="button">
+      <svg viewBox="0 0 24 24"><rect x="1" y="9" width="4" height="6" rx="1"/><rect x="19" y="9" width="4" height="6" rx="1"/><rect x="5" y="10" width="3" height="4"/><rect x="16" y="10" width="3" height="4"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+      <span>Log</span>
+    </button>
+    <button data-view="feel" type="button">
+      <svg viewBox="0 0 24 24"><path d="M12 21s-7.5-4.6-10-9.3C.5 8 2 4.5 5.5 4c2-.3 3.7.6 4.9 2.2C11.6 4.6 13.3 3.7 15.3 4c3.5.5 5 4 3.5 7.7C19.5 16.4 12 21 12 21z"/></svg>
+      <span>Feel</span>
+    </button>
+    <button data-view="history" type="button">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 14"/></svg>
+      <span>History</span>
+    </button>
+    <button data-view="trends" type="button">
+      <svg viewBox="0 0 24 24"><polyline points="3 17 9 11 13 15 21 6"/><polyline points="15 6 21 6 21 12"/></svg>
+      <span>Trends</span>
+    </button>
+    <button data-view="data" type="button">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><path d="M4 12a8 8 0 0 1 .3-2.2l-1.7-1.3 1.5-2.6 2 .7a8 8 0 0 1 3.8-2.2l.3-2.1h3l.3 2.1a8 8 0 0 1 3.8 2.2l2-.7 1.5 2.6-1.7 1.3a8 8 0 0 1 0 4.4l1.7 1.3-1.5 2.6-2-.7a8 8 0 0 1-3.8 2.2l-.3 2.1h-3l-.3-2.1a8 8 0 0 1-3.8-2.2l-2 .7-1.5-2.6 1.7-1.3A8 8 0 0 1 4 12z"/></svg>
+      <span>Data</span>
+    </button>
+  </div>
+  <div class="nav-footer">
+    <div class="nav-avatar">MG</div>
+    <div class="nav-footer-text">Morgan</div>
+  </div>
 </nav>
 
 <script>
@@ -876,6 +1059,8 @@
     'Arms': ['Barbell Curl', 'Dumbbell Curl', 'Hammer Curl', 'Preacher Curl', 'Tricep Pushdown', 'Skull Crusher', 'Overhead Tricep Extension', 'Close-Grip Bench Press'],
     'Core': ['Plank', 'Hanging Leg Raise', 'Cable Crunch', 'Russian Twist', 'Ab Wheel Rollout', 'Sit-Up']
   };
+  const EXERCISE_TO_GROUP = {};
+  Object.entries(EXERCISE_CATALOG).forEach(([group, list]) => list.forEach(ex => { EXERCISE_TO_GROUP[ex] = group; }));
 
   const EQUIPMENT_OPTIONS = ['Barbell', 'Dumbbell', 'Machine', 'Smith Machine', 'Cable', 'Bodyweight', 'Kettlebell', 'Resistance Band', 'Other'];
 
@@ -900,6 +1085,37 @@
 
   const SORENESS_EMOJI = ['😌', '🙂', '😐', '😣', '🤕'];
   const ENERGY_EMOJI = ['🪫', '😴', '🙂', '⚡', '🔥'];
+
+  const ICON_SVGS = {
+    dumbbell: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="9" width="4" height="6" rx="1"/><rect x="19" y="9" width="4" height="6" rx="1"/><rect x="5" y="10" width="3" height="4"/><rect x="16" y="10" width="3" height="4"/><line x1="8" y1="12" x2="16" y2="12"/></svg>',
+    pull: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="6"/><polyline points="6 12 12 6 18 12"/></svg>',
+    legs: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21 12 4l8 17"/><path d="M9 15h6"/></svg>',
+    star: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15 9 22 9 16.5 13.5 18.5 21 12 16.5 5.5 21 7.5 13.5 2 9 9 9"/></svg>',
+    copy: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>',
+    pencil: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>'
+  };
+  const CATEGORY_STYLES = {
+    'Push': { bg: 'linear-gradient(135deg,#7c5cff,#5b8cff)', icon: 'dumbbell' },
+    'Pull': { bg: 'linear-gradient(135deg,#0ea371,#34d399)', icon: 'pull' },
+    'Legs': { bg: 'linear-gradient(135deg,#f0913a,#f2617a)', icon: 'legs' },
+    'Upper': { bg: 'linear-gradient(135deg,#5b8cff,#7c5cff)', icon: 'dumbbell' },
+    'Lower': { bg: 'linear-gradient(135deg,#f0913a,#f2c94c)', icon: 'legs' },
+    'Full Body': { bg: 'linear-gradient(135deg,#f2c94c,#f0913a)', icon: 'star' },
+    'Custom': { bg: 'linear-gradient(135deg,#64748b,#475569)', icon: 'dumbbell' }
+  };
+  function categoryBadgeHtml(category) {
+    const style = CATEGORY_STYLES[category] || CATEGORY_STYLES['Custom'];
+    return `<div class="template-icon-badge" style="background:${style.bg}">${ICON_SVGS[style.icon]}</div>`;
+  }
+  function inferMuscleGroups(routine) {
+    const groups = new Set();
+    routine.exercises.forEach(ex => { const g = EXERCISE_TO_GROUP[ex.exercise]; if (g) groups.add(g); });
+    return [...groups];
+  }
+  function estimateDuration(routine) {
+    const totalSets = routine.exercises.reduce((s, e) => s + (e.warmupSets || 0) + (e.workingSets || 0), 0);
+    return Math.max(15, Math.round((totalSets * 2.5) / 5) * 5);
+  }
 
   function uid() {
     return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
@@ -1085,26 +1301,22 @@
   });
 
   // ---------- NAV ----------
-  const navButtons = document.querySelectorAll('nav button');
+  const navButtons = document.querySelectorAll('nav button[data-view]');
   navButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-      navButtons.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-      document.getElementById('view-' + btn.dataset.view).classList.add('active');
-      window.scrollTo({ top: 0, behavior: 'instant' in window ? 'instant' : 'auto' });
-      if (btn.dataset.view === 'trends') renderTrends();
-      if (btn.dataset.view === 'history') renderHistory();
-      if (btn.dataset.view === 'feel') renderFeelHistory();
-      if (btn.dataset.view === 'plan') { renderRoutineList(); renderSchedule(); renderCalendar(); renderStreaks(); }
-      if (btn.dataset.view === 'log') { populatePlanRoutineSelect(); applyScheduleDefault(); renderPlanExercises(); }
-    });
+    btn.addEventListener('click', () => switchView(btn.dataset.view));
   });
-  function goToView(view) {
+  function switchView(view) {
     navButtons.forEach(b => b.classList.toggle('active', b.dataset.view === view));
     document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
     document.getElementById('view-' + view).classList.add('active');
+    window.scrollTo(0, 0);
+    if (view === 'trends') renderTrends();
+    if (view === 'history') renderHistory();
+    if (view === 'feel') renderFeelHistory();
+    if (view === 'plan') { renderRoutineList(); renderSchedule(); renderCalendar(); renderStreaks(); }
+    if (view === 'log') { populatePlanRoutineSelect(); applyScheduleDefault(); renderPlanExercises(); }
   }
+  function goToView(view) { switchView(view); }
 
   // ---------- PLAN SUB-NAV ----------
   document.querySelectorAll('.subnav-btn').forEach(btn => {
@@ -1195,14 +1407,14 @@
   }
 
   function renderHeaderStreak() {
-    const badge = document.getElementById('headerStreak');
     const streak = computeCurrentStreak();
-    if (streak > 0) {
-      badge.style.display = 'inline-flex';
-      badge.textContent = `🔥 ${streak} day${streak === 1 ? '' : 's'}`;
-    } else {
-      badge.style.display = 'none';
-    }
+    const text = streak > 0 ? `🔥 ${streak} day${streak === 1 ? '' : 's'}` : '';
+    ['headerStreak', 'sidebarStreak'].forEach(id => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      if (text) { el.style.display = 'inline-flex'; el.textContent = text; }
+      else { el.style.display = 'none'; }
+    });
   }
 
   document.getElementById('saveWorkoutBtn').addEventListener('click', () => {
@@ -1338,8 +1550,18 @@
   // ---------- TEMPLATES ----------
   let editingRoutineId = null;
   let templateCategoryFilter = 'All';
+  let templateSearchQuery = '';
   const routineExRows = document.getElementById('routineExRows');
   document.getElementById('routineCategory').innerHTML = TEMPLATE_CATEGORIES.map(c => `<option value="${c}">${c}</option>`).join('');
+
+  document.getElementById('templateSearch').addEventListener('input', (e) => {
+    templateSearchQuery = e.target.value;
+    renderRoutineList();
+  });
+  document.getElementById('proTipDismiss').addEventListener('click', () => {
+    localStorage.setItem('workoutTracker.tipDismissed', '1');
+    document.getElementById('proTipBanner').style.display = 'none';
+  });
 
   function refreshReorderButtons() {
     const cards = [...routineExRows.querySelectorAll('.routine-ex-card')];
@@ -1500,27 +1722,46 @@
       chip.addEventListener('click', () => { templateCategoryFilter = chip.dataset.cat; renderRoutineList(); });
     });
 
-    const filtered = templateCategoryFilter === 'All' ? state.routines : state.routines.filter(r => (r.category || 'Custom') === templateCategoryFilter);
+    let filtered = templateCategoryFilter === 'All' ? state.routines : state.routines.filter(r => (r.category || 'Custom') === templateCategoryFilter);
+    const q = templateSearchQuery.trim().toLowerCase();
+    if (q) filtered = filtered.filter(r => r.name.toLowerCase().includes(q));
 
     if (filtered.length === 0) {
-      el.innerHTML = '<div class="empty"><span class="empty-icon">🗂️</span>No templates in this category yet.</div>';
-      return;
-    }
-    el.innerHTML = filtered.map(r => `
-      <div class="routine-card">
-        <div class="top">
-          <span class="name">${escapeHtml(r.name)} <span class="pill b">${escapeHtml(r.category || 'Custom')}</span></span>
-          <div class="btn-row">
-            <button class="btn small secondary useRoutineBtn" data-id="${r.id}" type="button">Use in Log</button>
-            <button class="btn small secondary duplicateRoutineBtn" data-id="${r.id}" type="button">Duplicate</button>
-            <button class="btn small secondary editRoutineBtn" data-id="${r.id}" type="button">Edit</button>
+      el.innerHTML = '<div class="empty"><span class="empty-icon">🗂️</span>No templates found.</div>';
+    } else {
+      el.innerHTML = filtered.map(r => {
+        const cat = r.category || 'Custom';
+        const groups = inferMuscleGroups(r);
+        const mins = estimateDuration(r);
+        const shown = r.exercises.slice(0, 3);
+        const moreCount = r.exercises.length - shown.length;
+        return `
+        <div class="template-card-v2">
+          ${categoryBadgeHtml(cat)}
+          <div class="template-main">
+            <div class="name-row">
+              <span class="name">${escapeHtml(r.name)}</span>
+              <span class="pill b">${escapeHtml(cat)}</span>
+            </div>
+            <div class="template-meta">${r.exercises.length} exercise${r.exercises.length === 1 ? '' : 's'} · ~${mins} min${groups.length ? ' · ' + groups.map(g => escapeHtml(g)).join(', ') : ''}</div>
+            <div class="template-chips">
+              ${shown.map(ex => `<span class="ex-tag">${escapeHtml(ex.exercise)}</span>`).join('')}
+              ${moreCount > 0 ? `<span class="ex-tag">+${moreCount} more</span>` : ''}
+            </div>
           </div>
-        </div>
-        <div class="ex-tags">
-          ${r.exercises.map(ex => `<span class="ex-tag">${escapeHtml(ex.exercise)}${ex.equipment ? ` <span class="equip">(${escapeHtml(ex.equipment)})</span>` : ''} ${formatExPlan(ex)}</span>`).join('') || '<span class="ex-tag">No exercises yet</span>'}
-        </div>
-      </div>
-    `).join('');
+          <div class="template-actions">
+            <button class="btn small secondary useRoutineBtn" data-id="${r.id}" type="button">Use in Log</button>
+            <button class="icon-btn duplicateRoutineBtn" data-id="${r.id}" type="button" title="Duplicate">${ICON_SVGS.copy}</button>
+            <button class="icon-btn editRoutineBtn" data-id="${r.id}" type="button" title="Edit">${ICON_SVGS.pencil}</button>
+          </div>
+        </div>`;
+      }).join('');
+    }
+
+    if (state.routines.length > 0 && localStorage.getItem('workoutTracker.tipDismissed') !== '1') {
+      document.getElementById('proTipBanner').style.display = 'flex';
+    }
+
     el.querySelectorAll('.editRoutineBtn').forEach(btn => {
       btn.addEventListener('click', () => openRoutineEditor(state.routines.find(r => r.id === btn.dataset.id)));
     });
