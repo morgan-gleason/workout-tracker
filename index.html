@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Workout Tracker</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg: #0f1115;
+    --panel: #171a21;
+    --panel-2: #1e222b;
+    --border: #2a2f3a;
+    --text: #e8eaed;
+    --muted: #9aa3af;
+    --accent: #5b8cff;
+    --accent-2: #37d67a;
+    --warn: #ffb648;
+    --danger: #ff5c6c;
+    --radius: 10px;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+  }
+  header {
+    padding: 20px 24px 12px;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    background: var(--bg);
+    z-index: 10;
+  }
+  header h1 {
+    margin: 0 0 4px;
+    font-size: 22px;
+    font-weight: 700;
+  }
+  header p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 13px;
+  }
+  nav {
+    display: flex;
+    gap: 6px;
+    padding: 12px 24px 0;
+    flex-wrap: wrap;
+  }
+  nav button {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: 8px 14px;
+    border-radius: 999px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all .15s ease;
+  }
+  nav button:hover { color: var(--text); border-color: #3a4150; }
+  nav button.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: white;
+    font-weight: 600;
+  }
+  main {
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 20px 24px 80px;
+  }
+  .view { display: none; }
+  .view.active { display: block; }
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px;
+    margin-bottom: 16px;
+  }
+  .card h2 {
+    margin: 0 0 14px;
+    font-size: 16px;
+    font-weight: 600;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+  }
+  label {
+    display: block;
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 5px;
+  }
+  input, select, textarea {
+    width: 100%;
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 9px 10px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: inherit;
+  }
+  input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+  textarea { resize: vertical; min-height: 50px; }
+  .field { margin-bottom: 12px; }
+  .btn {
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 4px;
+  }
+  .btn:hover { filter: brightness(1.1); }
+  .btn.secondary {
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    color: var(--text);
+  }
+  .btn.danger { background: var(--danger); }
+  .btn-row { display: flex; gap: 8px; flex-wrap: wrap; }
+  .set-rows { margin-bottom: 10px; }
+  .set-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr auto;
+    gap: 8px;
+    margin-bottom: 8px;
+    align-items: end;
+  }
+  .set-row .rm {
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    color: var(--danger);
+    border-radius: 8px;
+    padding: 9px 12px;
+    cursor: pointer;
+  }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--border); }
+  th { color: var(--muted); font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: .03em; }
+  tr:last-child td { border-bottom: none; }
+  .pill {
+    display: inline-block;
+    padding: 2px 9px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .pill.g { background: rgba(55,214,122,.15); color: var(--accent-2); }
+  .pill.y { background: rgba(255,182,72,.15); color: var(--warn); }
+  .pill.r { background: rgba(255,92,108,.15); color: var(--danger); }
+  .empty {
+    text-align: center;
+    color: var(--muted);
+    padding: 30px 10px;
+    font-size: 13px;
+  }
+  .session-item {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+    background: var(--panel-2);
+  }
+  .session-item .top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+  }
+  .session-item .top .name { font-weight: 600; font-size: 14px; }
+  .session-item .top .date { color: var(--muted); font-size: 12px; }
+  .session-item .meta { color: var(--muted); font-size: 12px; margin-bottom: 6px; }
+  .session-item .del {
+    background: none; border: none; color: var(--muted); cursor: pointer; font-size: 12px;
+  }
+  .session-item .del:hover { color: var(--danger); }
+  .feel-scale { display: flex; gap: 6px; margin-bottom: 4px; }
+  .feel-scale button {
+    flex: 1;
+    padding: 10px 4px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--panel-2);
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 13px;
+  }
+  .feel-scale button.selected {
+    border-color: var(--accent);
+    background: rgba(91,140,255,.15);
+    color: var(--text);
+    font-weight: 600;
+  }
+  .stat-row { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 4px; }
+  .stat {
+    flex: 1;
+    min-width: 120px;
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 14px;
+  }
+  .stat .num { font-size: 22px; font-weight: 700; }
+  .stat .lbl { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  canvas { max-height: 280px; }
+  .footer-note { text-align: center; color: var(--muted); font-size: 12px; margin-top: 24px; }
+  select#trendExercise { max-width: 280px; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🏋️ Workout Tracker</h1>
+  <p>Log sessions, track how you feel, and watch your trends over time.</p>
+</header>
+
+<nav>
+  <button data-view="log" class="active">Log Workout</button>
+  <button data-view="feel">How I Feel</button>
+  <button data-view="history">History</button>
+  <button data-view="trends">Trends</button>
+  <button data-view="data">Data</button>
+</nav>
+
+<main>
+
+  <!-- LOG WORKOUT -->
+  <div class="view active" id="view-log">
+    <div class="card">
+      <h2>New Workout Session</h2>
+      <div class="grid">
+        <div class="field">
+          <label>Date</label>
+          <input type="date" id="logDate">
+        </div>
+        <div class="field">
+          <label>Exercise</label>
+          <input type="text" id="logExercise" list="exerciseList" placeholder="e.g. Bench Press">
+          <datalist id="exerciseList"></datalist>
+        </div>
+        <div class="field">
+          <label>Machine / Equipment</label>
+          <input type="text" id="logMachine" list="machineList" placeholder="e.g. Smith Machine">
+          <datalist id="machineList"></datalist>
+        </div>
+        <div class="field">
+          <label>Unit</label>
+          <select id="logUnit">
+            <option value="lb">lb</option>
+            <option value="kg">kg</option>
+          </select>
+        </div>
+      </div>
+
+      <label>Sets</label>
+      <div class="set-rows" id="setRows"></div>
+      <button class="btn secondary" id="addSetBtn" type="button">+ Add Set</button>
+
+      <div class="field" style="margin-top:14px;">
+        <label>Notes (form cues, how it felt during the set, etc.)</label>
+        <textarea id="logNotes" placeholder="Optional"></textarea>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn" id="saveWorkoutBtn" type="button">Save Workout</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- HOW I FEEL -->
+  <div class="view" id="view-feel">
+    <div class="card">
+      <h2>How Do You Feel Today?</h2>
+      <p style="color:var(--muted); font-size:13px; margin-top:-8px;">Log this the morning after a workout to track recovery over time.</p>
+      <div class="field">
+        <label>Date</label>
+        <input type="date" id="feelDate">
+      </div>
+      <div class="field">
+        <label>Soreness (1 = none, 5 = very sore)</label>
+        <div class="feel-scale" id="sorenessScale"></div>
+      </div>
+      <div class="field">
+        <label>Energy Level (1 = drained, 5 = great)</label>
+        <div class="feel-scale" id="energyScale"></div>
+      </div>
+      <div class="field">
+        <label>Which muscle groups are sore? (optional)</label>
+        <input type="text" id="feelAreas" placeholder="e.g. legs, shoulders">
+      </div>
+      <div class="field">
+        <label>Notes</label>
+        <textarea id="feelNotes" placeholder="Optional"></textarea>
+      </div>
+      <button class="btn" id="saveFeelBtn" type="button">Save Check-in</button>
+    </div>
+
+    <div class="card">
+      <h2>Recent Check-ins</h2>
+      <div id="feelHistory"><div class="empty">No check-ins yet.</div></div>
+    </div>
+  </div>
+
+  <!-- HISTORY -->
+  <div class="view" id="view-history">
+    <div class="card">
+      <h2>Workout History</h2>
+      <div class="field">
+        <label>Filter by exercise</label>
+        <select id="historyFilter"><option value="">All exercises</option></select>
+      </div>
+      <div id="historyList"><div class="empty">No workouts logged yet.</div></div>
+    </div>
+  </div>
+
+  <!-- TRENDS -->
+  <div class="view" id="view-trends">
+    <div class="card">
+      <h2>Progress Over Time</h2>
+      <div class="field">
+        <label>Exercise</label>
+        <select id="trendExercise"></select>
+      </div>
+      <div class="stat-row" id="trendStats"></div>
+      <canvas id="weightChart"></canvas>
+    </div>
+    <div class="card">
+      <h2>Volume Over Time (weight × reps × sets)</h2>
+      <canvas id="volumeChart"></canvas>
+    </div>
+    <div class="card">
+      <h2>Recovery Trends</h2>
+      <canvas id="feelChart"></canvas>
+    </div>
+  </div>
+
+  <!-- DATA -->
+  <div class="view" id="view-data">
+    <div class="card">
+      <h2>Backup & Restore</h2>
+      <p style="color:var(--muted); font-size:13px;">All data is stored locally in your browser. Export a backup regularly, or move it to another device.</p>
+      <div class="btn-row">
+        <button class="btn secondary" id="exportBtn" type="button">Export JSON</button>
+        <button class="btn secondary" id="importBtn" type="button">Import JSON</button>
+        <button class="btn danger" id="clearBtn" type="button">Clear All Data</button>
+      </div>
+      <input type="file" id="importFile" accept="application/json" style="display:none;">
+    </div>
+  </div>
+
+</main>
+
+<p class="footer-note">Your data stays in this browser's local storage — nothing is sent anywhere.</p>
+
+<script>
+(function() {
+  const STORAGE_KEY = 'workoutTracker.v1';
+  const state = load();
+
+  function load() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) return JSON.parse(raw);
+    } catch (e) { console.error(e); }
+    return { workouts: [], feelings: [] };
+  }
+  function save() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  }
+  function uid() {
+    return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+  }
+  function todayStr() {
+    return new Date().toISOString().slice(0, 10);
+  }
+  function fmtDate(d) {
+    const dt = new Date(d + 'T00:00:00');
+    return dt.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+  }
+
+  // ---------- NAV ----------
+  const navButtons = document.querySelectorAll('nav button');
+  navButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      navButtons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+      document.getElementById('view-' + btn.dataset.view).classList.add('active');
+      if (btn.dataset.view === 'trends') renderTrends();
+      if (btn.dataset.view === 'history') renderHistory();
+      if (btn.dataset.view === 'feel') renderFeelHistory();
+    });
+  });
+
+  // ---------- LOG WORKOUT ----------
+  document.getElementById('logDate').value = todayStr();
+  const setRows = document.getElementById('setRows');
+
+  function addSetRow(weight, reps) {
+    const row = document.createElement('div');
+    row.className = 'set-row';
+    row.innerHTML = `
+      <div>
+        <label>Weight</label>
+        <input type="number" step="0.5" class="setWeight" value="${weight ?? ''}" placeholder="0">
+      </div>
+      <div>
+        <label>Reps</label>
+        <input type="number" class="setReps" value="${reps ?? ''}" placeholder="0">
+      </div>
+      <div>
+        <label>RPE (1-10)</label>
+        <input type="number" class="setRpe" min="1" max="10" placeholder="optional">
+      </div>
+      <button class="rm" type="button" title="Remove set">✕</button>
+    `;
+    row.querySelector('.rm').addEventListener('click', () => row.remove());
+    setRows.appendChild(row);
+  }
+  document.getElementById('addSetBtn').addEventListener('click', () => addSetRow());
+  addSetRow(); addSetRow(); addSetRow();
+
+  function updateDatalists() {
+    const exercises = [...new Set(state.workouts.map(w => w.exercise))].sort();
+    const machines = [...new Set(state.workouts.map(w => w.machine).filter(Boolean))].sort();
+    document.getElementById('exerciseList').innerHTML = exercises.map(e => `<option value="${escapeHtml(e)}">`).join('');
+    document.getElementById('machineList').innerHTML = machines.map(m => `<option value="${escapeHtml(m)}">`).join('');
+  }
+
+  function escapeHtml(str) {
+    return String(str).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+  }
+
+  document.getElementById('saveWorkoutBtn').addEventListener('click', () => {
+    const date = document.getElementById('logDate').value;
+    const exercise = document.getElementById('logExercise').value.trim();
+    const machine = document.getElementById('logMachine').value.trim();
+    const unit = document.getElementById('logUnit').value;
+    const notes = document.getElementById('logNotes').value.trim();
+
+    if (!date || !exercise) {
+      alert('Please fill in at least a date and exercise name.');
+      return;
+    }
+    const sets = [...setRows.querySelectorAll('.set-row')].map(row => ({
+      weight: parseFloat(row.querySelector('.setWeight').value) || 0,
+      reps: parseInt(row.querySelector('.setReps').value) || 0,
+      rpe: row.querySelector('.setRpe').value ? parseFloat(row.querySelector('.setRpe').value) : null
+    })).filter(s => s.weight > 0 || s.reps > 0);
+
+    if (sets.length === 0) {
+      alert('Add at least one set with a weight or rep count.');
+      return;
+    }
+
+    state.workouts.push({ id: uid(), date, exercise, machine, unit, sets, notes, createdAt: Date.now() });
+    save();
+    updateDatalists();
+
+    document.getElementById('logExercise').value = '';
+    document.getElementById('logMachine').value = '';
+    document.getElementById('logNotes').value = '';
+    setRows.innerHTML = '';
+    addSetRow(); addSetRow(); addSetRow();
+
+    alert('Workout saved!');
+  });
+
+  // ---------- HOW I FEEL ----------
+  document.getElementById('feelDate').value = todayStr();
+  let sorenessVal = null, energyVal = null;
+
+  function buildScale(containerId, onSelect) {
+    const el = document.getElementById(containerId);
+    el.innerHTML = '';
+    for (let i = 1; i <= 5; i++) {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.textContent = i;
+      b.addEventListener('click', () => {
+        [...el.children].forEach(c => c.classList.remove('selected'));
+        b.classList.add('selected');
+        onSelect(i);
+      });
+      el.appendChild(b);
+    }
+  }
+  buildScale('sorenessScale', v => sorenessVal = v);
+  buildScale('energyScale', v => energyVal = v);
+
+  document.getElementById('saveFeelBtn').addEventListener('click', () => {
+    const date = document.getElementById('feelDate').value;
+    if (!date || sorenessVal === null || energyVal === null) {
+      alert('Please pick a date and select both soreness and energy levels.');
+      return;
+    }
+    const areas = document.getElementById('feelAreas').value.trim();
+    const notes = document.getElementById('feelNotes').value.trim();
+    state.feelings.push({ id: uid(), date, soreness: sorenessVal, energy: energyVal, areas, notes, createdAt: Date.now() });
+    save();
+
+    document.getElementById('feelAreas').value = '';
+    document.getElementById('feelNotes').value = '';
+    sorenessVal = null; energyVal = null;
+    [...document.getElementById('sorenessScale').children].forEach(c => c.classList.remove('selected'));
+    [...document.getElementById('energyScale').children].forEach(c => c.classList.remove('selected'));
+
+    renderFeelHistory();
+    alert('Check-in saved!');
+  });
+
+  function renderFeelHistory() {
+    const el = document.getElementById('feelHistory');
+    const items = [...state.feelings].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 15);
+    if (items.length === 0) {
+      el.innerHTML = '<div class="empty">No check-ins yet.</div>';
+      return;
+    }
+    el.innerHTML = items.map(f => {
+      const pillClass = f.soreness >= 4 ? 'r' : f.soreness >= 2 ? 'y' : 'g';
+      return `
+        <div class="session-item">
+          <div class="top">
+            <span class="name">${fmtDate(f.date)}</span>
+            <button class="del" data-id="${f.id}">Delete</button>
+          </div>
+          <div class="meta">
+            <span class="pill ${pillClass}">Soreness ${f.soreness}/5</span>
+            &nbsp;<span class="pill g">Energy ${f.energy}/5</span>
+            ${f.areas ? ' · ' + escapeHtml(f.areas) : ''}
+          </div>
+          ${f.notes ? `<div style="font-size:13px;color:var(--muted);">${escapeHtml(f.notes)}</div>` : ''}
+        </div>`;
+    }).join('');
+    el.querySelectorAll('.del').forEach(btn => {
+      btn.addEventListener('click', () => {
+        state.feelings = state.feelings.filter(f => f.id !== btn.dataset.id);
+        save();
+        renderFeelHistory();
+      });
+    });
+  }
+
+  // ---------- HISTORY ----------
+  function renderHistory() {
+    const filterSel = document.getElementById('historyFilter');
+    const exercises = [...new Set(state.workouts.map(w => w.exercise))].sort();
+    const current = filterSel.value;
+    filterSel.innerHTML = '<option value="">All exercises</option>' + exercises.map(e => `<option value="${escapeHtml(e)}">${escapeHtml(e)}</option>`).join('');
+    filterSel.value = current;
+
+    const list = document.getElementById('historyList');
+    let items = [...state.workouts].sort((a, b) => b.date.localeCompare(a.date) || b.createdAt - a.createdAt);
+    if (filterSel.value) items = items.filter(w => w.exercise === filterSel.value);
+
+    if (items.length === 0) {
+      list.innerHTML = '<div class="empty">No workouts logged yet.</div>';
+      return;
+    }
+    list.innerHTML = items.map(w => {
+      const setStr = w.sets.map(s => `${s.weight}${w.unit}×${s.reps}${s.rpe ? ' @RPE' + s.rpe : ''}`).join(', ');
+      return `
+        <div class="session-item">
+          <div class="top">
+            <span class="name">${escapeHtml(w.exercise)}</span>
+            <span class="date">${fmtDate(w.date)}</span>
+          </div>
+          <div class="meta">${w.machine ? escapeHtml(w.machine) + ' · ' : ''}${setStr}</div>
+          ${w.notes ? `<div style="font-size:13px;color:var(--muted);">${escapeHtml(w.notes)}</div>` : ''}
+          <button class="del" data-id="${w.id}">Delete</button>
+        </div>`;
+    }).join('');
+    list.querySelectorAll('.del').forEach(btn => {
+      btn.addEventListener('click', () => {
+        state.workouts = state.workouts.filter(w => w.id !== btn.dataset.id);
+        save();
+        renderHistory();
+      });
+    });
+  }
+  document.getElementById('historyFilter').addEventListener('change', renderHistory);
+
+  // ---------- TRENDS ----------
+  let weightChart, volumeChart, feelChart;
+
+  function chartColors() {
+    return { line: '#5b8cff', fill: 'rgba(91,140,255,0.15)', bar: '#37d67a', soreness: '#ff5c6c', energy: '#ffb648', grid: '#2a2f3a', text: '#9aa3af' };
+  }
+
+  function renderTrends() {
+    const exerciseSel = document.getElementById('trendExercise');
+    const exercises = [...new Set(state.workouts.map(w => w.exercise))].sort();
+    const current = exerciseSel.value;
+    exerciseSel.innerHTML = exercises.map(e => `<option value="${escapeHtml(e)}">${escapeHtml(e)}</option>`).join('');
+    if (exercises.includes(current)) exerciseSel.value = current;
+
+    renderWeightAndVolume();
+    renderFeelChart();
+  }
+  document.getElementById('trendExercise').addEventListener('change', renderWeightAndVolume);
+
+  function renderWeightAndVolume() {
+    const colors = chartColors();
+    const exercise = document.getElementById('trendExercise').value;
+    const statsEl = document.getElementById('trendStats');
+    const sessions = state.workouts
+      .filter(w => w.exercise === exercise)
+      .sort((a, b) => a.date.localeCompare(b.date));
+
+    if (sessions.length === 0) {
+      statsEl.innerHTML = '<div class="empty">No data for this exercise yet.</div>';
+      if (weightChart) { weightChart.destroy(); weightChart = null; }
+      if (volumeChart) { volumeChart.destroy(); volumeChart = null; }
+      return;
+    }
+
+    const labels = sessions.map(s => fmtDate(s.date));
+    const maxWeights = sessions.map(s => Math.max(...s.sets.map(x => x.weight)));
+    const volumes = sessions.map(s => s.sets.reduce((sum, x) => sum + x.weight * x.reps, 0));
+
+    const first = maxWeights[0], last = maxWeights[maxWeights.length - 1];
+    const change = last - first;
+    const pct = first ? ((change / first) * 100).toFixed(1) : '0';
+    const unit = sessions[sessions.length - 1].unit;
+
+    statsEl.innerHTML = `
+      <div class="stat"><div class="num">${last}${unit}</div><div class="lbl">Latest top weight</div></div>
+      <div class="stat"><div class="num">${change >= 0 ? '+' : ''}${change.toFixed(1)}${unit}</div><div class="lbl">Change since first log (${pct}%)</div></div>
+      <div class="stat"><div class="num">${sessions.length}</div><div class="lbl">Sessions logged</div></div>
+    `;
+
+    if (weightChart) weightChart.destroy();
+    weightChart = new Chart(document.getElementById('weightChart'), {
+      type: 'line',
+      data: { labels, datasets: [{ label: `Top weight (${unit})`, data: maxWeights, borderColor: colors.line, backgroundColor: colors.fill, fill: true, tension: 0.3, pointRadius: 4 }] },
+      options: chartOpts(colors)
+    });
+
+    if (volumeChart) volumeChart.destroy();
+    volumeChart = new Chart(document.getElementById('volumeChart'), {
+      type: 'bar',
+      data: { labels, datasets: [{ label: 'Volume', data: volumes, backgroundColor: colors.bar }] },
+      options: chartOpts(colors)
+    });
+  }
+
+  function renderFeelChart() {
+    const colors = chartColors();
+    const items = [...state.feelings].sort((a, b) => a.date.localeCompare(b.date));
+    if (feelChart) { feelChart.destroy(); feelChart = null; }
+    if (items.length === 0) return;
+    feelChart = new Chart(document.getElementById('feelChart'), {
+      type: 'line',
+      data: {
+        labels: items.map(f => fmtDate(f.date)),
+        datasets: [
+          { label: 'Soreness', data: items.map(f => f.soreness), borderColor: colors.soreness, tension: 0.3, pointRadius: 3 },
+          { label: 'Energy', data: items.map(f => f.energy), borderColor: colors.energy, tension: 0.3, pointRadius: 3 }
+        ]
+      },
+      options: chartOpts(colors, 0, 5)
+    });
+  }
+
+  function chartOpts(colors, min, max) {
+    return {
+      responsive: true,
+      plugins: { legend: { labels: { color: colors.text } } },
+      scales: {
+        x: { ticks: { color: colors.text }, grid: { color: colors.grid } },
+        y: { ticks: { color: colors.text }, grid: { color: colors.grid }, min, max }
+      }
+    };
+  }
+
+  // ---------- DATA ----------
+  document.getElementById('exportBtn').addEventListener('click', () => {
+    const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `workout-tracker-backup-${todayStr()}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  });
+  document.getElementById('importBtn').addEventListener('click', () => document.getElementById('importFile').click());
+  document.getElementById('importFile').addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const imported = JSON.parse(reader.result);
+        if (!imported.workouts || !imported.feelings) throw new Error('Invalid file format');
+        state.workouts = imported.workouts;
+        state.feelings = imported.feelings;
+        save();
+        updateDatalists();
+        alert('Data imported successfully!');
+      } catch (err) {
+        alert('Could not import file: ' + err.message);
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = '';
+  });
+  document.getElementById('clearBtn').addEventListener('click', () => {
+    if (confirm('This will permanently delete all workouts and check-ins from this browser. Continue?')) {
+      state.workouts = [];
+      state.feelings = [];
+      save();
+      updateDatalists();
+      renderHistory();
+      renderFeelHistory();
+      alert('All data cleared.');
+    }
+  });
+
+  // ---------- INIT ----------
+  updateDatalists();
+  renderHistory();
+  renderFeelHistory();
+})();
+</script>
+
+</body>
+</html>
