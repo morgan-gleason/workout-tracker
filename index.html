@@ -82,16 +82,32 @@
     flex-wrap: wrap;
   }
   .page-title {
-    font-size: 24px;
+    font-size: 29px;
     font-weight: 800;
     margin: 0 0 4px;
-    letter-spacing: -.01em;
+    letter-spacing: -.015em;
   }
   .page-subtitle {
     color: var(--muted);
     font-size: 13.5px;
     margin: 0;
   }
+  .page-header-action {
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+    border-radius: 13px;
+    background: linear-gradient(135deg, #6d8cff, #8b6cff);
+    border: none;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(109,140,255,.35);
+  }
+  .page-header-action svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+  .page-header-action:active { transform: scale(.94); }
 
   /* ---------- Nav (bottom bar on mobile, sidebar on desktop) ---------- */
   nav {
@@ -197,27 +213,31 @@
   /* ---------- Sub nav (in-page tabs, e.g. Plan) ---------- */
   .subnav {
     display: flex;
-    gap: 6px;
-    margin-bottom: 16px;
-    flex-wrap: wrap;
+    gap: 4px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid var(--border);
   }
   .subnav-btn {
+    flex: 1;
     background: none;
-    border: 1px solid var(--border);
+    border: none;
     color: var(--muted);
-    padding: 9px 15px;
-    border-radius: 999px;
-    font-size: 13px;
-    font-weight: 600;
+    padding: 8px 6px 12px;
+    font-size: 12.5px;
+    font-weight: 700;
     cursor: pointer;
-    min-height: 38px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
   }
-  .subnav-btn:hover { color: var(--text); border-color: var(--border-light); }
+  .subnav-btn svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .subnav-btn:hover { color: var(--text); }
   .subnav-btn.active {
-    background: var(--panel-2);
-    border-color: var(--border-light);
-    color: var(--text);
-    box-shadow: var(--shadow-sm);
+    color: var(--accent);
+    border-bottom-color: var(--accent);
   }
 
   main {
@@ -463,30 +483,78 @@
     color: white;
     font-weight: 700;
   }
-  .template-card-v2 {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 14px;
-    padding: 16px;
+
+  /* Promo / create rows */
+  .promo-list {
     border: 1px solid var(--border);
-    border-radius: 14px;
+    border-radius: 16px;
+    overflow: hidden;
+    margin-bottom: 16px;
     background: var(--panel-2);
-    margin-bottom: 12px;
   }
-  .template-icon-badge {
-    width: 46px; height: 46px;
+  .promo-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 15px;
+    cursor: pointer;
+    border-bottom: 1px solid var(--border);
+    min-height: 44px;
+  }
+  .promo-row:last-child { border-bottom: none; }
+  .promo-row:hover { background: rgba(255,255,255,.03); }
+  .promo-row:active { background: rgba(255,255,255,.05); }
+  .promo-icon {
+    width: 44px; height: 44px;
     border-radius: 12px;
     display: flex; align-items: center; justify-content: center;
     flex-shrink: 0;
     color: white;
   }
-  .template-icon-badge svg { width: 23px; height: 23px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-  .template-main { flex: 1; min-width: 200px; }
+  .promo-icon svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .promo-text { flex: 1; min-width: 0; }
+  .promo-text .t { font-weight: 700; font-size: 14.5px; margin-bottom: 2px; }
+  .promo-text .s { color: var(--muted); font-size: 12px; line-height: 1.4; }
+  .promo-chevron { color: var(--muted); font-size: 20px; flex-shrink: 0; }
+
+  /* Template cards */
+  .template-card-v2 {
+    padding: 16px;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    background: var(--panel-2);
+    margin-bottom: 12px;
+    position: relative;
+  }
+  .template-card-head {
+    display: flex;
+    align-items: flex-start;
+    gap: 13px;
+    margin-bottom: 12px;
+  }
+  .template-icon-badge {
+    width: 52px; height: 52px;
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    color: white;
+  }
+  .template-icon-badge svg { width: 24px; height: 24px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .template-main { flex: 1; min-width: 0; padding-right: 4px; }
   .template-main .name-row { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; flex-wrap: wrap; }
-  .template-main .name { font-weight: 800; font-size: 15px; }
-  .template-meta { color: var(--muted); font-size: 12px; margin-bottom: 9px; }
-  .template-chips { display: flex; flex-wrap: wrap; gap: 6px; }
-  .template-actions { display: flex; gap: 6px; align-items: center; flex-shrink: 0; }
+  .template-main .name { font-weight: 800; font-size: 16px; }
+  .template-meta { color: var(--muted); font-size: 12.5px; line-height: 1.6; }
+  .template-chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 11px 0 12px; }
+  .template-actions-row { display: flex; gap: 8px; align-items: center; }
+  .template-actions-row .btn.useRoutineBtn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 11px 16px;
+  }
+  .template-actions-row .btn.useRoutineBtn svg { width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-width: 2.3; stroke-linecap: round; stroke-linejoin: round; }
   .ex-tag {
     background: rgba(255,255,255,.05);
     border: 1px solid var(--border);
@@ -495,6 +563,66 @@
     font-size: 11.5px;
     color: var(--text);
   }
+  .template-menu { position: relative; flex-shrink: 0; }
+  .template-menu-btn {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    background: none;
+    border: none;
+    color: var(--muted);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+  }
+  .template-menu-btn:hover { color: var(--text); background: rgba(255,255,255,.05); }
+  .template-menu-btn svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .template-menu-dropdown {
+    position: absolute;
+    top: 36px; right: 0;
+    background: var(--panel);
+    border: 1px solid var(--border-light);
+    border-radius: 10px;
+    box-shadow: var(--shadow-md);
+    z-index: 20;
+    min-width: 130px;
+    overflow: hidden;
+  }
+  .template-menu-dropdown button {
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: none;
+    border: none;
+    color: var(--danger);
+    padding: 11px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .template-menu-dropdown button:hover { background: rgba(255,107,122,.1); }
+
+  /* Icon / color pickers */
+  .icon-picker-row, .color-picker-row { display: flex; flex-wrap: wrap; gap: 8px; }
+  .icon-picker-row { margin-bottom: 10px; }
+  .color-picker-row { margin-bottom: 14px; }
+  .icon-pick-btn {
+    width: 42px; height: 42px;
+    border-radius: 11px;
+    background: var(--panel);
+    border: 2px solid var(--border);
+    color: var(--muted);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+  }
+  .icon-pick-btn svg { width: 19px; height: 19px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .icon-pick-btn.selected { border-color: var(--accent); color: var(--text); background: rgba(109,140,255,.12); }
+  .color-pick-btn {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    cursor: pointer;
+    padding: 0;
+  }
+  .color-pick-btn.selected { border-color: var(--text); box-shadow: 0 0 0 2px var(--panel); }
   .pro-tip {
     display: flex;
     align-items: flex-start;
@@ -713,11 +841,23 @@
         <h1 class="page-title">Plan</h1>
         <p class="page-subtitle">Prepare for successful workouts before you arrive at the gym.</p>
       </div>
+      <button class="page-header-action" id="planHeaderAddBtn" type="button" title="New Template" style="display:none;">
+        <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      </button>
     </div>
     <div class="subnav">
-      <button class="subnav-btn active" data-sub="templates" type="button">Templates</button>
-      <button class="subnav-btn" data-sub="planning" type="button">Planning</button>
-      <button class="subnav-btn" data-sub="streaks" type="button">Streaks</button>
+      <button class="subnav-btn active" data-sub="templates" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="4" x2="8" y2="10"/></svg>
+        <span>Templates</span>
+      </button>
+      <button class="subnav-btn" data-sub="planning" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="3" x2="8" y2="7"/><line x1="16" y1="3" x2="16" y2="7"/></svg>
+        <span>Planning</span>
+      </button>
+      <button class="subnav-btn" data-sub="streaks" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c1 3-2 4-2 7a4 4 0 0 0 8 0c0-1-.5-2-1-2 .5 2-1 3-1 3 .5-3-2-4-2-6-1 1-2 1.5-2-2z"/></svg>
+        <span>Streaks</span>
+      </button>
     </div>
 
     <!-- TEMPLATES -->
@@ -725,8 +865,17 @@
       <div class="card">
         <h2>Workout Templates</h2>
         <p class="caption">Pre-plan workouts like Push / Pull / Legs (or anything else) so you can pick exercises, equipment, and sets ahead of time — then just log the numbers on gym day.</p>
-        <div class="btn-row" style="margin-bottom:12px;">
-          <button class="btn" id="newRoutineBtn" type="button">+ New Template</button>
+        <div class="promo-list">
+          <div class="promo-row" id="createTemplateRow">
+            <div class="promo-icon" style="background:linear-gradient(135deg,#7c5cff,#5b8cff);">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </div>
+            <div class="promo-text">
+              <div class="t">Create Template</div>
+              <div class="s">Build your own workout from scratch.</div>
+            </div>
+            <span class="promo-chevron">›</span>
+          </div>
         </div>
         <div class="field" style="margin-bottom:10px;">
           <input type="text" id="templateSearch" placeholder="Search templates…">
@@ -749,6 +898,12 @@
         <div class="field">
           <label>Category</label>
           <select id="routineCategory"></select>
+        </div>
+        <div class="field">
+          <label>Icon</label>
+          <div class="icon-picker-row" id="iconPickerRow"></div>
+          <label>Color</label>
+          <div class="color-picker-row" id="colorPickerRow"></div>
         </div>
         <label>Exercises</label>
         <p class="caption">
@@ -1088,24 +1243,45 @@
 
   const ICON_SVGS = {
     dumbbell: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="9" width="4" height="6" rx="1"/><rect x="19" y="9" width="4" height="6" rx="1"/><rect x="5" y="10" width="3" height="4"/><rect x="16" y="10" width="3" height="4"/><line x1="8" y1="12" x2="16" y2="12"/></svg>',
-    pull: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="6"/><polyline points="6 12 12 6 18 12"/></svg>',
-    legs: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21 12 4l8 17"/><path d="M9 15h6"/></svg>',
+    pull: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16"/><path d="M7 6v4"/><path d="M17 6v4"/><path d="M12 10v8"/><path d="M9 22l3-4 3 4"/></svg>',
+    legs: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13" cy="4" r="2"/><path d="M14 7l-2 5 3 2 1 6"/><path d="M12 12l-4 2 1 6"/><path d="M8 14l-4 1"/></svg>',
     star: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15 9 22 9 16.5 13.5 18.5 21 12 16.5 5.5 21 7.5 13.5 2 9 9 9"/></svg>',
+    flame: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c1 3-2 4-2 7a4 4 0 0 0 8 0c0-1-.5-2-1-2 .5 2-1 3-1 3 .5-3-2-4-2-6-1 1-2 1.5-2-2z"/></svg>',
+    heart: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg>',
+    bolt: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 11 14 11 22 21 10 13 10 13 2"/></svg>',
+    target: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></svg>',
     copy: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>',
-    pencil: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>'
+    pencil: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>',
+    dots: '<svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/></svg>',
+    arrow: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>'
   };
+  const COLOR_SWATCHES = {
+    indigo: 'linear-gradient(135deg,#7c5cff,#5b8cff)',
+    green: 'linear-gradient(135deg,#0ea371,#34d399)',
+    orange: 'linear-gradient(135deg,#f0913a,#f2617a)',
+    amber: 'linear-gradient(135deg,#f2c94c,#f0913a)',
+    blue: 'linear-gradient(135deg,#3aa0f0,#5b8cff)',
+    pink: 'linear-gradient(135deg,#f0619f,#f2617a)',
+    teal: 'linear-gradient(135deg,#14b8a6,#34d399)',
+    slate: 'linear-gradient(135deg,#64748b,#475569)'
+  };
+  const ICON_PICKER_KEYS = ['dumbbell', 'pull', 'legs', 'star', 'flame', 'heart', 'bolt', 'target'];
   const CATEGORY_STYLES = {
-    'Push': { bg: 'linear-gradient(135deg,#7c5cff,#5b8cff)', icon: 'dumbbell' },
-    'Pull': { bg: 'linear-gradient(135deg,#0ea371,#34d399)', icon: 'pull' },
-    'Legs': { bg: 'linear-gradient(135deg,#f0913a,#f2617a)', icon: 'legs' },
-    'Upper': { bg: 'linear-gradient(135deg,#5b8cff,#7c5cff)', icon: 'dumbbell' },
-    'Lower': { bg: 'linear-gradient(135deg,#f0913a,#f2c94c)', icon: 'legs' },
-    'Full Body': { bg: 'linear-gradient(135deg,#f2c94c,#f0913a)', icon: 'star' },
-    'Custom': { bg: 'linear-gradient(135deg,#64748b,#475569)', icon: 'dumbbell' }
+    'Push': { color: 'indigo', icon: 'dumbbell' },
+    'Pull': { color: 'green', icon: 'pull' },
+    'Legs': { color: 'orange', icon: 'legs' },
+    'Upper': { color: 'blue', icon: 'dumbbell' },
+    'Lower': { color: 'amber', icon: 'legs' },
+    'Full Body': { color: 'amber', icon: 'star' },
+    'Custom': { color: 'slate', icon: 'dumbbell' }
   };
-  function categoryBadgeHtml(category) {
-    const style = CATEGORY_STYLES[category] || CATEGORY_STYLES['Custom'];
-    return `<div class="template-icon-badge" style="background:${style.bg}">${ICON_SVGS[style.icon]}</div>`;
+  function categoryBadgeHtml(routine) {
+    const cat = routine.category || 'Custom';
+    const fallback = CATEGORY_STYLES[cat] || CATEGORY_STYLES['Custom'];
+    const iconKey = routine.icon || fallback.icon;
+    const colorKey = routine.color || fallback.color;
+    const bg = COLOR_SWATCHES[colorKey] || COLOR_SWATCHES.slate;
+    return `<div class="template-icon-badge" style="background:${bg}">${ICON_SVGS[iconKey] || ICON_SVGS.dumbbell}</div>`;
   }
   function inferMuscleGroups(routine) {
     const groups = new Set();
@@ -1325,11 +1501,13 @@
       btn.classList.add('active');
       document.querySelectorAll('.sub-view').forEach(v => v.classList.remove('active'));
       document.getElementById('sub-' + btn.dataset.sub).classList.add('active');
+      document.getElementById('planHeaderAddBtn').style.display = btn.dataset.sub === 'templates' ? 'flex' : 'none';
       if (btn.dataset.sub === 'templates') renderRoutineList();
       if (btn.dataset.sub === 'planning') { renderSchedule(); renderCalendar(); }
       if (btn.dataset.sub === 'streaks') renderStreaks();
     });
   });
+  document.getElementById('planHeaderAddBtn').style.display = 'flex';
 
   document.querySelectorAll('.planningToggleBtn').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -1626,11 +1804,42 @@
     refreshReorderButtons();
   }
 
+  let selectedIcon = 'dumbbell';
+  let selectedColor = 'indigo';
+
+  function renderIconColorPickers() {
+    const iconRow = document.getElementById('iconPickerRow');
+    iconRow.innerHTML = ICON_PICKER_KEYS.map(key =>
+      `<button type="button" class="icon-pick-btn ${key === selectedIcon ? 'selected' : ''}" data-icon="${key}">${ICON_SVGS[key]}</button>`
+    ).join('');
+    iconRow.querySelectorAll('.icon-pick-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        selectedIcon = btn.dataset.icon;
+        iconRow.querySelectorAll('.icon-pick-btn').forEach(b => b.classList.toggle('selected', b === btn));
+      });
+    });
+    const colorRow = document.getElementById('colorPickerRow');
+    colorRow.innerHTML = Object.entries(COLOR_SWATCHES).map(([key, bg]) =>
+      `<button type="button" class="color-pick-btn ${key === selectedColor ? 'selected' : ''}" data-color="${key}" style="background:${bg}"></button>`
+    ).join('');
+    colorRow.querySelectorAll('.color-pick-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        selectedColor = btn.dataset.color;
+        colorRow.querySelectorAll('.color-pick-btn').forEach(b => b.classList.toggle('selected', b === btn));
+      });
+    });
+  }
+
   function openRoutineEditor(routine) {
     editingRoutineId = routine ? routine.id : null;
     document.getElementById('routineEditorTitle').textContent = routine ? 'Edit Template' : 'New Template';
     document.getElementById('routineName').value = routine ? routine.name : '';
-    document.getElementById('routineCategory').value = routine ? (routine.category || 'Custom') : 'Custom';
+    const cat = routine ? (routine.category || 'Custom') : 'Custom';
+    document.getElementById('routineCategory').value = cat;
+    const fallback = CATEGORY_STYLES[cat] || CATEGORY_STYLES['Custom'];
+    selectedIcon = (routine && routine.icon) || fallback.icon;
+    selectedColor = (routine && routine.color) || fallback.color;
+    renderIconColorPickers();
     routineExRows.innerHTML = '';
     if (routine && routine.exercises.length) {
       routine.exercises.forEach(ex => addRoutineExRow(ex));
@@ -1646,9 +1855,17 @@
     document.getElementById('routineEditorCard').style.display = 'none';
   }
 
-  document.getElementById('newRoutineBtn').addEventListener('click', () => openRoutineEditor(null));
+  document.getElementById('createTemplateRow').addEventListener('click', () => openRoutineEditor(null));
+  document.getElementById('planHeaderAddBtn').addEventListener('click', () => openRoutineEditor(null));
   document.getElementById('addRoutineExBtn').addEventListener('click', () => addRoutineExRow());
   document.getElementById('cancelRoutineBtn').addEventListener('click', closeRoutineEditor);
+  document.getElementById('routineCategory').addEventListener('change', (e) => {
+    if (editingRoutineId) return; // don't clobber an explicit pick on an existing template
+    const fallback = CATEGORY_STYLES[e.target.value] || CATEGORY_STYLES['Custom'];
+    selectedIcon = fallback.icon;
+    selectedColor = fallback.color;
+    renderIconColorPickers();
+  });
 
   document.getElementById('saveRoutineBtn').addEventListener('click', () => {
     const name = document.getElementById('routineName').value.trim();
@@ -1676,8 +1893,10 @@
       r.name = name;
       r.category = category;
       r.exercises = exercises;
+      r.icon = selectedIcon;
+      r.color = selectedColor;
     } else {
-      state.routines.push({ id: uid(), name, category, exercises });
+      state.routines.push({ id: uid(), name, category, exercises, icon: selectedIcon, color: selectedColor });
     }
     save();
     closeRoutineEditor();
@@ -1690,27 +1909,29 @@
     showToast('Template saved ✓', 'success');
   });
 
+  function deleteRoutine(id) {
+    if (!confirm('Delete this template? This will not delete any workouts you already logged.')) return;
+    state.routines = state.routines.filter(r => r.id !== id);
+    Object.keys(state.schedule).forEach(day => {
+      if (state.schedule[day] === id) state.schedule[day] = '';
+    });
+    Object.keys(state.plannedWorkouts).forEach(dateKey => {
+      const ov = state.plannedWorkouts[dateKey];
+      if (ov && ov.type === 'template' && ov.templateId === id) delete state.plannedWorkouts[dateKey];
+    });
+    save();
+    closeRoutineEditor();
+    renderRoutineList();
+    populatePlanRoutineSelect();
+    renderSchedule();
+    renderCalendar();
+    applyScheduleDefault();
+    renderPlanExercises();
+    showToast('Template deleted', 'success');
+  }
+
   document.getElementById('deleteRoutineBtn').addEventListener('click', () => {
-    if (!editingRoutineId) return;
-    if (confirm('Delete this template? This will not delete any workouts you already logged.')) {
-      state.routines = state.routines.filter(r => r.id !== editingRoutineId);
-      Object.keys(state.schedule).forEach(day => {
-        if (state.schedule[day] === editingRoutineId) state.schedule[day] = '';
-      });
-      Object.keys(state.plannedWorkouts).forEach(dateKey => {
-        const ov = state.plannedWorkouts[dateKey];
-        if (ov && ov.type === 'template' && ov.templateId === editingRoutineId) delete state.plannedWorkouts[dateKey];
-      });
-      save();
-      closeRoutineEditor();
-      renderRoutineList();
-      populatePlanRoutineSelect();
-      renderSchedule();
-      renderCalendar();
-      applyScheduleDefault();
-      renderPlanExercises();
-      showToast('Template deleted', 'success');
-    }
+    if (editingRoutineId) deleteRoutine(editingRoutineId);
   });
 
   function renderRoutineList() {
@@ -1737,20 +1958,31 @@
         const moreCount = r.exercises.length - shown.length;
         return `
         <div class="template-card-v2">
-          ${categoryBadgeHtml(cat)}
-          <div class="template-main">
-            <div class="name-row">
-              <span class="name">${escapeHtml(r.name)}</span>
-              <span class="pill b">${escapeHtml(cat)}</span>
+          <div class="template-card-head">
+            ${categoryBadgeHtml(r)}
+            <div class="template-main">
+              <div class="name-row">
+                <span class="name">${escapeHtml(r.name)}</span>
+                <span class="pill b">${escapeHtml(cat)}</span>
+              </div>
+              <div class="template-meta">
+                <div>${r.exercises.length} exercise${r.exercises.length === 1 ? '' : 's'} · ~${mins} min</div>
+                ${groups.length ? `<div>${groups.map(g => escapeHtml(g)).join(', ')}</div>` : ''}
+              </div>
             </div>
-            <div class="template-meta">${r.exercises.length} exercise${r.exercises.length === 1 ? '' : 's'} · ~${mins} min${groups.length ? ' · ' + groups.map(g => escapeHtml(g)).join(', ') : ''}</div>
-            <div class="template-chips">
-              ${shown.map(ex => `<span class="ex-tag">${escapeHtml(ex.exercise)}</span>`).join('')}
-              ${moreCount > 0 ? `<span class="ex-tag">+${moreCount} more</span>` : ''}
+            <div class="template-menu">
+              <button class="template-menu-btn" data-id="${r.id}" type="button" title="More options">${ICON_SVGS.dots}</button>
+              <div class="template-menu-dropdown" data-menu-for="${r.id}" style="display:none;">
+                <button type="button" class="menuDeleteBtn" data-id="${r.id}">Delete</button>
+              </div>
             </div>
           </div>
-          <div class="template-actions">
-            <button class="btn small secondary useRoutineBtn" data-id="${r.id}" type="button">Use in Log</button>
+          <div class="template-chips">
+            ${shown.map(ex => `<span class="ex-tag">${escapeHtml(ex.exercise)}</span>`).join('')}
+            ${moreCount > 0 ? `<span class="ex-tag">+${moreCount} more</span>` : ''}
+          </div>
+          <div class="template-actions-row">
+            <button class="btn useRoutineBtn" data-id="${r.id}" type="button">Use in Log ${ICON_SVGS.arrow}</button>
             <button class="icon-btn duplicateRoutineBtn" data-id="${r.id}" type="button" title="Duplicate">${ICON_SVGS.copy}</button>
             <button class="icon-btn editRoutineBtn" data-id="${r.id}" type="button" title="Edit">${ICON_SVGS.pencil}</button>
           </div>
@@ -1773,6 +2005,8 @@
           id: uid(),
           name: orig.name + ' (Copy)',
           category: orig.category || 'Custom',
+          icon: orig.icon,
+          color: orig.color,
           exercises: orig.exercises.map(ex => ({ ...ex, id: uid() }))
         };
         state.routines.push(clone);
@@ -1790,7 +2024,25 @@
         renderPlanExercises();
       });
     });
+    el.querySelectorAll('.template-menu-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const dropdown = el.querySelector(`.template-menu-dropdown[data-menu-for="${btn.dataset.id}"]`);
+        const isOpen = dropdown.style.display === 'block';
+        el.querySelectorAll('.template-menu-dropdown').forEach(d => d.style.display = 'none');
+        dropdown.style.display = isOpen ? 'none' : 'block';
+      });
+    });
+    el.querySelectorAll('.menuDeleteBtn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        deleteRoutine(btn.dataset.id);
+      });
+    });
   }
+  document.addEventListener('click', () => {
+    document.querySelectorAll('.template-menu-dropdown').forEach(d => d.style.display = 'none');
+  });
 
   // ---------- WEEKLY SCHEDULE ----------
   function renderSchedule() {
