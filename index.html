@@ -2,24 +2,29 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Workout Tracker</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
 <style>
   :root {
-    --bg: #0f1115;
-    --panel: #171a21;
-    --panel-2: #1e222b;
-    --border: #2a2f3a;
-    --text: #e8eaed;
-    --muted: #9aa3af;
-    --accent: #5b8cff;
-    --accent-2: #37d67a;
-    --warn: #ffb648;
-    --danger: #ff5c6c;
-    --radius: 10px;
+    --bg: #0b0d12;
+    --panel: #151922;
+    --panel-2: #1c212c;
+    --border: #262c38;
+    --border-light: #333b4a;
+    --text: #f1f3f7;
+    --muted: #8b93a3;
+    --accent: #6d8cff;
+    --accent-2: #34d399;
+    --warn: #fbbf5c;
+    --danger: #ff6b7a;
+    --radius: 16px;
+    --radius-sm: 10px;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,.35);
+    --shadow-md: 0 8px 24px rgba(0,0,0,.4);
   }
-  * { box-sizing: border-box; }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html { -webkit-text-size-adjust: 100%; }
   body {
     margin: 0;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
@@ -28,46 +33,83 @@
     -webkit-font-smoothing: antialiased;
   }
   header {
-    padding: 20px 24px 12px;
+    padding: 16px 20px 12px;
     border-bottom: 1px solid var(--border);
     position: sticky;
     top: 0;
-    background: var(--bg);
+    background: rgba(11,13,18,.92);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     z-index: 10;
-  }
-  header h1 {
-    margin: 0 0 4px;
-    font-size: 22px;
-    font-weight: 700;
-  }
-  header p {
-    margin: 0;
-    color: var(--muted);
-    font-size: 13px;
-  }
-  nav {
     display: flex;
-    gap: 6px;
-    padding: 12px 24px 0;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
     flex-wrap: wrap;
   }
-  nav button {
-    background: none;
-    border: 1px solid var(--border);
+  header .title-block h1 {
+    margin: 0 0 2px;
+    font-size: 19px;
+    font-weight: 800;
+    letter-spacing: -.01em;
+  }
+  header .title-block p {
+    margin: 0;
     color: var(--muted);
-    padding: 8px 14px;
+    font-size: 12.5px;
+  }
+  .header-streak-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: rgba(251,191,92,.15);
+    color: var(--warn);
+    padding: 5px 11px;
     border-radius: 999px;
-    font-size: 13px;
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  /* ---------- Bottom tab bar ---------- */
+  nav {
+    position: fixed;
+    left: 0; right: 0; bottom: 0;
+    display: flex;
+    background: rgba(13,15,20,.94);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-top: 1px solid var(--border);
+    padding: 6px 4px calc(6px + env(safe-area-inset-bottom));
+    z-index: 100;
+    gap: 2px;
+  }
+  nav button {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    background: none;
+    border: none;
+    color: var(--muted);
+    padding: 7px 2px 5px;
+    border-radius: var(--radius-sm);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .01em;
     cursor: pointer;
-    transition: all .15s ease;
+    transition: color .15s ease, transform .1s ease;
+    min-width: 0;
   }
-  nav button:hover { color: var(--text); border-color: #3a4150; }
-  nav button.active {
-    background: var(--accent);
-    border-color: var(--accent);
-    color: white;
-    font-weight: 600;
-  }
+  nav button span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; }
+  nav button svg { width: 21px; height: 21px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; transition: transform .15s ease; }
+  nav button.active { color: var(--accent); }
+  nav button.active svg { transform: translateY(-1px) scale(1.08); }
+  nav button:active { transform: scale(.9); }
+
+  /* ---------- Sub nav (in-page tabs, e.g. Plan) ---------- */
   .subnav {
     display: flex;
     gap: 6px;
@@ -78,22 +120,28 @@
     background: none;
     border: 1px solid var(--border);
     color: var(--muted);
-    padding: 6px 12px;
+    padding: 9px 15px;
     border-radius: 999px;
-    font-size: 12px;
+    font-size: 13px;
+    font-weight: 600;
     cursor: pointer;
+    min-height: 38px;
   }
-  .subnav-btn:hover { color: var(--text); border-color: #3a4150; }
+  .subnav-btn:hover { color: var(--text); border-color: var(--border-light); }
   .subnav-btn.active {
     background: var(--panel-2);
-    border-color: #3a4150;
+    border-color: var(--border-light);
     color: var(--text);
-    font-weight: 600;
+    box-shadow: var(--shadow-sm);
   }
+
   main {
     max-width: 880px;
     margin: 0 auto;
-    padding: 20px 24px 80px;
+    padding: 18px 16px calc(96px + env(safe-area-inset-bottom));
+  }
+  @media (min-width: 640px) {
+    main { padding-left: 24px; padding-right: 24px; }
   }
   .view { display: none; }
   .view.active { display: block; }
@@ -103,13 +151,15 @@
     background: var(--panel);
     border: 1px solid var(--border);
     border-radius: var(--radius);
-    padding: 18px;
+    padding: 20px;
     margin-bottom: 16px;
+    box-shadow: var(--shadow-sm);
   }
   .card h2 {
     margin: 0 0 14px;
     font-size: 16px;
-    font-weight: 600;
+    font-weight: 700;
+    letter-spacing: -.005em;
   }
   .grid {
     display: grid;
@@ -120,61 +170,92 @@
     display: block;
     font-size: 12px;
     color: var(--muted);
-    margin-bottom: 5px;
+    font-weight: 600;
+    margin-bottom: 6px;
   }
   input, select, textarea {
     width: 100%;
     background: var(--panel-2);
     border: 1px solid var(--border);
     color: var(--text);
-    padding: 9px 10px;
-    border-radius: 8px;
-    font-size: 14px;
+    padding: 11px 12px;
+    border-radius: var(--radius-sm);
+    font-size: 16px;
     font-family: inherit;
+    min-height: 44px;
   }
+  select { min-height: 44px; }
   input:focus, select:focus, textarea:focus {
     outline: none;
     border-color: var(--accent);
   }
-  textarea { resize: vertical; min-height: 50px; }
-  .field { margin-bottom: 12px; }
-  .caption { color: var(--muted); font-size: 12px; margin: -6px 0 14px; line-height: 1.5; }
+  textarea { resize: vertical; min-height: 60px; }
+  .field { margin-bottom: 14px; }
+  .caption { color: var(--muted); font-size: 12.5px; margin: -6px 0 14px; line-height: 1.55; }
   .btn {
     background: var(--accent);
     color: white;
     border: none;
-    padding: 10px 18px;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 600;
+    padding: 12px 20px;
+    border-radius: var(--radius-sm);
+    font-size: 14.5px;
+    font-weight: 700;
     cursor: pointer;
     margin-top: 4px;
+    min-height: 44px;
+    transition: filter .1s ease, transform .1s ease;
   }
-  .btn:hover { filter: brightness(1.1); }
+  .btn:hover { filter: brightness(1.08); }
+  .btn:active { transform: scale(.97); }
   .btn.secondary {
     background: var(--panel-2);
-    border: 1px solid var(--border);
+    border: 1px solid var(--border-light);
     color: var(--text);
   }
   .btn.danger { background: var(--danger); }
-  .btn.small { padding: 6px 12px; font-size: 12px; margin-top: 0; }
+  .btn.small { padding: 8px 14px; font-size: 12.5px; margin-top: 0; min-height: 36px; }
   .btn-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
   .set-rows { margin-bottom: 10px; }
   .set-row {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1.2fr auto;
+    grid-template-columns: 1.3fr 1.1fr 1fr 1.2fr auto;
     gap: 8px;
-    margin-bottom: 8px;
+    margin-bottom: 10px;
     align-items: end;
-  }
-  .set-row .rm {
     background: var(--panel-2);
     border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 10px;
+  }
+  .set-row .rm {
+    background: var(--panel);
+    border: 1px solid var(--border);
     color: var(--danger);
-    border-radius: 8px;
+    border-radius: var(--radius-sm);
     padding: 9px 12px;
     cursor: pointer;
+    min-height: 44px;
   }
+  .stepper-row { display: flex; align-items: center; gap: 4px; }
+  .stepper-row input { text-align: center; flex: 1; min-width: 0; padding-left: 4px; padding-right: 4px; }
+  .stepper-btn {
+    width: 34px;
+    height: 44px;
+    flex-shrink: 0;
+    border-radius: var(--radius-sm);
+    background: var(--panel);
+    border: 1px solid var(--border-light);
+    color: var(--text);
+    font-size: 17px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    padding: 0;
+  }
+  .stepper-btn:active { background: var(--accent); border-color: var(--accent); }
   @media (max-width: 640px) {
     .set-row { grid-template-columns: 1fr 1fr; }
     .set-row .rm { grid-column: span 2; }
@@ -192,25 +273,26 @@
   tr:last-child td { border-bottom: none; }
   .pill {
     display: inline-block;
-    padding: 2px 9px;
+    padding: 3px 10px;
     border-radius: 999px;
     font-size: 11px;
-    font-weight: 600;
+    font-weight: 700;
   }
-  .pill.g { background: rgba(55,214,122,.15); color: var(--accent-2); }
-  .pill.y { background: rgba(255,182,72,.15); color: var(--warn); }
-  .pill.r { background: rgba(255,92,108,.15); color: var(--danger); }
-  .pill.b { background: rgba(91,140,255,.15); color: var(--accent); }
+  .pill.g { background: rgba(52,211,153,.15); color: var(--accent-2); }
+  .pill.y { background: rgba(251,191,92,.15); color: var(--warn); }
+  .pill.r { background: rgba(255,107,122,.15); color: var(--danger); }
+  .pill.b { background: rgba(109,140,255,.15); color: var(--accent); }
   .empty {
     text-align: center;
     color: var(--muted);
-    padding: 30px 10px;
-    font-size: 13px;
+    padding: 34px 10px;
+    font-size: 13.5px;
   }
+  .empty .empty-icon { font-size: 28px; display: block; margin-bottom: 8px; }
   .session-item {
     border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 12px 14px;
+    border-radius: var(--radius-sm);
+    padding: 13px 15px;
     margin-bottom: 10px;
     background: var(--panel-2);
   }
@@ -220,29 +302,35 @@
     align-items: center;
     margin-bottom: 6px;
   }
-  .session-item .top .name { font-weight: 600; font-size: 14px; }
+  .session-item .top .name { font-weight: 700; font-size: 14px; }
   .session-item .top .date { color: var(--muted); font-size: 12px; }
-  .session-item .meta { color: var(--muted); font-size: 12px; margin-bottom: 6px; }
+  .session-item .meta { color: var(--muted); font-size: 12.5px; margin-bottom: 6px; line-height: 1.6; }
   .session-item .del {
-    background: none; border: none; color: var(--muted); cursor: pointer; font-size: 12px;
+    background: none; border: none; color: var(--muted); cursor: pointer; font-size: 12px; padding: 6px 0; min-height: 32px;
   }
   .session-item .del:hover { color: var(--danger); }
   .feel-scale { display: flex; gap: 6px; margin-bottom: 4px; }
   .feel-scale button {
     flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
     padding: 10px 4px;
-    border-radius: 8px;
+    border-radius: var(--radius-sm);
     border: 1px solid var(--border);
     background: var(--panel-2);
     color: var(--muted);
     cursor: pointer;
-    font-size: 13px;
+    font-size: 10px;
+    font-weight: 700;
+    min-height: 52px;
   }
+  .feel-scale button .emoji { font-size: 19px; line-height: 1; }
   .feel-scale button.selected {
     border-color: var(--accent);
-    background: rgba(91,140,255,.15);
+    background: rgba(109,140,255,.15);
     color: var(--text);
-    font-weight: 600;
   }
   .stat-row { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 4px; }
   .stat {
@@ -250,20 +338,20 @@
     min-width: 120px;
     background: var(--panel-2);
     border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 12px 14px;
+    border-radius: var(--radius-sm);
+    padding: 14px 15px;
   }
-  .stat .num { font-size: 22px; font-weight: 700; }
+  .stat .num { font-size: 23px; font-weight: 800; letter-spacing: -.01em; }
   .stat .lbl { font-size: 12px; color: var(--muted); margin-top: 2px; }
   canvas { max-height: 280px; }
-  .footer-note { text-align: center; color: var(--muted); font-size: 12px; margin-top: 24px; }
+  .footer-note { text-align: center; color: var(--muted); font-size: 12px; margin-top: 8px; }
   select#trendExercise { max-width: 280px; }
 
   /* Templates */
   .routine-card {
     border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 12px 14px;
+    border-radius: var(--radius-sm);
+    padding: 14px 15px;
     margin-bottom: 10px;
     background: var(--panel-2);
   }
@@ -271,17 +359,17 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 8px;
+    margin-bottom: 10px;
     flex-wrap: wrap;
     gap: 8px;
   }
-  .routine-card .top .name { font-weight: 700; font-size: 15px; }
+  .routine-card .top .name { font-weight: 800; font-size: 15px; }
   .routine-card .ex-tags { display: flex; flex-wrap: wrap; gap: 8px; }
   .ex-tag {
     background: rgba(255,255,255,.05);
     border: 1px solid var(--border);
     border-radius: 999px;
-    padding: 4px 10px 4px 12px;
+    padding: 5px 11px 5px 13px;
     font-size: 12px;
     color: var(--text);
     display: inline-flex;
@@ -291,7 +379,7 @@
   .ex-tag .equip { color: var(--muted); }
   .routine-ex-card {
     border: 1px solid var(--border);
-    border-radius: 8px;
+    border-radius: var(--radius-sm);
     padding: 14px;
     margin-bottom: 12px;
     background: var(--panel-2);
@@ -306,33 +394,35 @@
   .reorder-btns { display: flex; flex-direction: column; gap: 3px; }
   .reorder-btns button {
     background: var(--panel);
-    border: 1px solid var(--border);
+    border: 1px solid var(--border-light);
     color: var(--muted);
     border-radius: 6px;
-    width: 28px;
-    height: 18px;
+    width: 30px;
+    height: 20px;
     font-size: 10px;
     line-height: 1;
     cursor: pointer;
     padding: 0;
   }
-  .reorder-btns button:hover { color: var(--text); border-color: #3a4150; }
+  .reorder-btns button:hover { color: var(--text); }
   .reorder-btns button:disabled { opacity: .3; cursor: default; }
   .cat-chip {
     background: none;
     border: 1px solid var(--border);
     color: var(--muted);
-    padding: 5px 12px;
+    padding: 7px 14px;
     border-radius: 999px;
-    font-size: 12px;
+    font-size: 12.5px;
+    font-weight: 600;
     cursor: pointer;
+    min-height: 36px;
   }
-  .cat-chip:hover { color: var(--text); border-color: #3a4150; }
+  .cat-chip:hover { color: var(--text); border-color: var(--border-light); }
   .cat-chip.active {
     background: var(--accent);
     border-color: var(--accent);
     color: white;
-    font-weight: 600;
+    font-weight: 700;
   }
   .plan-item {
     display: flex;
@@ -340,23 +430,23 @@
     align-items: center;
     gap: 10px;
     border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 10px 12px;
+    border-radius: var(--radius-sm);
+    padding: 12px 14px;
     margin-bottom: 8px;
     background: var(--panel-2);
     flex-wrap: wrap;
   }
-  .plan-item.done { border-color: rgba(55,214,122,.4); }
+  .plan-item.done { border-color: rgba(52,211,153,.4); background: rgba(52,211,153,.06); }
   .plan-item .info { display: flex; flex-direction: column; gap: 4px; }
-  .plan-item .info .exname { font-weight: 600; font-size: 13px; }
+  .plan-item .info .exname { font-weight: 700; font-size: 13.5px; }
   .plan-item .info .tags { display: flex; flex-wrap: wrap; gap: 5px; }
-  .plan-item .check { color: var(--accent-2); font-size: 12px; font-weight: 600; }
+  .plan-item .check { color: var(--accent-2); font-size: 12.5px; font-weight: 700; }
 
   /* Weekly schedule */
   .week-grid {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    gap: 10px;
+    gap: 8px;
   }
   @media (max-width: 760px) {
     .week-grid { grid-template-columns: repeat(2, 1fr); }
@@ -364,15 +454,15 @@
   .week-day {
     background: var(--panel-2);
     border: 1px solid var(--border);
-    border-radius: 8px;
+    border-radius: var(--radius-sm);
     padding: 10px;
   }
-  .week-day.today { border-color: var(--accent); }
+  .week-day.today { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent) inset; }
   .week-day .dow {
     font-size: 11px;
     color: var(--muted);
     margin-bottom: 6px;
-    font-weight: 700;
+    font-weight: 800;
     text-transform: uppercase;
     letter-spacing: .04em;
   }
@@ -386,17 +476,17 @@
     gap: 16px;
     margin-bottom: 14px;
   }
-  .cal-header span { font-weight: 700; font-size: 15px; min-width: 160px; text-align: center; }
+  .cal-header span { font-weight: 800; font-size: 15px; min-width: 160px; text-align: center; }
   .cal-grid {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    gap: 6px;
+    gap: 5px;
   }
   .cal-daylabel {
     text-align: center;
     font-size: 10px;
     color: var(--muted);
-    font-weight: 700;
+    font-weight: 800;
     text-transform: uppercase;
     letter-spacing: .03em;
     padding-bottom: 4px;
@@ -405,27 +495,27 @@
     background: var(--panel-2);
     border: 1px solid var(--border);
     border-radius: 8px;
-    padding: 6px;
-    min-height: 54px;
+    padding: 5px;
+    min-height: 50px;
     cursor: pointer;
     position: relative;
   }
-  .cal-cell:hover { border-color: #3a4150; }
+  .cal-cell:hover { border-color: var(--border-light); }
   .cal-cell.empty { background: transparent; border: none; cursor: default; }
-  .cal-cell.today { border-color: var(--accent); }
-  .cal-cell .daynum { font-weight: 700; font-size: 12px; margin-bottom: 3px; }
+  .cal-cell.today { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent) inset; }
+  .cal-cell .daynum { font-weight: 700; font-size: 11.5px; margin-bottom: 3px; }
   .cal-cell.today .daynum { color: var(--accent); }
   .cal-cell .label {
     color: var(--muted);
-    font-size: 10px;
+    font-size: 9.5px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
   .cal-cell .dot {
     position: absolute;
-    top: 6px;
-    right: 6px;
+    top: 5px;
+    right: 5px;
     width: 6px;
     height: 6px;
     border-radius: 50%;
@@ -446,23 +536,51 @@
     border-radius: 999px;
     transition: width .3s;
   }
+
+  /* Toasts */
+  #toastContainer {
+    position: fixed;
+    left: 0; right: 0;
+    bottom: calc(72px + env(safe-area-inset-bottom));
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    z-index: 300;
+    pointer-events: none;
+    padding: 0 16px;
+  }
+  .toast {
+    background: var(--panel-2);
+    border: 1px solid var(--border-light);
+    color: var(--text);
+    padding: 12px 18px;
+    border-radius: 12px;
+    font-size: 13.5px;
+    font-weight: 600;
+    box-shadow: var(--shadow-md);
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity .25s ease, transform .25s ease;
+    max-width: 100%;
+    text-align: center;
+  }
+  .toast.show { opacity: 1; transform: translateY(0); }
+  .toast.success { border-color: rgba(52,211,153,.5); }
+  .toast.error { border-color: rgba(255,107,122,.5); }
 </style>
 </head>
 <body>
 
 <header>
-  <h1>🏋️ Workout Tracker</h1>
-  <p>Log sessions, track how you feel, and watch your trends over time.</p>
+  <div class="title-block">
+    <h1>🏋️ Workout Tracker</h1>
+    <p>Log sessions, track how you feel, and watch your trends over time.</p>
+  </div>
+  <span class="header-streak-badge" id="headerStreak" style="display:none;"></span>
 </header>
 
-<nav>
-  <button data-view="plan">Plan</button>
-  <button data-view="log" class="active">Log Workout</button>
-  <button data-view="feel">How I Feel</button>
-  <button data-view="history">History</button>
-  <button data-view="trends">Trends</button>
-  <button data-view="data">Data</button>
-</nav>
+<div id="toastContainer"></div>
 
 <main>
 
@@ -507,7 +625,7 @@
         <button class="btn secondary" id="addRoutineExBtn" type="button">+ Add Exercise</button>
 
         <div class="btn-row" style="margin-top:14px;">
-          <button class="btn" id="saveRoutineBtn" type="button">Save Template</button>
+          <button class="btn" id="saveRoutineBtn" type="button">✓ Save Template</button>
           <button class="btn secondary" id="cancelRoutineBtn" type="button">Cancel</button>
           <button class="btn danger" id="deleteRoutineBtn" type="button" style="display:none;">Delete Template</button>
         </div>
@@ -529,7 +647,7 @@
         </div>
 
         <div id="planningCalendar" style="display:none;">
-          <p class="caption">Click any day to assign a template, mark it a rest day, or plan a one-off workout just for that date.</p>
+          <p class="caption">Tap any day to assign a template, mark it a rest day, or plan a one-off workout just for that date.</p>
           <div class="cal-header">
             <button class="btn small secondary" id="calPrevBtn" type="button">‹</button>
             <span id="calMonthLabel"></span>
@@ -550,7 +668,7 @@
           <textarea id="calCustomExercises" placeholder="Bench Press&#10;Overhead Press&#10;Tricep Pushdown"></textarea>
         </div>
         <div class="btn-row">
-          <button class="btn" id="calSaveBtn" type="button">Save</button>
+          <button class="btn" id="calSaveBtn" type="button">✓ Save</button>
           <button class="btn secondary" id="calCancelBtn" type="button">Cancel</button>
         </div>
       </div>
@@ -562,9 +680,9 @@
         <h2>Workout Streaks</h2>
         <p class="caption">Rest days you've planned don't break your streak — only missed workout days do.</p>
         <div class="stat-row">
-          <div class="stat"><div class="num" id="streakCurrent">0</div><div class="lbl">Current streak (days)</div></div>
-          <div class="stat"><div class="num" id="streakLongest">0</div><div class="lbl">Longest streak (days)</div></div>
-          <div class="stat"><div class="num" id="streakMonth">0</div><div class="lbl">Workouts this month</div></div>
+          <div class="stat"><div class="num" id="streakCurrent">0</div><div class="lbl">🔥 Current streak (days)</div></div>
+          <div class="stat"><div class="num" id="streakLongest">0</div><div class="lbl">🏆 Longest streak (days)</div></div>
+          <div class="stat"><div class="num" id="streakMonth">0</div><div class="lbl">This month</div></div>
         </div>
         <div class="field" style="margin-top:16px;">
           <label>Weekly goal (workouts per week)</label>
@@ -626,7 +744,7 @@
       </div>
 
       <div class="btn-row">
-        <button class="btn" id="saveWorkoutBtn" type="button">Save Workout</button>
+        <button class="btn" id="saveWorkoutBtn" type="button">✓ Save Workout</button>
       </div>
     </div>
   </div>
@@ -641,11 +759,11 @@
         <input type="date" id="feelDate">
       </div>
       <div class="field">
-        <label>Soreness (1 = none, 5 = very sore)</label>
+        <label>Soreness</label>
         <div class="feel-scale" id="sorenessScale"></div>
       </div>
       <div class="field">
-        <label>Energy Level (1 = drained, 5 = great)</label>
+        <label>Energy Level</label>
         <div class="feel-scale" id="energyScale"></div>
       </div>
       <div class="field">
@@ -656,7 +774,7 @@
         <label>Notes</label>
         <textarea id="feelNotes" placeholder="Optional"></textarea>
       </div>
-      <button class="btn" id="saveFeelBtn" type="button">Save Check-in</button>
+      <button class="btn" id="saveFeelBtn" type="button">✓ Save Check-in</button>
     </div>
 
     <div class="card">
@@ -714,7 +832,34 @@
 
 </main>
 
-<p class="footer-note">Your data stays in this browser's local storage — nothing is sent anywhere.</p>
+<p class="footer-note" style="padding-bottom: calc(90px + env(safe-area-inset-bottom));">Your data stays in this browser's local storage — nothing is sent anywhere.</p>
+
+<nav>
+  <button data-view="plan" type="button">
+    <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="3" x2="8" y2="7"/><line x1="16" y1="3" x2="16" y2="7"/></svg>
+    <span>Plan</span>
+  </button>
+  <button data-view="log" class="active" type="button">
+    <svg viewBox="0 0 24 24"><rect x="1" y="9" width="4" height="6" rx="1"/><rect x="19" y="9" width="4" height="6" rx="1"/><rect x="5" y="10" width="3" height="4"/><rect x="16" y="10" width="3" height="4"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+    <span>Log</span>
+  </button>
+  <button data-view="feel" type="button">
+    <svg viewBox="0 0 24 24"><path d="M12 21s-7.5-4.6-10-9.3C.5 8 2 4.5 5.5 4c2-.3 3.7.6 4.9 2.2C11.6 4.6 13.3 3.7 15.3 4c3.5.5 5 4 3.5 7.7C19.5 16.4 12 21 12 21z"/></svg>
+    <span>Feel</span>
+  </button>
+  <button data-view="history" type="button">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 14"/></svg>
+    <span>History</span>
+  </button>
+  <button data-view="trends" type="button">
+    <svg viewBox="0 0 24 24"><polyline points="3 17 9 11 13 15 21 6"/><polyline points="15 6 21 6 21 12"/></svg>
+    <span>Trends</span>
+  </button>
+  <button data-view="data" type="button">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><path d="M4 12a8 8 0 0 1 .3-2.2l-1.7-1.3 1.5-2.6 2 .7a8 8 0 0 1 3.8-2.2l.3-2.1h3l.3 2.1a8 8 0 0 1 3.8 2.2l2-.7 1.5 2.6-1.7 1.3a8 8 0 0 1 0 4.4l1.7 1.3-1.5 2.6-2-.7a8 8 0 0 1-3.8 2.2l-.3 2.1h-3l-.3-2.1a8 8 0 0 1-3.8-2.2l-2 .7-1.5-2.6 1.7-1.3A8 8 0 0 1 4 12z"/></svg>
+    <span>Data</span>
+  </button>
+</nav>
 
 <script>
 (function() {
@@ -753,8 +898,26 @@
     { value: 'power', label: 'Power — explosive, very low reps', warmup: 3, working: 5, reps: '1-3' }
   ];
 
+  const SORENESS_EMOJI = ['😌', '🙂', '😐', '😣', '🤕'];
+  const ENERGY_EMOJI = ['🪫', '😴', '🙂', '⚡', '🔥'];
+
   function uid() {
     return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+  }
+
+  // ---------- TOASTS ----------
+  function showToast(message, type) {
+    const container = document.getElementById('toastContainer');
+    if (!container) { return; }
+    const t = document.createElement('div');
+    t.className = 'toast' + (type ? ' ' + type : '');
+    t.textContent = message;
+    container.appendChild(t);
+    requestAnimationFrame(() => t.classList.add('show'));
+    setTimeout(() => {
+      t.classList.remove('show');
+      setTimeout(() => t.remove(), 300);
+    }, 2200);
   }
 
   function defaultRoutines() {
@@ -873,7 +1036,7 @@
   }
 
   // Fill every "Browse…" exercise dropdown on the page (event-delegated so it also
-  // works for dynamically-added rows).
+  // works for dynamically-added rows). Also handles weight/rep quick-stepper taps.
   function initBrowseSelect(sel) {
     if (sel.dataset.filled) return;
     sel.innerHTML = '<option value="">Browse…</option>' + catalogOptionsHtml();
@@ -909,6 +1072,17 @@
       t.value = '';
     }
   });
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.stepper-btn');
+    if (!btn) return;
+    const input = btn.parentElement.querySelector('input');
+    if (!input) return;
+    const delta = parseFloat(btn.dataset.delta);
+    const current = parseFloat(input.value) || 0;
+    let next = Math.round((current + delta) * 100) / 100;
+    if (next < 0) next = 0;
+    input.value = next;
+  });
 
   // ---------- NAV ----------
   const navButtons = document.querySelectorAll('nav button');
@@ -918,6 +1092,7 @@
       btn.classList.add('active');
       document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
       document.getElementById('view-' + btn.dataset.view).classList.add('active');
+      window.scrollTo({ top: 0, behavior: 'instant' in window ? 'instant' : 'auto' });
       if (btn.dataset.view === 'trends') renderTrends();
       if (btn.dataset.view === 'history') renderHistory();
       if (btn.dataset.view === 'feel') renderFeelHistory();
@@ -965,15 +1140,23 @@
     row.innerHTML = `
       <div>
         <label>Weight</label>
-        <input type="number" step="0.5" class="setWeight" value="${weight ?? ''}" placeholder="0">
+        <div class="stepper-row">
+          <button type="button" class="stepper-btn" data-delta="-2.5">−</button>
+          <input type="number" step="0.5" class="setWeight" value="${weight ?? ''}" placeholder="0">
+          <button type="button" class="stepper-btn" data-delta="2.5">+</button>
+        </div>
       </div>
       <div>
         <label>Reps</label>
-        <input type="number" class="setReps" value="${reps ?? ''}" placeholder="0">
+        <div class="stepper-row">
+          <button type="button" class="stepper-btn" data-delta="-1">−</button>
+          <input type="number" class="setReps" value="${reps ?? ''}" placeholder="0">
+          <button type="button" class="stepper-btn" data-delta="1">+</button>
+        </div>
       </div>
       <div>
-        <label>RPE (1-10)</label>
-        <input type="number" class="setRpe" min="1" max="10" placeholder="optional">
+        <label>RPE</label>
+        <input type="number" class="setRpe" min="1" max="10" placeholder="opt.">
       </div>
       <div>
         <label>Type</label>
@@ -1011,6 +1194,17 @@
     document.getElementById('machineList').innerHTML = machines.map(m => `<option value="${escapeHtml(m)}">`).join('');
   }
 
+  function renderHeaderStreak() {
+    const badge = document.getElementById('headerStreak');
+    const streak = computeCurrentStreak();
+    if (streak > 0) {
+      badge.style.display = 'inline-flex';
+      badge.textContent = `🔥 ${streak} day${streak === 1 ? '' : 's'}`;
+    } else {
+      badge.style.display = 'none';
+    }
+  }
+
   document.getElementById('saveWorkoutBtn').addEventListener('click', () => {
     const date = document.getElementById('logDate').value;
     const exercise = document.getElementById('logExercise').value.trim();
@@ -1021,7 +1215,7 @@
     const routine = routineSel.value ? (state.routines.find(r => r.id === routineSel.value) || {}).name : null;
 
     if (!date || !exercise) {
-      alert('Please fill in at least a date and exercise name.');
+      showToast('Please fill in at least a date and exercise name.', 'error');
       return;
     }
     const sets = [...setRows.querySelectorAll('.set-row')].map(row => ({
@@ -1032,7 +1226,7 @@
     })).filter(s => s.weight > 0 || s.reps > 0);
 
     if (sets.length === 0) {
-      alert('Add at least one set with a weight or rep count.');
+      showToast('Add at least one set with a weight or rep count.', 'error');
       return;
     }
 
@@ -1046,7 +1240,8 @@
     setRowCount(3);
 
     renderPlanExercises();
-    alert('Workout saved!');
+    renderHeaderStreak();
+    showToast('Workout saved ✓', 'success');
   });
 
   // ---------- TODAY'S PLAN (template-driven logging) ----------
@@ -1133,7 +1328,7 @@
     }
 
     if (currentDatePlan && currentDatePlan.type === 'rest') {
-      list.innerHTML = '<div class="empty">😴 Rest day — nothing planned. Feel free to log freely below if you end up training.</div>';
+      list.innerHTML = '<div class="empty"><span class="empty-icon">😴</span>Rest day — nothing planned. Feel free to log freely below if you end up training.</div>';
       return;
     }
 
@@ -1236,7 +1431,7 @@
   document.getElementById('saveRoutineBtn').addEventListener('click', () => {
     const name = document.getElementById('routineName').value.trim();
     if (!name) {
-      alert('Please give the template a name.');
+      showToast('Please give the template a name.', 'error');
       return;
     }
     const category = document.getElementById('routineCategory').value;
@@ -1250,7 +1445,7 @@
     })).filter(ex => ex.exercise);
 
     if (exercises.length === 0) {
-      alert('Add at least one exercise to this template.');
+      showToast('Add at least one exercise to this template.', 'error');
       return;
     }
 
@@ -1270,6 +1465,7 @@
     renderCalendar();
     applyScheduleDefault();
     renderPlanExercises();
+    showToast('Template saved ✓', 'success');
   });
 
   document.getElementById('deleteRoutineBtn').addEventListener('click', () => {
@@ -1291,6 +1487,7 @@
       renderCalendar();
       applyScheduleDefault();
       renderPlanExercises();
+      showToast('Template deleted', 'success');
     }
   });
 
@@ -1306,7 +1503,7 @@
     const filtered = templateCategoryFilter === 'All' ? state.routines : state.routines.filter(r => (r.category || 'Custom') === templateCategoryFilter);
 
     if (filtered.length === 0) {
-      el.innerHTML = '<div class="empty">No templates in this category yet.</div>';
+      el.innerHTML = '<div class="empty"><span class="empty-icon">🗂️</span>No templates in this category yet.</div>';
       return;
     }
     el.innerHTML = filtered.map(r => `
@@ -1341,6 +1538,7 @@
         save();
         renderRoutineList();
         populatePlanRoutineSelect();
+        showToast('Template duplicated ✓', 'success');
       });
     });
     el.querySelectorAll('.useRoutineBtn').forEach(btn => {
@@ -1453,7 +1651,7 @@
       state.plannedWorkouts[iso] = { type: 'rest' };
     } else if (val === 'custom') {
       const exercises = document.getElementById('calCustomExercises').value.split('\n').map(s => s.trim()).filter(Boolean);
-      if (exercises.length === 0) { alert('Add at least one exercise, or choose a different option.'); return; }
+      if (exercises.length === 0) { showToast('Add at least one exercise, or choose a different option.', 'error'); return; }
       state.plannedWorkouts[iso] = { type: 'custom', name: 'One-off Workout', exercises };
     } else if (val.startsWith('tmpl:')) {
       state.plannedWorkouts[iso] = { type: 'template', templateId: val.slice(5) };
@@ -1463,6 +1661,7 @@
     renderCalendar();
     applyScheduleDefault();
     renderPlanExercises();
+    showToast('Plan saved ✓', 'success');
   });
   document.getElementById('calCancelBtn').addEventListener('click', () => {
     document.getElementById('calDayEditor').style.display = 'none';
@@ -1568,13 +1767,13 @@
   document.getElementById('feelDate').value = todayStr();
   let sorenessVal = null, energyVal = null;
 
-  function buildScale(containerId, onSelect) {
+  function buildScale(containerId, onSelect, emojis) {
     const el = document.getElementById(containerId);
     el.innerHTML = '';
     for (let i = 1; i <= 5; i++) {
       const b = document.createElement('button');
       b.type = 'button';
-      b.textContent = i;
+      b.innerHTML = `<span class="emoji">${emojis[i - 1]}</span><span>${i}</span>`;
       b.addEventListener('click', () => {
         [...el.children].forEach(c => c.classList.remove('selected'));
         b.classList.add('selected');
@@ -1583,13 +1782,13 @@
       el.appendChild(b);
     }
   }
-  buildScale('sorenessScale', v => sorenessVal = v);
-  buildScale('energyScale', v => energyVal = v);
+  buildScale('sorenessScale', v => sorenessVal = v, SORENESS_EMOJI);
+  buildScale('energyScale', v => energyVal = v, ENERGY_EMOJI);
 
   document.getElementById('saveFeelBtn').addEventListener('click', () => {
     const date = document.getElementById('feelDate').value;
     if (!date || sorenessVal === null || energyVal === null) {
-      alert('Please pick a date and select both soreness and energy levels.');
+      showToast('Please pick a date and select both soreness and energy levels.', 'error');
       return;
     }
     const areas = document.getElementById('feelAreas').value.trim();
@@ -1604,14 +1803,14 @@
     [...document.getElementById('energyScale').children].forEach(c => c.classList.remove('selected'));
 
     renderFeelHistory();
-    alert('Check-in saved!');
+    showToast('Check-in saved ✓', 'success');
   });
 
   function renderFeelHistory() {
     const el = document.getElementById('feelHistory');
     const items = [...state.feelings].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 15);
     if (items.length === 0) {
-      el.innerHTML = '<div class="empty">No check-ins yet.</div>';
+      el.innerHTML = '<div class="empty"><span class="empty-icon">📝</span>No check-ins yet.</div>';
       return;
     }
     el.innerHTML = items.map(f => {
@@ -1623,8 +1822,8 @@
             <button class="del" data-id="${f.id}">Delete</button>
           </div>
           <div class="meta">
-            <span class="pill ${pillClass}">Soreness ${f.soreness}/5</span>
-            &nbsp;<span class="pill g">Energy ${f.energy}/5</span>
+            <span class="pill ${pillClass}">${SORENESS_EMOJI[f.soreness - 1]} Soreness ${f.soreness}/5</span>
+            &nbsp;<span class="pill g">${ENERGY_EMOJI[f.energy - 1]} Energy ${f.energy}/5</span>
             ${f.areas ? ' · ' + escapeHtml(f.areas) : ''}
           </div>
           ${f.notes ? `<div style="font-size:13px;color:var(--muted);">${escapeHtml(f.notes)}</div>` : ''}
@@ -1652,7 +1851,7 @@
     if (filterSel.value) items = items.filter(w => w.exercise === filterSel.value);
 
     if (items.length === 0) {
-      list.innerHTML = '<div class="empty">No workouts logged yet.</div>';
+      list.innerHTML = '<div class="empty"><span class="empty-icon">📋</span>No workouts logged yet.</div>';
       return;
     }
     list.innerHTML = items.map(w => {
@@ -1673,6 +1872,7 @@
         state.workouts = state.workouts.filter(w => w.id !== btn.dataset.id);
         save();
         renderHistory();
+        renderHeaderStreak();
       });
     });
   }
@@ -1682,7 +1882,7 @@
   let weightChart, volumeChart, feelChart;
 
   function chartColors() {
-    return { line: '#5b8cff', fill: 'rgba(91,140,255,0.15)', bar: '#37d67a', soreness: '#ff5c6c', energy: '#ffb648', grid: '#2a2f3a', text: '#9aa3af' };
+    return { line: '#6d8cff', fill: 'rgba(109,140,255,0.15)', bar: '#34d399', soreness: '#ff6b7a', energy: '#fbbf5c', grid: '#262c38', text: '#8b93a3' };
   }
 
   function renderTrends() {
@@ -1807,9 +2007,10 @@
         populatePlanRoutineSelect();
         applyScheduleDefault();
         renderPlanExercises();
-        alert('Data imported successfully!');
+        renderHeaderStreak();
+        showToast('Data imported successfully ✓', 'success');
       } catch (err) {
-        alert('Could not import file: ' + err.message);
+        showToast('Could not import file: ' + err.message, 'error');
       }
     };
     reader.readAsText(file);
@@ -1834,7 +2035,8 @@
       populatePlanRoutineSelect();
       applyScheduleDefault();
       renderPlanExercises();
-      alert('All data cleared.');
+      renderHeaderStreak();
+      showToast('All data cleared', 'success');
     }
   });
 
@@ -1849,6 +2051,7 @@
   populatePlanRoutineSelect();
   applyScheduleDefault();
   renderPlanExercises();
+  renderHeaderStreak();
 })();
 </script>
 
