@@ -68,6 +68,28 @@
     color: white;
     font-weight: 600;
   }
+  .subnav {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+  .subnav-btn {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    cursor: pointer;
+  }
+  .subnav-btn:hover { color: var(--text); border-color: #3a4150; }
+  .subnav-btn.active {
+    background: var(--panel-2);
+    border-color: #3a4150;
+    color: var(--text);
+    font-weight: 600;
+  }
   main {
     max-width: 880px;
     margin: 0 auto;
@@ -75,6 +97,8 @@
   }
   .view { display: none; }
   .view.active { display: block; }
+  .sub-view { display: none; }
+  .sub-view.active { display: block; }
   .card {
     background: var(--panel);
     border: 1px solid var(--border);
@@ -134,7 +158,7 @@
   }
   .btn.danger { background: var(--danger); }
   .btn.small { padding: 6px 12px; font-size: 12px; margin-top: 0; }
-  .btn-row { display: flex; gap: 8px; flex-wrap: wrap; }
+  .btn-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
   .set-rows { margin-bottom: 10px; }
   .set-row {
     display: grid;
@@ -235,7 +259,7 @@
   .footer-note { text-align: center; color: var(--muted); font-size: 12px; margin-top: 24px; }
   select#trendExercise { max-width: 280px; }
 
-  /* Routines */
+  /* Templates */
   .routine-card {
     border: 1px solid var(--border);
     border-radius: 8px;
@@ -294,6 +318,22 @@
   }
   .reorder-btns button:hover { color: var(--text); border-color: #3a4150; }
   .reorder-btns button:disabled { opacity: .3; cursor: default; }
+  .cat-chip {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: 5px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    cursor: pointer;
+  }
+  .cat-chip:hover { color: var(--text); border-color: #3a4150; }
+  .cat-chip.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: white;
+    font-weight: 600;
+  }
   .plan-item {
     display: flex;
     justify-content: space-between;
@@ -337,6 +377,75 @@
     letter-spacing: .04em;
   }
   .week-day.today .dow { color: var(--accent); }
+
+  /* Calendar */
+  .cal-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    margin-bottom: 14px;
+  }
+  .cal-header span { font-weight: 700; font-size: 15px; min-width: 160px; text-align: center; }
+  .cal-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 6px;
+  }
+  .cal-daylabel {
+    text-align: center;
+    font-size: 10px;
+    color: var(--muted);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .03em;
+    padding-bottom: 4px;
+  }
+  .cal-cell {
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 6px;
+    min-height: 54px;
+    cursor: pointer;
+    position: relative;
+  }
+  .cal-cell:hover { border-color: #3a4150; }
+  .cal-cell.empty { background: transparent; border: none; cursor: default; }
+  .cal-cell.today { border-color: var(--accent); }
+  .cal-cell .daynum { font-weight: 700; font-size: 12px; margin-bottom: 3px; }
+  .cal-cell.today .daynum { color: var(--accent); }
+  .cal-cell .label {
+    color: var(--muted);
+    font-size: 10px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .cal-cell .dot {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent-2);
+  }
+
+  /* Streaks */
+  .progress-bar-track {
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    height: 10px;
+    overflow: hidden;
+  }
+  .progress-bar-fill {
+    background: var(--accent-2);
+    height: 100%;
+    border-radius: 999px;
+    transition: width .3s;
+  }
 </style>
 </head>
 <body>
@@ -347,9 +456,8 @@
 </header>
 
 <nav>
+  <button data-view="plan">Plan</button>
   <button data-view="log" class="active">Log Workout</button>
-  <button data-view="routines">Routines</button>
-  <button data-view="schedule">Schedule</button>
   <button data-view="feel">How I Feel</button>
   <button data-view="history">History</button>
   <button data-view="trends">Trends</button>
@@ -358,13 +466,122 @@
 
 <main>
 
+  <!-- PLAN -->
+  <div class="view" id="view-plan">
+    <div class="subnav">
+      <button class="subnav-btn active" data-sub="templates" type="button">Templates</button>
+      <button class="subnav-btn" data-sub="planning" type="button">Planning</button>
+      <button class="subnav-btn" data-sub="streaks" type="button">Streaks</button>
+    </div>
+
+    <!-- TEMPLATES -->
+    <div class="sub-view active" id="sub-templates">
+      <div class="card">
+        <h2>Workout Templates</h2>
+        <p class="caption">Pre-plan workouts like Push / Pull / Legs (or anything else) so you can pick exercises, equipment, and sets ahead of time — then just log the numbers on gym day.</p>
+        <div class="btn-row" style="margin-bottom:12px;">
+          <button class="btn" id="newRoutineBtn" type="button">+ New Template</button>
+        </div>
+        <div id="templateCategoryChips" class="btn-row" style="margin-bottom:12px;"></div>
+        <div id="routineList"><div class="empty">No templates yet.</div></div>
+      </div>
+
+      <div class="card" id="routineEditorCard" style="display:none;">
+        <h2 id="routineEditorTitle">New Template</h2>
+        <div class="field">
+          <label>Template Name</label>
+          <input type="text" id="routineName" placeholder="e.g. Push Day">
+        </div>
+        <div class="field">
+          <label>Category</label>
+          <select id="routineCategory"></select>
+        </div>
+        <label>Exercises</label>
+        <p class="caption">
+          <strong>Warm-up sets</strong> prime the muscle without much fatigue and don't need to be near max effort.
+          <strong>Working sets</strong> are your real effort — the ones that drive progress. Typical rep ranges:
+          strength 3–5, hypertrophy 8–12, endurance 15–20+. Use the reorder arrows to change exercise order,
+          and "Quick fill" to auto-fill sets/reps for a goal.
+        </p>
+        <div id="routineExRows"></div>
+        <button class="btn secondary" id="addRoutineExBtn" type="button">+ Add Exercise</button>
+
+        <div class="btn-row" style="margin-top:14px;">
+          <button class="btn" id="saveRoutineBtn" type="button">Save Template</button>
+          <button class="btn secondary" id="cancelRoutineBtn" type="button">Cancel</button>
+          <button class="btn danger" id="deleteRoutineBtn" type="button" style="display:none;">Delete Template</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PLANNING -->
+    <div class="sub-view" id="sub-planning">
+      <div class="card">
+        <h2>Workout Planning</h2>
+        <div class="btn-row" style="margin-bottom:14px;">
+          <button class="btn small planningToggleBtn" data-target="weekly" type="button">Weekly</button>
+          <button class="btn small secondary planningToggleBtn" data-target="calendar" type="button">Calendar</button>
+        </div>
+
+        <div id="planningWeekly">
+          <p class="caption">Assign a template to each day of the week. This repeats every week unless you override a specific date on the Calendar tab.</p>
+          <div class="week-grid" id="scheduleGrid"></div>
+        </div>
+
+        <div id="planningCalendar" style="display:none;">
+          <p class="caption">Click any day to assign a template, mark it a rest day, or plan a one-off workout just for that date.</p>
+          <div class="cal-header">
+            <button class="btn small secondary" id="calPrevBtn" type="button">‹</button>
+            <span id="calMonthLabel"></span>
+            <button class="btn small secondary" id="calNextBtn" type="button">›</button>
+          </div>
+          <div class="cal-grid" id="calGrid"></div>
+        </div>
+      </div>
+
+      <div class="card" id="calDayEditor" style="display:none;">
+        <h2 id="calDayEditorTitle">Plan for …</h2>
+        <div class="field">
+          <label>Assignment</label>
+          <select id="calAssignSelect"></select>
+        </div>
+        <div class="field" id="calCustomField" style="display:none;">
+          <label>One-off exercises (one per line)</label>
+          <textarea id="calCustomExercises" placeholder="Bench Press&#10;Overhead Press&#10;Tricep Pushdown"></textarea>
+        </div>
+        <div class="btn-row">
+          <button class="btn" id="calSaveBtn" type="button">Save</button>
+          <button class="btn secondary" id="calCancelBtn" type="button">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- STREAKS -->
+    <div class="sub-view" id="sub-streaks">
+      <div class="card">
+        <h2>Workout Streaks</h2>
+        <p class="caption">Rest days you've planned don't break your streak — only missed workout days do.</p>
+        <div class="stat-row">
+          <div class="stat"><div class="num" id="streakCurrent">0</div><div class="lbl">Current streak (days)</div></div>
+          <div class="stat"><div class="num" id="streakLongest">0</div><div class="lbl">Longest streak (days)</div></div>
+          <div class="stat"><div class="num" id="streakMonth">0</div><div class="lbl">Workouts this month</div></div>
+        </div>
+        <div class="field" style="margin-top:16px;">
+          <label>Weekly goal (workouts per week)</label>
+          <input type="number" id="weeklyGoalInput" min="1" max="14" placeholder="e.g. 4" style="max-width:120px;">
+        </div>
+        <div id="weeklyGoalProgress"></div>
+      </div>
+    </div>
+  </div>
+
   <!-- LOG WORKOUT -->
   <div class="view active" id="view-log">
     <div class="card">
       <h2>Today's Plan</h2>
       <p class="caption" id="scheduleHint"></p>
       <div class="field">
-        <label>Use a routine (optional)</label>
+        <label>Use a template (optional)</label>
         <select id="planRoutineSelect"><option value="">None — log freely</option></select>
       </div>
       <div id="planExerciseList"></div>
@@ -411,50 +628,6 @@
       <div class="btn-row">
         <button class="btn" id="saveWorkoutBtn" type="button">Save Workout</button>
       </div>
-    </div>
-  </div>
-
-  <!-- ROUTINES -->
-  <div class="view" id="view-routines">
-    <div class="card">
-      <h2>Your Routines</h2>
-      <p class="caption">Pre-plan workouts like Push / Pull / Legs (or anything else) so you can pick exercises, equipment, and sets ahead of time — then just log the numbers on gym day.</p>
-      <div class="btn-row" style="margin-bottom:12px;">
-        <button class="btn" id="newRoutineBtn" type="button">+ New Routine</button>
-      </div>
-      <div id="routineList"><div class="empty">No routines yet.</div></div>
-    </div>
-
-    <div class="card" id="routineEditorCard" style="display:none;">
-      <h2 id="routineEditorTitle">New Routine</h2>
-      <div class="field">
-        <label>Routine Name</label>
-        <input type="text" id="routineName" placeholder="e.g. Push Day">
-      </div>
-      <label>Exercises</label>
-      <p class="caption">
-        <strong>Warm-up sets</strong> prime the muscle without much fatigue and don't need to be near max effort.
-        <strong>Working sets</strong> are your real effort — the ones that drive progress. Typical rep ranges:
-        strength 3–5, hypertrophy 8–12, endurance 15–20+. Use the reorder arrows to change exercise order,
-        and "Quick fill" to auto-fill sets/reps for a goal.
-      </p>
-      <div id="routineExRows"></div>
-      <button class="btn secondary" id="addRoutineExBtn" type="button">+ Add Exercise</button>
-
-      <div class="btn-row" style="margin-top:14px;">
-        <button class="btn" id="saveRoutineBtn" type="button">Save Routine</button>
-        <button class="btn secondary" id="cancelRoutineBtn" type="button">Cancel</button>
-        <button class="btn danger" id="deleteRoutineBtn" type="button" style="display:none;">Delete Routine</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- SCHEDULE -->
-  <div class="view" id="view-schedule">
-    <div class="card">
-      <h2>Weekly Schedule</h2>
-      <p class="caption">Assign a routine to each day of the week. The Log Workout tab will automatically suggest today's routine.</p>
-      <div class="week-grid" id="scheduleGrid"></div>
     </div>
   </div>
 
@@ -548,6 +721,7 @@
   const STORAGE_KEY = 'workoutTracker.v1';
   const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   const DAY_ABBR = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const TEMPLATE_CATEGORIES = ['Push', 'Pull', 'Legs', 'Upper', 'Lower', 'Full Body', 'Custom'];
 
   const EXERCISE_CATALOG = {
     'Chest': ['Bench Press', 'Incline Bench Press', 'Decline Bench Press', 'Dumbbell Bench Press', 'Incline Dumbbell Press', 'Chest Fly', 'Cable Crossover', 'Push-Up', 'Chest Dip'],
@@ -585,21 +759,21 @@
 
   function defaultRoutines() {
     return [
-      { id: uid(), name: 'Push Day', exercises: [
+      { id: uid(), name: 'Push Day', category: 'Push', exercises: [
         { id: uid(), exercise: 'Bench Press', equipment: 'Barbell', warmupSets: 2, workingSets: 4, repRange: '6-8' },
         { id: uid(), exercise: 'Overhead Press', equipment: 'Barbell', warmupSets: 1, workingSets: 3, repRange: '8-10' },
         { id: uid(), exercise: 'Incline Dumbbell Press', equipment: 'Dumbbell', warmupSets: 1, workingSets: 3, repRange: '10-12' },
         { id: uid(), exercise: 'Lateral Raise', equipment: 'Dumbbell', warmupSets: 0, workingSets: 3, repRange: '12-15' },
         { id: uid(), exercise: 'Tricep Pushdown', equipment: 'Cable', warmupSets: 0, workingSets: 3, repRange: '12-15' }
       ]},
-      { id: uid(), name: 'Pull Day', exercises: [
+      { id: uid(), name: 'Pull Day', category: 'Pull', exercises: [
         { id: uid(), exercise: 'Deadlift', equipment: 'Barbell', warmupSets: 2, workingSets: 3, repRange: '5' },
         { id: uid(), exercise: 'Pull-Up', equipment: 'Bodyweight', warmupSets: 0, workingSets: 3, repRange: '8-10' },
         { id: uid(), exercise: 'Bent-Over Row', equipment: 'Barbell', warmupSets: 1, workingSets: 3, repRange: '8-10' },
         { id: uid(), exercise: 'Face Pull', equipment: 'Cable', warmupSets: 0, workingSets: 3, repRange: '15' },
         { id: uid(), exercise: 'Barbell Curl', equipment: 'Barbell', warmupSets: 0, workingSets: 3, repRange: '10-12' }
       ]},
-      { id: uid(), name: 'Leg Day', exercises: [
+      { id: uid(), name: 'Leg Day', category: 'Legs', exercises: [
         { id: uid(), exercise: 'Back Squat', equipment: 'Barbell', warmupSets: 2, workingSets: 4, repRange: '6-8' },
         { id: uid(), exercise: 'Romanian Deadlift', equipment: 'Barbell', warmupSets: 1, workingSets: 3, repRange: '8-10' },
         { id: uid(), exercise: 'Leg Press', equipment: 'Machine', warmupSets: 1, workingSets: 3, repRange: '10-12' },
@@ -620,7 +794,7 @@
     schedule[2] = routines[1].id; // Tue: Pull
     schedule[3] = routines[2].id; // Wed: Legs
     schedule[5] = routines[0].id; // Fri: Push
-    return { workouts: [], feelings: [], routines, schedule };
+    return { workouts: [], feelings: [], routines, schedule, plannedWorkouts: {}, weeklyGoal: null };
   }
 
   function load() {
@@ -636,6 +810,8 @@
       if (!s.feelings) s.feelings = [];
       if (!s.routines) s.routines = [];
       if (!s.schedule) s.schedule = emptySchedule();
+      if (!s.plannedWorkouts) s.plannedWorkouts = {};
+      if (s.weeklyGoal === undefined) s.weeklyGoal = null;
     }
     return s;
   }
@@ -672,8 +848,32 @@
     return bits.join(' ');
   }
 
+  // ---------- PLANNING: date -> plan resolution ----------
+  function getPlanForDate(iso) {
+    const override = state.plannedWorkouts[iso];
+    if (override) {
+      if (override.type === 'rest') return { type: 'rest' };
+      if (override.type === 'template') {
+        const t = state.routines.find(r => r.id === override.templateId);
+        if (t) return { type: 'template', template: t };
+        return { type: 'rest' };
+      }
+      if (override.type === 'custom') return { type: 'custom', name: override.name, exercises: override.exercises };
+    }
+    const day = new Date(iso + 'T00:00:00').getDay();
+    const schedId = state.schedule[day];
+    if (schedId) {
+      const t = state.routines.find(r => r.id === schedId);
+      if (t) return { type: 'template', template: t };
+    }
+    return { type: 'rest' };
+  }
+  function isPlannedRestDay(iso) {
+    return getPlanForDate(iso).type === 'rest';
+  }
+
   // Fill every "Browse…" exercise dropdown on the page (event-delegated so it also
-  // works for dynamically-added routine rows).
+  // works for dynamically-added rows).
   function initBrowseSelect(sel) {
     if (sel.dataset.filled) return;
     sel.innerHTML = '<option value="">Browse…</option>' + catalogOptionsHtml();
@@ -721,8 +921,7 @@
       if (btn.dataset.view === 'trends') renderTrends();
       if (btn.dataset.view === 'history') renderHistory();
       if (btn.dataset.view === 'feel') renderFeelHistory();
-      if (btn.dataset.view === 'routines') renderRoutineList();
-      if (btn.dataset.view === 'schedule') renderSchedule();
+      if (btn.dataset.view === 'plan') { renderRoutineList(); renderSchedule(); renderCalendar(); renderStreaks(); }
       if (btn.dataset.view === 'log') { populatePlanRoutineSelect(); applyScheduleDefault(); renderPlanExercises(); }
     });
   });
@@ -731,6 +930,29 @@
     document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
     document.getElementById('view-' + view).classList.add('active');
   }
+
+  // ---------- PLAN SUB-NAV ----------
+  document.querySelectorAll('.subnav-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.subnav-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.querySelectorAll('.sub-view').forEach(v => v.classList.remove('active'));
+      document.getElementById('sub-' + btn.dataset.sub).classList.add('active');
+      if (btn.dataset.sub === 'templates') renderRoutineList();
+      if (btn.dataset.sub === 'planning') { renderSchedule(); renderCalendar(); }
+      if (btn.dataset.sub === 'streaks') renderStreaks();
+    });
+  });
+
+  document.querySelectorAll('.planningToggleBtn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.planningToggleBtn').forEach(b => b.classList.add('secondary'));
+      btn.classList.remove('secondary');
+      document.getElementById('planningWeekly').style.display = btn.dataset.target === 'weekly' ? 'block' : 'none';
+      document.getElementById('planningCalendar').style.display = btn.dataset.target === 'calendar' ? 'block' : 'none';
+      if (btn.dataset.target === 'calendar') renderCalendar();
+    });
+  });
 
   // ---------- LOG WORKOUT ----------
   document.getElementById('logDate').value = todayStr();
@@ -827,7 +1049,7 @@
     alert('Workout saved!');
   });
 
-  // ---------- TODAY'S PLAN (routine-driven logging) ----------
+  // ---------- TODAY'S PLAN (template-driven logging) ----------
   function populatePlanRoutineSelect() {
     const sel = document.getElementById('planRoutineSelect');
     const current = sel.value;
@@ -836,62 +1058,93 @@
   }
   document.getElementById('planRoutineSelect').addEventListener('change', renderPlanExercises);
 
+  let currentDatePlan = null;
   function applyScheduleDefault() {
     const date = document.getElementById('logDate').value || todayStr();
-    const day = new Date(date + 'T00:00:00').getDay();
-    const scheduledId = state.schedule[day];
+    const isToday = date === todayStr();
+    const plan = getPlanForDate(date);
+    currentDatePlan = plan;
     const sel = document.getElementById('planRoutineSelect');
     const hint = document.getElementById('scheduleHint');
-    const dayName = DAY_NAMES[day];
-    const isToday = date === todayStr();
-    const scheduledRoutine = scheduledId ? state.routines.find(r => r.id === scheduledId) : null;
+    const dayLabel = isToday ? 'Today' : fmtDate(date);
 
-    if (scheduledRoutine) {
-      hint.textContent = `📅 ${isToday ? 'Today' : dayName} is scheduled: ${scheduledRoutine.name}`;
-      if (!sel.value) sel.value = scheduledId;
+    if (plan.type === 'template') {
+      hint.textContent = `📅 ${dayLabel} is planned: ${plan.template.name}`;
+      if (!sel.value) sel.value = plan.template.id;
+    } else if (plan.type === 'custom') {
+      hint.textContent = `📅 ${dayLabel} has a one-off plan: ${plan.exercises.length} exercise${plan.exercises.length === 1 ? '' : 's'}`;
     } else {
-      hint.textContent = `📅 No routine scheduled for ${isToday ? 'today' : dayName}. Set one in the Schedule tab.`;
+      hint.textContent = `😴 ${dayLabel} is a rest day. Set a plan in the Plan tab, or log freely below.`;
     }
   }
 
   function renderPlanExercises() {
     const sel = document.getElementById('planRoutineSelect');
     const list = document.getElementById('planExerciseList');
-    const routine = state.routines.find(r => r.id === sel.value);
-    if (!routine) {
-      list.innerHTML = '';
-      return;
-    }
     const date = document.getElementById('logDate').value || todayStr();
     const loggedToday = new Set(state.workouts.filter(w => w.date === date).map(w => w.exercise));
-    list.innerHTML = routine.exercises.map(ex => {
-      const done = loggedToday.has(ex.exercise);
-      return `
-        <div class="plan-item ${done ? 'done' : ''}">
-          <div class="info">
-            <span class="exname">${escapeHtml(ex.exercise)}${ex.equipment ? ` <span style="color:var(--muted); font-weight:400;">· ${escapeHtml(ex.equipment)}</span>` : ''}</span>
-            <span class="tags">${formatExPlan(ex)}</span>
-          </div>
-          ${done ? '<span class="check">✓ Logged</span>' : `<button class="btn small secondary planLogBtn" data-exid="${ex.id}" type="button">Log this</button>`}
-        </div>`;
-    }).join('') || '<div class="empty">This routine has no exercises yet. Add some in the Routines tab.</div>';
 
-    list.querySelectorAll('.planLogBtn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const ex = routine.exercises.find(x => x.id === btn.dataset.exid);
-        if (!ex) return;
-        document.getElementById('logExercise').value = ex.exercise;
-        document.getElementById('logExercise').dispatchEvent(new Event('input'));
-        if (ex.equipment) document.getElementById('logMachine').value = ex.equipment;
-        setRowsFromPlanExercise(ex);
-        document.querySelector('#view-log .card:nth-child(2)').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    const routine = state.routines.find(r => r.id === sel.value);
+    if (routine) {
+      list.innerHTML = routine.exercises.map(ex => {
+        const done = loggedToday.has(ex.exercise);
+        return `
+          <div class="plan-item ${done ? 'done' : ''}">
+            <div class="info">
+              <span class="exname">${escapeHtml(ex.exercise)}${ex.equipment ? ` <span style="color:var(--muted); font-weight:400;">· ${escapeHtml(ex.equipment)}</span>` : ''}</span>
+              <span class="tags">${formatExPlan(ex)}</span>
+            </div>
+            ${done ? '<span class="check">✓ Logged</span>' : `<button class="btn small secondary planLogBtn" data-exid="${ex.id}" type="button">Log this</button>`}
+          </div>`;
+      }).join('') || '<div class="empty">This template has no exercises yet. Add some in the Plan tab.</div>';
+
+      list.querySelectorAll('.planLogBtn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const ex = routine.exercises.find(x => x.id === btn.dataset.exid);
+          if (!ex) return;
+          document.getElementById('logExercise').value = ex.exercise;
+          document.getElementById('logExercise').dispatchEvent(new Event('input'));
+          if (ex.equipment) document.getElementById('logMachine').value = ex.equipment;
+          setRowsFromPlanExercise(ex);
+          document.querySelector('#view-log .card:nth-child(2)').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
       });
-    });
+      return;
+    }
+
+    if (currentDatePlan && currentDatePlan.type === 'custom') {
+      list.innerHTML = currentDatePlan.exercises.map(name => {
+        const done = loggedToday.has(name);
+        return `
+          <div class="plan-item ${done ? 'done' : ''}">
+            <div class="info"><span class="exname">${escapeHtml(name)}</span></div>
+            ${done ? '<span class="check">✓ Logged</span>' : `<button class="btn small secondary planLogCustomBtn" data-exname="${escapeHtml(name)}" type="button">Log this</button>`}
+          </div>`;
+      }).join('');
+      list.querySelectorAll('.planLogCustomBtn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.getElementById('logExercise').value = btn.dataset.exname;
+          document.getElementById('logExercise').dispatchEvent(new Event('input'));
+          setRowCount(3);
+          document.querySelector('#view-log .card:nth-child(2)').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+      });
+      return;
+    }
+
+    if (currentDatePlan && currentDatePlan.type === 'rest') {
+      list.innerHTML = '<div class="empty">😴 Rest day — nothing planned. Feel free to log freely below if you end up training.</div>';
+      return;
+    }
+
+    list.innerHTML = '';
   }
 
-  // ---------- ROUTINES ----------
+  // ---------- TEMPLATES ----------
   let editingRoutineId = null;
+  let templateCategoryFilter = 'All';
   const routineExRows = document.getElementById('routineExRows');
+  document.getElementById('routineCategory').innerHTML = TEMPLATE_CATEGORIES.map(c => `<option value="${c}">${c}</option>`).join('');
 
   function refreshReorderButtons() {
     const cards = [...routineExRows.querySelectorAll('.routine-ex-card')];
@@ -958,8 +1211,9 @@
 
   function openRoutineEditor(routine) {
     editingRoutineId = routine ? routine.id : null;
-    document.getElementById('routineEditorTitle').textContent = routine ? 'Edit Routine' : 'New Routine';
+    document.getElementById('routineEditorTitle').textContent = routine ? 'Edit Template' : 'New Template';
     document.getElementById('routineName').value = routine ? routine.name : '';
+    document.getElementById('routineCategory').value = routine ? (routine.category || 'Custom') : 'Custom';
     routineExRows.innerHTML = '';
     if (routine && routine.exercises.length) {
       routine.exercises.forEach(ex => addRoutineExRow(ex));
@@ -982,9 +1236,10 @@
   document.getElementById('saveRoutineBtn').addEventListener('click', () => {
     const name = document.getElementById('routineName').value.trim();
     if (!name) {
-      alert('Please give the routine a name.');
+      alert('Please give the template a name.');
       return;
     }
+    const category = document.getElementById('routineCategory').value;
     const exercises = [...routineExRows.querySelectorAll('.routine-ex-card')].map(card => ({
       id: uid(),
       exercise: card.querySelector('.routineExInput').value.trim(),
@@ -995,38 +1250,45 @@
     })).filter(ex => ex.exercise);
 
     if (exercises.length === 0) {
-      alert('Add at least one exercise to this routine.');
+      alert('Add at least one exercise to this template.');
       return;
     }
 
     if (editingRoutineId) {
       const r = state.routines.find(r => r.id === editingRoutineId);
       r.name = name;
+      r.category = category;
       r.exercises = exercises;
     } else {
-      state.routines.push({ id: uid(), name, exercises });
+      state.routines.push({ id: uid(), name, category, exercises });
     }
     save();
     closeRoutineEditor();
     renderRoutineList();
     populatePlanRoutineSelect();
     renderSchedule();
+    renderCalendar();
     applyScheduleDefault();
     renderPlanExercises();
   });
 
   document.getElementById('deleteRoutineBtn').addEventListener('click', () => {
     if (!editingRoutineId) return;
-    if (confirm('Delete this routine? This will not delete any workouts you already logged.')) {
+    if (confirm('Delete this template? This will not delete any workouts you already logged.')) {
       state.routines = state.routines.filter(r => r.id !== editingRoutineId);
       Object.keys(state.schedule).forEach(day => {
         if (state.schedule[day] === editingRoutineId) state.schedule[day] = '';
+      });
+      Object.keys(state.plannedWorkouts).forEach(dateKey => {
+        const ov = state.plannedWorkouts[dateKey];
+        if (ov && ov.type === 'template' && ov.templateId === editingRoutineId) delete state.plannedWorkouts[dateKey];
       });
       save();
       closeRoutineEditor();
       renderRoutineList();
       populatePlanRoutineSelect();
       renderSchedule();
+      renderCalendar();
       applyScheduleDefault();
       renderPlanExercises();
     }
@@ -1034,16 +1296,26 @@
 
   function renderRoutineList() {
     const el = document.getElementById('routineList');
-    if (state.routines.length === 0) {
-      el.innerHTML = '<div class="empty">No routines yet. Create one to plan your exercises ahead of time.</div>';
+    const chipsEl = document.getElementById('templateCategoryChips');
+    const usedCats = ['All', ...TEMPLATE_CATEGORIES.filter(c => state.routines.some(r => (r.category || 'Custom') === c))];
+    chipsEl.innerHTML = usedCats.map(c => `<button type="button" class="cat-chip ${templateCategoryFilter === c ? 'active' : ''}" data-cat="${c}">${c}</button>`).join('');
+    chipsEl.querySelectorAll('.cat-chip').forEach(chip => {
+      chip.addEventListener('click', () => { templateCategoryFilter = chip.dataset.cat; renderRoutineList(); });
+    });
+
+    const filtered = templateCategoryFilter === 'All' ? state.routines : state.routines.filter(r => (r.category || 'Custom') === templateCategoryFilter);
+
+    if (filtered.length === 0) {
+      el.innerHTML = '<div class="empty">No templates in this category yet.</div>';
       return;
     }
-    el.innerHTML = state.routines.map(r => `
+    el.innerHTML = filtered.map(r => `
       <div class="routine-card">
         <div class="top">
-          <span class="name">${escapeHtml(r.name)}</span>
+          <span class="name">${escapeHtml(r.name)} <span class="pill b">${escapeHtml(r.category || 'Custom')}</span></span>
           <div class="btn-row">
             <button class="btn small secondary useRoutineBtn" data-id="${r.id}" type="button">Use in Log</button>
+            <button class="btn small secondary duplicateRoutineBtn" data-id="${r.id}" type="button">Duplicate</button>
             <button class="btn small secondary editRoutineBtn" data-id="${r.id}" type="button">Edit</button>
           </div>
         </div>
@@ -1055,6 +1327,22 @@
     el.querySelectorAll('.editRoutineBtn').forEach(btn => {
       btn.addEventListener('click', () => openRoutineEditor(state.routines.find(r => r.id === btn.dataset.id)));
     });
+    el.querySelectorAll('.duplicateRoutineBtn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const orig = state.routines.find(r => r.id === btn.dataset.id);
+        if (!orig) return;
+        const clone = {
+          id: uid(),
+          name: orig.name + ' (Copy)',
+          category: orig.category || 'Custom',
+          exercises: orig.exercises.map(ex => ({ ...ex, id: uid() }))
+        };
+        state.routines.push(clone);
+        save();
+        renderRoutineList();
+        populatePlanRoutineSelect();
+      });
+    });
     el.querySelectorAll('.useRoutineBtn').forEach(btn => {
       btn.addEventListener('click', () => {
         goToView('log');
@@ -1065,7 +1353,7 @@
     });
   }
 
-  // ---------- SCHEDULE ----------
+  // ---------- WEEKLY SCHEDULE ----------
   function renderSchedule() {
     const el = document.getElementById('scheduleGrid');
     const todayDay = new Date().getDay();
@@ -1082,9 +1370,199 @@
       sel.addEventListener('change', () => {
         state.schedule[sel.dataset.day] = sel.value;
         save();
+        renderCalendar();
       });
     });
   }
+
+  // ---------- CALENDAR ----------
+  let calendarMonth = new Date(todayStr() + 'T00:00:00');
+  calendarMonth.setDate(1);
+
+  function renderCalendar() {
+    const el = document.getElementById('calGrid');
+    if (!el) return;
+    const label = document.getElementById('calMonthLabel');
+    label.textContent = calendarMonth.toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
+    const year = calendarMonth.getFullYear(), month = calendarMonth.getMonth();
+    const firstDay = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const todayIso = todayStr();
+    let html = DAY_ABBR.map(d => `<div class="cal-daylabel">${d}</div>`).join('');
+    for (let i = 0; i < firstDay; i++) html += '<div class="cal-cell empty"></div>';
+    for (let day = 1; day <= daysInMonth; day++) {
+      const iso = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+      const plan = getPlanForDate(iso);
+      let planLabel = 'Rest';
+      if (plan.type === 'template') planLabel = plan.template.name;
+      else if (plan.type === 'custom') planLabel = plan.name || 'Custom';
+      const hasLog = state.workouts.some(w => w.date === iso);
+      html += `<div class="cal-cell ${iso === todayIso ? 'today' : ''}" data-date="${iso}">
+        <div class="daynum">${day}</div>
+        <div class="label">${escapeHtml(planLabel)}</div>
+        ${hasLog ? '<span class="dot"></span>' : ''}
+      </div>`;
+    }
+    el.innerHTML = html;
+    el.querySelectorAll('.cal-cell[data-date]').forEach(cell => {
+      cell.addEventListener('click', () => openCalDayEditor(cell.dataset.date));
+    });
+  }
+  document.getElementById('calPrevBtn').addEventListener('click', () => { calendarMonth.setMonth(calendarMonth.getMonth() - 1); renderCalendar(); });
+  document.getElementById('calNextBtn').addEventListener('click', () => { calendarMonth.setMonth(calendarMonth.getMonth() + 1); renderCalendar(); });
+
+  function openCalDayEditor(iso) {
+    const panel = document.getElementById('calDayEditor');
+    document.getElementById('calDayEditorTitle').textContent = 'Plan for ' + fmtDate(iso);
+    const sel = document.getElementById('calAssignSelect');
+    sel.innerHTML = `
+      <option value="default">Use weekly schedule default</option>
+      <option value="rest">Rest day</option>
+      ${state.routines.map(r => `<option value="tmpl:${r.id}">${escapeHtml(r.name)}</option>`).join('')}
+      <option value="custom">Custom one-off…</option>
+    `;
+    const override = state.plannedWorkouts[iso];
+    const customField = document.getElementById('calCustomField');
+    const customTa = document.getElementById('calCustomExercises');
+    customField.style.display = 'none';
+    customTa.value = '';
+    if (!override) {
+      sel.value = 'default';
+    } else if (override.type === 'rest') {
+      sel.value = 'rest';
+    } else if (override.type === 'template') {
+      sel.value = 'tmpl:' + override.templateId;
+    } else if (override.type === 'custom') {
+      sel.value = 'custom';
+      customField.style.display = 'block';
+      customTa.value = (override.exercises || []).join('\n');
+    }
+    panel.dataset.date = iso;
+    panel.style.display = 'block';
+    panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+  document.getElementById('calAssignSelect').addEventListener('change', (e) => {
+    document.getElementById('calCustomField').style.display = e.target.value === 'custom' ? 'block' : 'none';
+  });
+  document.getElementById('calSaveBtn').addEventListener('click', () => {
+    const iso = document.getElementById('calDayEditor').dataset.date;
+    const val = document.getElementById('calAssignSelect').value;
+    if (val === 'default') {
+      delete state.plannedWorkouts[iso];
+    } else if (val === 'rest') {
+      state.plannedWorkouts[iso] = { type: 'rest' };
+    } else if (val === 'custom') {
+      const exercises = document.getElementById('calCustomExercises').value.split('\n').map(s => s.trim()).filter(Boolean);
+      if (exercises.length === 0) { alert('Add at least one exercise, or choose a different option.'); return; }
+      state.plannedWorkouts[iso] = { type: 'custom', name: 'One-off Workout', exercises };
+    } else if (val.startsWith('tmpl:')) {
+      state.plannedWorkouts[iso] = { type: 'template', templateId: val.slice(5) };
+    }
+    save();
+    document.getElementById('calDayEditor').style.display = 'none';
+    renderCalendar();
+    applyScheduleDefault();
+    renderPlanExercises();
+  });
+  document.getElementById('calCancelBtn').addEventListener('click', () => {
+    document.getElementById('calDayEditor').style.display = 'none';
+  });
+
+  // ---------- STREAKS ----------
+  function loggedDatesSet() {
+    return new Set(state.workouts.map(w => w.date));
+  }
+  function computeCurrentStreak() {
+    const logged = loggedDatesSet();
+    let streak = 0;
+    let d = new Date(todayStr() + 'T00:00:00');
+    let isFirstDay = true;
+    while (true) {
+      const iso = d.toISOString().slice(0, 10);
+      const hasLog = logged.has(iso);
+      if (hasLog) {
+        streak++;
+      } else if (isFirstDay) {
+        // today, not logged yet — neutral, keep checking backward
+      } else if (isPlannedRestDay(iso)) {
+        // past rest day with no log — neutral, doesn't break the streak
+      } else {
+        break;
+      }
+      isFirstDay = false;
+      d.setDate(d.getDate() - 1);
+      if (streak > 3650) break;
+    }
+    return streak;
+  }
+  function computeLongestStreak() {
+    const logged = loggedDatesSet();
+    if (logged.size === 0) return 0;
+    const allDates = [...logged].sort();
+    const start = new Date(allDates[0] + 'T00:00:00');
+    const end = new Date(todayStr() + 'T00:00:00');
+    let longest = 0, current = 0;
+    for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+      const iso = d.toISOString().slice(0, 10);
+      if (logged.has(iso)) {
+        current++;
+        longest = Math.max(longest, current);
+      } else if (isPlannedRestDay(iso)) {
+        // neutral, streak continues untouched
+      } else {
+        current = 0;
+      }
+    }
+    return longest;
+  }
+  function countWorkoutsThisWeek() {
+    const today = new Date(todayStr() + 'T00:00:00');
+    const sunday = new Date(today);
+    sunday.setDate(today.getDate() - today.getDay());
+    const dates = new Set();
+    state.workouts.forEach(w => {
+      const wd = new Date(w.date + 'T00:00:00');
+      if (wd >= sunday && wd <= today) dates.add(w.date);
+    });
+    return dates.size;
+  }
+  function countWorkoutsThisMonth() {
+    const today = new Date(todayStr() + 'T00:00:00');
+    const y = today.getFullYear(), m = today.getMonth();
+    const dates = new Set();
+    state.workouts.forEach(w => {
+      const wd = new Date(w.date + 'T00:00:00');
+      if (wd.getFullYear() === y && wd.getMonth() === m) dates.add(w.date);
+    });
+    return dates.size;
+  }
+  function renderStreaks() {
+    document.getElementById('streakCurrent').textContent = computeCurrentStreak();
+    document.getElementById('streakLongest').textContent = computeLongestStreak();
+    document.getElementById('streakMonth').textContent = countWorkoutsThisMonth();
+    document.getElementById('weeklyGoalInput').value = state.weeklyGoal || '';
+    renderWeeklyGoalProgress();
+  }
+  function renderWeeklyGoalProgress() {
+    const el = document.getElementById('weeklyGoalProgress');
+    const goal = state.weeklyGoal;
+    const count = countWorkoutsThisWeek();
+    if (!goal) {
+      el.innerHTML = '<p class="caption">Set a weekly goal above to track your progress.</p>';
+      return;
+    }
+    const pct = Math.min(100, Math.round((count / goal) * 100));
+    el.innerHTML = `
+      <p class="caption" style="margin-bottom:6px;">${count} of ${goal} workouts this week</p>
+      <div class="progress-bar-track"><div class="progress-bar-fill" style="width:${pct}%;"></div></div>
+    `;
+  }
+  document.getElementById('weeklyGoalInput').addEventListener('change', (e) => {
+    const v = parseInt(e.target.value);
+    state.weeklyGoal = (v && v > 0) ? v : null;
+    save();
+    renderWeeklyGoalProgress();
+  });
 
   // ---------- HOW I FEEL ----------
   document.getElementById('feelDate').value = todayStr();
@@ -1316,12 +1794,16 @@
         state.feelings = imported.feelings;
         state.routines = imported.routines || [];
         state.schedule = imported.schedule || emptySchedule();
+        state.plannedWorkouts = imported.plannedWorkouts || {};
+        state.weeklyGoal = imported.weeklyGoal !== undefined ? imported.weeklyGoal : null;
         save();
         updateDatalists();
         renderHistory();
         renderFeelHistory();
         renderRoutineList();
         renderSchedule();
+        renderCalendar();
+        renderStreaks();
         populatePlanRoutineSelect();
         applyScheduleDefault();
         renderPlanExercises();
@@ -1334,17 +1816,21 @@
     e.target.value = '';
   });
   document.getElementById('clearBtn').addEventListener('click', () => {
-    if (confirm('This will permanently delete all workouts, check-ins, routines, and the schedule from this browser. Continue?')) {
+    if (confirm('This will permanently delete all workouts, check-ins, templates, and your plan from this browser. Continue?')) {
       state.workouts = [];
       state.feelings = [];
       state.routines = [];
       state.schedule = emptySchedule();
+      state.plannedWorkouts = {};
+      state.weeklyGoal = null;
       save();
       updateDatalists();
       renderHistory();
       renderFeelHistory();
       renderRoutineList();
       renderSchedule();
+      renderCalendar();
+      renderStreaks();
       populatePlanRoutineSelect();
       applyScheduleDefault();
       renderPlanExercises();
@@ -1358,6 +1844,8 @@
   renderFeelHistory();
   renderRoutineList();
   renderSchedule();
+  renderCalendar();
+  renderStreaks();
   populatePlanRoutineSelect();
   applyScheduleDefault();
   renderPlanExercises();
