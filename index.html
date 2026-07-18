@@ -377,13 +377,48 @@
     .set-row { grid-template-columns: 1fr 1fr; }
     .set-row .rm { grid-column: span 2; }
   }
-  .combo-row { display: flex; gap: 8px; }
-  .combo-row input { flex: 1; min-width: 0; }
-  .combo-row select.browseExercise { flex: 0 0 130px; }
-  @media (max-width: 640px) {
-    .combo-row { flex-wrap: wrap; }
-    .combo-row select.browseExercise { flex: 1 1 100%; }
+  /* Unified exercise search/type field (replaces separate text input + Browse dropdown) */
+  .exercise-combobox { position: relative; }
+  .exercise-combobox input { padding-right: 34px; }
+  .exercise-combobox::after {
+    content: '';
+    position: absolute;
+    right: 13px; top: 50%;
+    width: 9px; height: 9px;
+    margin-top: -6px;
+    border-right: 2px solid var(--muted);
+    border-bottom: 2px solid var(--muted);
+    transform: rotate(45deg);
+    pointer-events: none;
   }
+  .exercise-combobox-list {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0; right: 0;
+    background: var(--panel);
+    border: 1px solid var(--border-light);
+    border-radius: 10px;
+    box-shadow: var(--shadow-md);
+    max-height: 240px;
+    overflow-y: auto;
+    z-index: 30;
+    padding: 4px 0;
+  }
+  .combobox-group-label {
+    padding: 8px 13px 4px;
+    font-size: 10px;
+    font-weight: 800;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: .04em;
+  }
+  .combobox-option {
+    padding: 10px 13px;
+    font-size: 13.5px;
+    cursor: pointer;
+  }
+  .combobox-option:hover, .combobox-option:active { background: rgba(109,140,255,.12); }
+  .combobox-empty { padding: 12px 13px; font-size: 12.5px; color: var(--muted); line-height: 1.5; }
   table { width: 100%; border-collapse: collapse; font-size: 13px; }
   th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--border); }
   th { color: var(--muted); font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: .03em; }
@@ -665,13 +700,6 @@
     margin-bottom: 12px;
     background: rgba(255,255,255,.02);
   }
-  .routine-ex-head {
-    display: flex;
-    align-items: flex-start;
-    gap: 8px;
-    margin-bottom: 12px;
-  }
-  .routine-ex-head .combo-row { flex: 1; }
   .drag-handle {
     width: 32px;
     height: 44px;
@@ -1281,11 +1309,10 @@
         </div>
         <div class="field" style="grid-column: span 2;">
           <label>Exercise</label>
-          <div class="combo-row">
-            <input type="text" id="logExercise" list="exerciseList" placeholder="Type to search, or browse →">
-            <select class="browseExercise" data-target="logExercise"><option value="">Browse…</option></select>
+          <div class="exercise-combobox">
+            <input type="text" id="logExercise" placeholder="Search or type an exercise" autocomplete="off">
+            <div class="exercise-combobox-list" id="logExerciseComboList" style="display:none;"></div>
           </div>
-          <datalist id="exerciseList"></datalist>
         </div>
         <div class="field">
           <label>Unit</label>
@@ -1730,34 +1757,52 @@
     return getPlanForDate(iso).type === 'rest';
   }
 
-  // Fill every "Browse…" exercise dropdown on the page (event-delegated so it also
-  // works for dynamically-added rows). Also handles weight/rep quick-stepper taps.
-  function initBrowseSelect(sel) {
-    if (sel.dataset.filled) return;
-    sel.innerHTML = '<option value="">Browse…</option>' + catalogOptionsHtml();
-    sel.dataset.filled = '1';
-  }
-  document.addEventListener('focus', (e) => {
-    if (e.target && e.target.classList && e.target.classList.contains('browseExercise')) initBrowseSelect(e.target);
-  }, true);
-  document.addEventListener('change', (e) => {
-    const t = e.target;
-    if (!t || !t.classList) return;
-    if (t.classList.contains('browseExercise')) {
-      if (!t.value) return;
-      let input;
-      if (t.dataset.target) {
-        input = document.getElementById(t.dataset.target);
-      } else {
-        input = t.closest('.combo-row').querySelector('input');
-      }
-      if (input) {
-        input.value = t.value;
-        input.dispatchEvent(new Event('input'));
-      }
-      t.value = '';
+  // ---------- Unified exercise search/type combobox ----------
+  // Single field: type to filter the catalog, tap a suggestion to pick it, or just
+  // keep your own typed text to save it as a custom exercise. Replaces the old
+  // side-by-side free-text input + separate "Browse" dropdown.
+  function renderComboboxOptions(listEl, query) {
+    const q = query.trim().toLowerCase();
+    let html = '';
+    Object.entries(EXERCISE_CATALOG).forEach(([group, names]) => {
+      const matches = names.filter(n => !q || n.toLowerCase().includes(q));
+      if (matches.length === 0) return;
+      html += `<div class="combobox-group-label">${escapeHtml(group)}</div>`;
+      html += matches.map(n => `<div class="combobox-option" data-name="${escapeHtml(n)}">${escapeHtml(n)}</div>`).join('');
+    });
+    const catalogSet = new Set(Object.values(EXERCISE_CATALOG).flat());
+    const loggedCustom = [...new Set(state.workouts.map(w => w.exercise))].filter(n => n && !catalogSet.has(n));
+    const customMatches = loggedCustom.filter(n => !q || n.toLowerCase().includes(q));
+    if (customMatches.length) {
+      html += `<div class="combobox-group-label">Previously Logged</div>`;
+      html += customMatches.map(n => `<div class="combobox-option" data-name="${escapeHtml(n)}">${escapeHtml(n)}</div>`).join('');
     }
+    listEl.innerHTML = html || '<div class="combobox-empty">No matches — your typed text will be saved as a custom exercise.</div>';
+  }
+  function attachExerciseCombobox(input) {
+    const wrap = input.closest('.exercise-combobox');
+    const list = wrap.querySelector('.exercise-combobox-list');
+    const show = () => { renderComboboxOptions(list, input.value); list.style.display = 'block'; };
+    input.addEventListener('focus', show);
+    input.addEventListener('input', show);
+  }
+  document.addEventListener('click', (e) => {
+    const opt = e.target.closest('.combobox-option');
+    if (opt) {
+      const wrap = opt.closest('.exercise-combobox');
+      const input = wrap.querySelector('input');
+      input.value = opt.dataset.name;
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+      wrap.querySelector('.exercise-combobox-list').style.display = 'none';
+      return;
+    }
+    document.querySelectorAll('.exercise-combobox-list').forEach(l => {
+      const wrap = l.closest('.exercise-combobox');
+      if (wrap && !wrap.contains(e.target)) l.style.display = 'none';
+    });
   });
+  attachExerciseCombobox(document.getElementById('logExercise'));
+
   document.addEventListener('click', (e) => {
     const btn = e.target.closest('.stepper-btn');
     if (!btn) return;
@@ -1866,12 +1911,8 @@
   addSetRow(); addSetRow(); addSetRow();
 
   function updateDatalists() {
-    const loggedExercises = state.workouts.map(w => w.exercise);
-    const catalogExercises = Object.values(EXERCISE_CATALOG).flat();
-    const exercises = [...new Set([...loggedExercises, ...catalogExercises])].sort();
     const loggedMachines = state.workouts.map(w => w.machine).filter(Boolean);
     const machines = [...new Set([...loggedMachines, ...EQUIPMENT_OPTIONS])].sort();
-    document.getElementById('exerciseList').innerHTML = exercises.map(e => `<option value="${escapeHtml(e)}">`).join('');
     document.getElementById('machineList').innerHTML = machines.map(m => `<option value="${escapeHtml(m)}">`).join('');
   }
 
@@ -2192,9 +2233,9 @@
         </div>
       </div>
       <div class="ex-card-body" style="display:none;">
-        <div class="combo-row" style="margin-bottom:10px;">
-          <input type="text" class="routineExInput" id="${inputId}" list="exerciseList" placeholder="Exercise (type or browse →)" value="${escapeHtml(ex.exercise || '')}">
-          <select class="browseExercise" data-target="${inputId}"><option value="">Browse…</option></select>
+        <div class="exercise-combobox" style="margin-bottom:10px;">
+          <input type="text" class="routineExInput" id="${inputId}" placeholder="Search or type an exercise" autocomplete="off" value="${escapeHtml(ex.exercise || '')}">
+          <div class="exercise-combobox-list" style="display:none;"></div>
         </div>
         <div class="field">
           <label>Equipment</label>
@@ -2212,6 +2253,7 @@
     `;
     routineExRows.appendChild(card);
     initDragHandle(card.querySelector('.drag-handle'));
+    attachExerciseCombobox(card.querySelector('.routineExInput'));
     card.querySelectorAll('.set-table-row').forEach(row => bindSetRow(row));
 
     const header = card.querySelector('.ex-card-header');
