@@ -788,19 +788,27 @@
   .train-ex-card.ex-upcoming { opacity: .85; }
   .ex-card-body { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); }
 
-  /* Machine Setup — must never read as a form to fill out before lifting. Saved state is
-     one compact row; unsaved state is a single quiet line, not an empty card. */
+  /* Machine Setup — must never read as a form to fill out before lifting. Saved state
+     reads as a card matching the context-card family above it (same border/radius
+     language); unsaved state stays a single quiet line, not an empty card. */
   .ms-row { margin-bottom: 12px; }
-  .ms-row-saved, .ms-row-expanded {
-    display: flex; align-items: flex-start; justify-content: space-between; gap: 10px;
-    padding: 9px 10px; background: var(--panel-2); border-radius: 10px; cursor: pointer;
+  .ms-card {
+    background: var(--panel-2); border: 1px solid rgba(255,255,255,.08); border-radius: 12px;
+    padding: 11px 12px; cursor: pointer;
   }
-  .ms-row-expanded { flex-direction: column; }
-  .ms-row-expanded > .ms-edit-btn { align-self: flex-start; margin-top: 2px; }
+  .ms-card-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .ms-card-top .exinfo-header { margin-bottom: 0; }
+  .ms-view-all-btn { font-size: 12.5px; padding: 0; flex-shrink: 0; }
+  .ms-card-body { display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; margin-top: 7px; }
+  .ms-card-value { font-size: 15px; font-weight: 700; color: var(--text); }
+  .ms-card-fields { display: flex; gap: 18px; }
+  .ms-card-field { display: flex; flex-direction: column; gap: 1px; }
+  .ms-card-field-label { font-size: 10px; color: var(--muted); }
+  .ms-card-field-value { font-size: 13px; font-weight: 600; }
+  .ms-row-expanded { flex-direction: column; align-items: flex-start; }
+  .ms-row-expanded > .ms-edit-btn { align-self: flex-start; margin-top: 6px; }
   .ms-label { font-size: 10px; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
-  .ms-row-main { min-width: 0; }
-  .ms-summary { font-size: 13px; font-weight: 600; margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .ms-machine-name { font-size: 13.5px; font-weight: 700; margin: 3px 0 6px; }
+  .ms-machine-name { font-size: 13.5px; font-weight: 700; margin: 6px 0 6px; }
   .ms-detail-list { display: flex; flex-direction: column; gap: 4px; width: 100%; margin: 6px 0 4px; }
   .ms-detail-line { display: flex; justify-content: space-between; gap: 10px; font-size: 13px; }
   .ms-detail-line span:first-child { color: var(--muted); }
@@ -817,9 +825,48 @@
   .ms-prompt-text { font-size: 13px; font-weight: 600; min-width: 0; }
   .ms-prompt-actions { display: flex; gap: 2px; flex-shrink: 0; }
 
+  /* Exercise info cards: Today's Plan / Last Workout / Personal Best — one row that
+     scrolls horizontally rather than shrinking to fit three columns on a narrow phone.
+     Fixed card width gives each one room to breathe; a bit of the next card peeks in
+     at the edge as a scroll affordance. Borders are a low-opacity white overlay (not
+     a solid color) so they read as a subtle surface edge rather than a hard outline. */
+  .exinfo-grid {
+    display: flex; gap: 8px; margin-bottom: 12px;
+    overflow-x: auto; scroll-snap-type: x proximity; -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .exinfo-grid::-webkit-scrollbar { display: none; }
+  .exinfo-card {
+    flex: 0 0 136px; scroll-snap-align: start;
+    background: var(--panel-2); border: 1px solid rgba(255,255,255,.08); border-radius: 12px; padding: 11px 10px; min-width: 0;
+  }
+  .exinfo-header { display: flex; align-items: flex-start; gap: 5px; margin-bottom: 6px; color: var(--muted); }
+  .exinfo-header-accent { color: var(--accent); }
+  .exinfo-header-gold { color: var(--warn); }
+  .exinfo-icon { display: inline-flex; margin-top: 1px; }
+  .exinfo-icon svg { width: 14px; height: 14px; }
+  .exinfo-label { font-size: 9.5px; font-weight: 800; text-transform: uppercase; letter-spacing: .03em; line-height: 1.25; color: inherit; }
+  .exinfo-value { font-size: 16px; font-weight: 700; color: var(--text); line-height: 1.25; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .exinfo-sub { font-size: 12px; color: var(--muted); margin-top: 2px; line-height: 1.3; }
+  .exinfo-card-empty .exinfo-empty-text { font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+  .exinfo-card-empty .link-btn, .exinfo-card .link-btn { padding-left: 0; font-size: 12px; }
+  .exinfo-pill {
+    display: inline-block; font-size: 10.5px; font-weight: 700; padding: 3px 8px;
+    border-radius: 999px; margin-top: 6px;
+  }
+  .exinfo-pill-accent { background: rgba(109,140,255,.12); color: var(--accent); }
+  .exinfo-pill-success { background: rgba(52,211,153,.14); color: var(--accent-2); }
+  .exinfo-chip {
+    display: inline-block; font-size: 10px; font-weight: 600; color: var(--muted);
+    background: rgba(255,255,255,.06); padding: 3px 7px; border-radius: 999px; margin-top: 6px;
+  }
+  .exinfo-progress-track { height: 3px; background: rgba(255,255,255,.08); border-radius: 2px; margin-top: 7px; overflow: hidden; }
+  .exinfo-progress-fill { height: 100%; background: var(--accent); border-radius: 2px; }
+
   /* Machine Setup edit sheet */
   .ms-field-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
-  .ms-field-row .ms-field-label-input, .ms-field-row .ms-field-value-input { flex: 1; min-width: 0; }
+  .ms-field-row .ms-field-label-input, .ms-field-row .ms-field-value-input,
+  .ms-field-row .ms-field-label-select, .ms-field-row .ms-field-value-select { flex: 1; min-width: 0; }
   .ms-field-remove-btn svg { width: 14px; height: 14px; }
   .ms-add-detail-wrap { position: relative; margin: 2px 0 8px; }
   .ms-detail-picker { display: none; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
@@ -1102,8 +1149,8 @@
     .train-finish-bar { left: var(--sidebar-w); bottom: 0; padding: 14px 32px 20px; background: linear-gradient(to top, var(--bg) 70%, rgba(11,13,18,0)); }
   }
 
-  /* Train: active workout set rows — a compact scan-able table (Set / Previous /
-     Weight / Reps / done), not a stack of little forms. The next incomplete set gets
+  /* Train: active workout set rows — a compact scan-able table (Set / Weight / Reps /
+     done), not a stack of little forms. The next incomplete set gets
      a soft highlight so the workout still feels guided one set at a time even though
      every set in the exercise stays visible. */
   .train-set-rows-head {
@@ -1118,7 +1165,6 @@
     letter-spacing: .05em;
   }
   .train-set-rows-head .tsrh-num { width: 30px; flex-shrink: 0; }
-  .train-set-rows-head .tsrh-prev { width: 46px; flex-shrink: 0; text-align: center; }
   .train-set-rows-head .tsrh-field { flex: 1; min-width: 0; text-align: center; }
   .train-set-rows-head .tsrh-spacer { width: 50px; flex-shrink: 0; }
   /* Swipe-to-delete: the row itself slides via transform, revealing a red delete
@@ -1160,17 +1206,15 @@
   }
   .tsr-num.warmup { color: var(--warn); }
   .tsr-type-tag { font-size: 8px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .02em; margin-top: 1px; }
-  .tsr-prev {
-    width: 46px; flex-shrink: 0;
-    font-size: 12px; font-weight: 600; color: var(--muted); text-align: center;
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-  }
   .tsr-field { flex: 1; min-width: 0; }
-  .tsr-field .stepper-row { justify-content: center; gap: 1px; }
+  /* Number reads first, then the +/- pair sits grouped together right after it —
+     rather than flanking the number on both sides — so the row scans as one value
+     with a control attached, not three separate elements sharing the space. */
+  .tsr-field .stepper-row { justify-content: flex-end; align-items: center; gap: 3px; }
   .tsr-field .stepper-row input {
     background: none; border: none; padding: 0; min-height: auto;
-    font-size: 17px; font-weight: 800; text-align: center; color: var(--text);
-    width: 100%; min-width: 0;
+    font-size: 17px; font-weight: 800; text-align: right; color: var(--text);
+    flex: 1; min-width: 0;
   }
   .tsr-field .stepper-btn {
     width: 20px; height: 20px;
@@ -1194,10 +1238,6 @@
   }
   .train-set-complete-btn svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
   .train-set-row.completed .train-set-complete-btn { background: var(--accent-2); border-color: var(--accent-2); color: white; }
-  @media (max-width: 380px) {
-    .tsr-prev { display: none; }
-    .train-set-rows-head .tsrh-prev { display: none; }
-  }
   .train-remove-ex-btn {
     background: none; border: none; color: var(--muted); cursor: pointer;
     width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 8px; flex-shrink: 0;
@@ -1978,6 +2018,25 @@
     const base = EQUIPMENT_FIELD_PRESETS[equipment] || ['Seat position', 'Bench angle', 'Grip'];
     return base.concat(['General note']);
   }
+  // Common values per field label, so most fields can be picked from a dropdown
+  // instead of typed by hand. Keyed lowercase since custom-typed labels won't match
+  // the exact casing of the presets above. Any field without a match here (including
+  // freeform custom labels) just stays a plain text input.
+  const FIELD_VALUE_PRESETS = {
+    'seat position': ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'],
+    'back pad': ['1', '2', '3', '4', '5', '6', '7', '8'],
+    'bench angle': ['0°', '15°', '30°', '45°', '60°', '90°'],
+    'grip': ['Narrow', 'Neutral', 'Wide', 'Underhand', 'Overhand'],
+    'cable height': ['Low', 'Mid', 'High'],
+    'handle position': ['Low', 'Mid', 'High'],
+    'foot placement': ['Narrow', 'Standard', 'Wide'],
+    'bar height': ['Low', 'Mid', 'High'],
+    'anchor height': ['Low', 'Mid', 'High'],
+    'band strength': ['Light', 'Medium', 'Heavy', 'X-Heavy']
+  };
+  function fieldValuePresets(label) {
+    return FIELD_VALUE_PRESETS[(label || '').trim().toLowerCase()] || null;
+  }
 
   const SET_TYPES = [
     { value: 'working', label: 'Working' },
@@ -2027,7 +2086,10 @@
     check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>',
     moon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"/></svg>',
     edit: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></svg>',
-    x: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>'
+    x: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>',
+    barChart: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>',
+    trophy: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>',
+    clock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>'
   };
   const EXERCISE_TYPE = {
     'Bench Press': 'Compound', 'Incline Bench Press': 'Compound', 'Decline Bench Press': 'Compound', 'Dumbbell Bench Press': 'Compound', 'Incline Dumbbell Press': 'Compound', 'Chest Fly': 'Isolation', 'Cable Crossover': 'Isolation', 'Push-Up': 'Compound', 'Chest Dip': 'Compound',
@@ -2578,14 +2640,69 @@
   function getActiveSession() {
     return state.sessions.find(s => s.id === state.activeSessionId) || null;
   }
-  // Look up the most recently logged sets for an exercise, so a new session can start
-  // pre-filled with what was actually done last time instead of blank fields.
-  function lastLoggedSetsFor(exerciseName) {
+  // Look up the most recently finished workout entry for an exercise (date + sets),
+  // so both prefill and the Last Workout info card can read from one source.
+  function lastLoggedEntryFor(exerciseName) {
     if (!exerciseName) return null;
     const entries = state.workouts
       .filter(w => w.exercise === exerciseName && w.sets && w.sets.length)
       .sort((a, b) => b.date.localeCompare(a.date) || b.createdAt - a.createdAt);
-    return entries.length ? entries[0].sets : null;
+    return entries.length ? entries[0] : null;
+  }
+  // A new session starts pre-filled with what was actually done last time instead of
+  // blank fields — this just needs the sets, not the date.
+  function lastLoggedSetsFor(exerciseName) {
+    const entry = lastLoggedEntryFor(exerciseName);
+    return entry ? entry.sets : null;
+  }
+  // "6 days ago" reads better mid-workout than a full date; falls back to the absolute
+  // date once it's far enough back that "N days ago" stops being useful at a glance.
+  function formatRelativeDate(iso) {
+    const days = Math.round((new Date(todayStr() + 'T00:00:00') - new Date(iso + 'T00:00:00')) / 86400000);
+    if (days <= 0) return 'Today';
+    if (days === 1) return 'Yesterday';
+    if (days < 7) return `${days} days ago`;
+    return fmtDate(iso);
+  }
+  // Baseline PR: highest working-set weight ever logged for this exercise, from past
+  // finished workouts only (state.workouts) — deliberately excludes today's in-progress
+  // session, so this number always means "best before today's workout began."
+  function personalBestFor(exerciseName) {
+    let best = null;
+    state.workouts.forEach(w => {
+      if (w.exercise !== exerciseName) return;
+      w.sets.forEach(s => {
+        if (s.type === 'warmup' || !s.weight) return;
+        if (!best || s.weight > best.weight) best = { weight: s.weight, reps: s.reps, date: w.date };
+      });
+    });
+    return best;
+  }
+  // Highest weight among sets already completed in the current, still-active session.
+  function sessionBestFor(ex) {
+    let best = null;
+    ex.sets.forEach(s => {
+      if (!s.completed || s.type === 'warmup') return;
+      const w = parseFloat(s.weight) || 0;
+      if (!w) return;
+      if (!best || w > best.weight) best = { weight: w, reps: parseInt(s.reps) || 0 };
+    });
+    return best;
+  }
+  // Compares today's completed sets against the historical baseline without persisting
+  // anything — the baseline itself only updates once the workout is finished and its
+  // sets land in state.workouts, same as every other history-derived number here.
+  function personalBestStatusFor(ex) {
+    const baseline = personalBestFor(ex.exercise);
+    const today = sessionBestFor(ex);
+    if (!baseline && !today) return null;
+    if (today && (!baseline || today.weight > baseline.weight)) {
+      return { weight: today.weight, reps: today.reps, date: null, status: 'new' };
+    }
+    if (today && baseline && today.weight === baseline.weight) {
+      return { weight: baseline.weight, reps: baseline.reps, date: baseline.date, status: 'matched' };
+    }
+    return { weight: baseline.weight, reps: baseline.reps, date: baseline.date, status: 'historical' };
   }
   // Machine Setup belongs to the exercise itself (keyed by name), not the workout
   // template or session — a saved Chest Press setup should show up automatically
@@ -2827,6 +2944,7 @@
           </div>
         </div>
         <div class="ex-card-body" style="display:${open ? 'block' : 'none'};">
+          ${renderExerciseInfoGrid(ex)}
           ${renderMachineSetupBlock(ex)}
           <div id="trainSetRows-${ex.id}"></div>
           <button type="button" class="link-btn trainAddSetBtn" data-exid="${ex.id}">
@@ -2904,15 +3022,6 @@
     });
   }
 
-  // Formats a historical set as compact "weight×reps" text for the Previous column,
-  // reusing the same lookup/fallback logic as prefill so the two stay consistent.
-  function formatPreviousSet(lastSets, i) {
-    if (!lastSets || !lastSets.length) return '–';
-    const hist = lastSets[i] || lastSets[lastSets.length - 1];
-    if (!hist || (!hist.weight && !hist.reps)) return '–';
-    return `${hist.weight || 0}×${hist.reps || 0}`;
-  }
-
   // Machine Setup — optional, contextual info that "belongs" to an exercise. Renders one
   // of five states: hidden entirely (bodyweight exercise, nothing saved), a lightweight
   // post-completion nudge, a first-time hint with a short explanation, a quiet one-line
@@ -2927,23 +3036,25 @@
       const expanded = !!machineSetupExpanded[ex.id];
       const fields = setup.fields || [];
       if (!expanded) {
-        const parts = [];
-        if (setup.machine) parts.push(setup.machine);
-        fields.slice(0, setup.machine ? 2 : 3).forEach(f => parts.push(`${f.label} ${f.value}`));
-        const summary = escapeHtml(parts.join(' · ') || 'Saved');
+        const previewFields = fields.slice(0, setup.machine ? 2 : 3);
         return `
-        <div class="ms-row ms-row-saved" data-exid="${ex.id}">
-          <div class="ms-row-main">
-            <div class="ms-label">Machine setup</div>
-            <div class="ms-summary">${summary}</div>
+        <div class="ms-row ms-row-saved ms-card" data-exid="${ex.id}">
+          <div class="ms-card-top">
+            ${exinfoHeader('dumbbell', 'Machine Setup')}
+            <button type="button" class="link-btn ms-view-all-btn" data-exid="${ex.id}">View all ›</button>
           </div>
-          <button type="button" class="link-btn ms-edit-btn" data-exid="${ex.id}">Edit</button>
+          <div class="ms-card-body">
+            <div class="ms-card-value">${escapeHtml(setup.machine || 'Saved')}</div>
+            <div class="ms-card-fields">
+              ${previewFields.map(f => `<div class="ms-card-field"><span class="ms-card-field-label">${escapeHtml(f.label)}</span><span class="ms-card-field-value">${escapeHtml(f.value)}</span></div>`).join('')}
+            </div>
+          </div>
         </div>`;
       }
       const lines = fields.map(f => `<div class="ms-detail-line"><span>${escapeHtml(f.label)}</span><span>${escapeHtml(f.value)}</span></div>`).join('');
       return `
-      <div class="ms-row ms-row-expanded" data-exid="${ex.id}">
-        <div class="ms-label">Machine setup</div>
+      <div class="ms-row ms-row-expanded ms-card" data-exid="${ex.id}">
+        ${exinfoHeader('dumbbell', 'Machine Setup')}
         ${setup.machine ? `<div class="ms-machine-name">${escapeHtml(setup.machine)}</div>` : ''}
         <div class="ms-detail-list">${lines}</div>
         <button type="button" class="link-btn ms-edit-btn" data-exid="${ex.id}">Edit setup</button>
@@ -2977,6 +3088,84 @@
     </div>`;
   }
 
+  // Three compact context cards shown above Machine Setup while an exercise card is
+  // open: what today's plan calls for, what happened last time, and the standing PR
+  // (live-checked against sets completed so far this session). Deliberately plain
+  // numbers/short lines, no progress bars or large empty states — same "quietest
+  // version that satisfies the requirement" rule as Machine Setup follows.
+  function renderExerciseInfoGrid(ex) {
+    return `<div class="exinfo-grid">
+      ${renderTodaysPlanBlock(ex)}
+      ${renderLastWorkoutBlock(ex)}
+      ${renderPersonalBestBlock(ex)}
+    </div>`;
+  }
+  // Shared icon + uppercase label row used by every info block, so the icon set
+  // (target/clock/trophy) stays consistent with the ICON_SVGS convention instead of
+  // one-off inline SVGs per block. A theme ('accent'/'gold') tints icon+label where
+  // the card carries real meaning (the plan, a record) — left neutral otherwise.
+  function exinfoHeader(iconKey, label, theme) {
+    const cls = theme ? ` exinfo-header-${theme}` : '';
+    return `<div class="exinfo-header${cls}"><span class="exinfo-icon">${ICON_SVGS[iconKey]}</span><span class="exinfo-label">${label}</span></div>`;
+  }
+  function renderTodaysPlanBlock(ex) {
+    const total = ex.sets.length;
+    const complete = isExerciseComplete(ex);
+    const idx = ex.sets.findIndex(s => !s.completed);
+    // The rep range describes the plan overall, so it should reflect the working
+    // sets specifically — not whichever set happens to be current, which might be
+    // a warm-up with a different (and less relevant) target.
+    const planSet = ex.sets.find(s => s.type !== 'warmup') || ex.sets[0];
+    const repRange = (planSet && planSet.targetReps) ? `${escapeHtml(planSet.targetReps)} reps` : '—';
+    const progress = complete ? 'All sets complete' : `Set ${idx + 1} of ${total}`;
+    const pct = complete ? 100 : Math.round((idx / total) * 100);
+    return `
+    <div class="exinfo-card">
+      ${exinfoHeader('target', "Today's Plan", 'accent')}
+      <div class="exinfo-value">${total} set${total === 1 ? '' : 's'}</div>
+      <div class="exinfo-sub">${repRange}</div>
+      <div class="exinfo-sub">${progress}</div>
+      <div class="exinfo-progress-track"><div class="exinfo-progress-fill" style="width:${pct}%"></div></div>
+    </div>`;
+  }
+  function renderLastWorkoutBlock(ex) {
+    const entry = lastLoggedEntryFor(ex.exercise);
+    if (!entry) {
+      return `
+      <div class="exinfo-card exinfo-card-empty">
+        ${exinfoHeader('clock', 'Last Workout')}
+        <div class="exinfo-empty-text">No history yet</div>
+      </div>`;
+    }
+    const working = entry.sets.find(s => s.type !== 'warmup') || entry.sets[0];
+    const summary = `${working.weight || 0} lb × ${working.reps || 0}`;
+    return `
+    <div class="exinfo-card">
+      ${exinfoHeader('clock', 'Last Workout')}
+      <div class="exinfo-value">${escapeHtml(summary)}</div>
+      <div class="exinfo-sub" title="${fmtDate(entry.date)}">${formatRelativeDate(entry.date)}</div>
+      <span class="exinfo-chip">${entry.sets.length} total set${entry.sets.length === 1 ? '' : 's'}</span>
+    </div>`;
+  }
+  function renderPersonalBestBlock(ex) {
+    const info = personalBestStatusFor(ex);
+    if (!info) {
+      return `
+      <div class="exinfo-card exinfo-card-empty">
+        ${exinfoHeader('trophy', 'Personal Best', 'gold')}
+        <div class="exinfo-empty-text">No history yet</div>
+      </div>`;
+    }
+    const tag = info.status === 'new' ? 'New PR today' : info.status === 'matched' ? 'PR matched today' : 'Weight PR';
+    const pillClass = info.status === 'historical' ? 'exinfo-pill-accent' : 'exinfo-pill-success';
+    return `
+    <div class="exinfo-card">
+      ${exinfoHeader('trophy', 'Personal Best', 'gold')}
+      <div class="exinfo-value">${info.weight} lb × ${info.reps}</div>
+      ${info.date ? `<div class="exinfo-sub" title="${fmtDate(info.date)}">${formatRelativeDate(info.date)}</div>` : ''}
+      <span class="exinfo-pill ${pillClass}">${tag}</span>
+    </div>`;
+  }
   // Swipe-left-to-reveal-delete for a set row, iOS-list style, unified across touch
   // and mouse via Pointer Events. A drag can start anywhere on the row, including on
   // top of a stepper/checkmark button — a tap (no meaningful movement) still reaches
@@ -3019,6 +3208,13 @@
     }
     function onUp(e) {
       try { row.releasePointerCapture(e.pointerId); } catch (err) {}
+      // justDragged is normally cleared by the click handler right below, which fires
+      // immediately after a real drag. But if the browser never sends that click (a
+      // pointercancel, or certain touch gesture edge cases), it would otherwise stay
+      // stuck true forever — and the capturing click listener below would then treat
+      // every future tap on this row, including the completion checkmark, as a ghost
+      // click to suppress. This guarantees it clears on the next tick regardless.
+      if (justDragged) setTimeout(() => { justDragged = false; }, 400);
       if (!dragging) return;
       dragging = false;
       if (!horizontal) return;
@@ -3051,7 +3247,14 @@
     if (!ex) return;
     machineSetupEditingExId = exId;
     const setup = getMachineSetup(ex.exercise);
-    machineSetupDraftFields = (setup && setup.fields) ? setup.fields.map(f => ({ label: f.label, value: f.value })) : [];
+    // First time setting this exercise up: start from the equipment's usual fields
+    // (e.g. Bench Angle + Grip for a barbell) already in the list, empty and ready to
+    // fill in, rather than an empty sheet that makes every field feel hand-built.
+    // They're just a starting point — any row can still be removed or added to via
+    // the detail picker below.
+    machineSetupDraftFields = (setup && setup.fields)
+      ? setup.fields.map(f => ({ label: f.label, value: f.value }))
+      : (EQUIPMENT_FIELD_PRESETS[ex.equipment] || ['Seat position', 'Bench angle', 'Grip']).map(label => ({ label, value: '' }));
     document.getElementById('machineSetupExerciseLabel').textContent =
       ex.exercise + (ex.equipment ? ' · ' + ex.equipment : '');
     document.getElementById('machineSetupName').value = (setup && setup.machine) || '';
@@ -3066,22 +3269,95 @@
     document.body.style.overflow = '';
     machineSetupEditingExId = null;
   }
+  // A field renders as a dropdown of common values when its label has a preset list
+  // and the current value is either blank or already one of those presets — so typing
+  // an exact custom value (or picking "Custom…") still works, it just drops to a plain
+  // text input rather than fighting a dropdown that doesn't have that option.
   function renderMachineSetupDraftRows() {
     const el = document.getElementById('machineSetupFieldRows');
-    el.innerHTML = machineSetupDraftFields.map((f, i) => `
+    const session = getActiveSession();
+    const ex = session && session.exercises.find(x => x.id === machineSetupEditingExId);
+    const allLabelPresets = machineSetupPresetLabels(ex ? ex.equipment : '');
+    el.innerHTML = machineSetupDraftFields.map((f, i) => {
+      // Label options exclude whatever other rows are already using (no picking
+      // "Grip" twice), but always keep this row's own current label available.
+      const usedByOtherRows = machineSetupDraftFields
+        .filter((_, j) => j !== i)
+        .map(x => x.label.trim().toLowerCase());
+      const labelOptions = allLabelPresets.filter(l => !usedByOtherRows.includes(l.toLowerCase()));
+      const useLabelSelect = !f.label || labelOptions.some(l => l.toLowerCase() === f.label.trim().toLowerCase());
+      const labelControl = useLabelSelect
+        ? `<select class="ms-field-label-select">
+             <option value="">Choose…</option>
+             ${labelOptions.map(l => `<option value="${escapeHtml(l)}" ${f.label === l ? 'selected' : ''}>${escapeHtml(l)}</option>`).join('')}
+             <option value="__custom__">Custom…</option>
+           </select>`
+        : `<input type="text" class="ms-field-label-input" value="${escapeHtml(f.label)}" placeholder="Label">`;
+
+      const presets = fieldValuePresets(f.label);
+      const useValueSelect = presets && (!f.value || presets.includes(f.value));
+      const valueControl = useValueSelect
+        ? `<select class="ms-field-value-select">
+             <option value="">Choose…</option>
+             ${presets.map(v => `<option value="${escapeHtml(v)}" ${f.value === v ? 'selected' : ''}>${escapeHtml(v)}</option>`).join('')}
+             <option value="__custom__">Custom…</option>
+           </select>`
+        : `<input type="text" class="ms-field-value-input" value="${escapeHtml(f.value)}" placeholder="Value">`;
+      return `
       <div class="ms-field-row" data-idx="${i}">
-        <input type="text" class="ms-field-label-input" value="${escapeHtml(f.label)}" placeholder="Label">
-        <input type="text" class="ms-field-value-input" value="${escapeHtml(f.value)}" placeholder="Value">
+        ${labelControl}
+        ${valueControl}
         <button type="button" class="icon-btn ms-field-remove-btn" data-idx="${i}" title="Remove">${ICON_SVGS.x}</button>
-      </div>`).join('');
+      </div>`;
+    }).join('');
     el.querySelectorAll('.ms-field-label-input').forEach(inp => {
       inp.addEventListener('input', () => {
         machineSetupDraftFields[+inp.closest('.ms-field-row').dataset.idx].label = inp.value;
       });
     });
+    el.querySelectorAll('.ms-field-label-select').forEach(sel => {
+      sel.addEventListener('change', () => {
+        const idx = +sel.closest('.ms-field-row').dataset.idx;
+        if (sel.value === '__custom__') {
+          machineSetupDraftFields[idx].label = '';
+          const input = document.createElement('input');
+          input.type = 'text';
+          input.className = 'ms-field-label-input';
+          input.placeholder = 'Label';
+          input.addEventListener('input', () => { machineSetupDraftFields[idx].label = input.value; });
+          sel.replaceWith(input);
+          input.focus();
+        } else {
+          machineSetupDraftFields[idx].label = sel.value;
+          // The value control's preset set depends on the label, so a full re-render
+          // keeps it in sync (e.g. switching from Grip to Bench angle should offer
+          // angle presets, not grip ones).
+          renderMachineSetupDraftRows();
+        }
+      });
+    });
     el.querySelectorAll('.ms-field-value-input').forEach(inp => {
       inp.addEventListener('input', () => {
         machineSetupDraftFields[+inp.closest('.ms-field-row').dataset.idx].value = inp.value;
+      });
+    });
+    el.querySelectorAll('.ms-field-value-select').forEach(sel => {
+      sel.addEventListener('change', () => {
+        const idx = +sel.closest('.ms-field-row').dataset.idx;
+        if (sel.value === '__custom__') {
+          // Swap just this control for a text input, in place, rather than re-rendering
+          // every row — keeps the rest of the sheet (and any focus in it) undisturbed.
+          machineSetupDraftFields[idx].value = '';
+          const input = document.createElement('input');
+          input.type = 'text';
+          input.className = 'ms-field-value-input';
+          input.placeholder = 'Value';
+          input.addEventListener('input', () => { machineSetupDraftFields[idx].value = input.value; });
+          sel.replaceWith(input);
+          input.focus();
+        } else {
+          machineSetupDraftFields[idx].value = sel.value;
+        }
       });
     });
     el.querySelectorAll('.ms-field-remove-btn').forEach(btn => {
@@ -3119,14 +3395,12 @@
   function renderTrainSetRows(session, ex) {
     const el = document.getElementById(`trainSetRows-${ex.id}`);
     if (!el) return;
-    const lastSets = lastLoggedSetsFor(ex.exercise);
     // The first not-yet-completed set is "current" — the one we want to visually pull
     // focus toward, same idea as the current-exercise focus but one level down.
     const currentSetIdx = ex.sets.findIndex(s => !s.completed);
     const head = `
       <div class="train-set-rows-head">
         <span class="tsrh-num">Set</span>
-        <span class="tsrh-prev">Previous</span>
         <span class="tsrh-field">Weight</span>
         <span class="tsrh-field">Reps</span>
         <span class="tsrh-spacer"></span>
@@ -3144,18 +3418,17 @@
             ${badgeText}
             ${isSpecial ? `<span class="tsr-type-tag">${escapeHtml(typeLabel(s.type))}</span>` : ''}
           </div>
-          <div class="tsr-prev">${formatPreviousSet(lastSets, i)}</div>
           <div class="tsr-field">
             <div class="stepper-row">
-              <button type="button" class="stepper-btn" data-delta="-2.5">−</button>
               <input type="number" class="trainSetWeight" step="0.5" placeholder="0" value="${s.weight}">
+              <button type="button" class="stepper-btn" data-delta="-2.5">−</button>
               <button type="button" class="stepper-btn" data-delta="2.5">+</button>
             </div>
           </div>
           <div class="tsr-field">
             <div class="stepper-row">
-              <button type="button" class="stepper-btn" data-delta="-1">−</button>
               <input type="number" class="trainSetReps" placeholder="${repsPlaceholder}" value="${s.reps}">
+              <button type="button" class="stepper-btn" data-delta="-1">−</button>
               <button type="button" class="stepper-btn" data-delta="1">+</button>
             </div>
           </div>
