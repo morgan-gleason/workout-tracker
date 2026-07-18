@@ -1043,11 +1043,14 @@
     .train-finish-bar { left: var(--sidebar-w); bottom: 0; padding: 14px 32px 20px; background: linear-gradient(to top, var(--bg) 70%, rgba(11,13,18,0)); }
   }
 
-  /* Train: active workout set rows — flat list, not a stack of little forms */
+  /* Train: active workout set rows — a compact scan-able table (Set / Previous /
+     Weight / Reps / done), not a stack of little forms. The next incomplete set gets
+     a soft highlight so the workout still feels guided one set at a time even though
+     every set in the exercise stays visible. */
   .train-set-rows-head {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 6px;
     padding: 0 4px 6px;
     font-size: 9.5px;
     font-weight: 800;
@@ -1055,45 +1058,53 @@
     text-transform: uppercase;
     letter-spacing: .05em;
   }
-  .train-set-rows-head .tsrh-num { width: 20px; flex-shrink: 0; }
-  .train-set-rows-head .tsrh-meta { width: 78px; flex-shrink: 0; }
-  .train-set-rows-head .tsrh-field { flex: 1; text-align: center; }
-  .train-set-rows-head .tsrh-spacer { width: 78px; flex-shrink: 0; }
+  .train-set-rows-head .tsrh-num { width: 30px; flex-shrink: 0; }
+  .train-set-rows-head .tsrh-prev { width: 46px; flex-shrink: 0; text-align: center; }
+  .train-set-rows-head .tsrh-field { flex: 1; min-width: 0; text-align: center; }
+  .train-set-rows-head .tsrh-spacer { width: 50px; flex-shrink: 0; }
   .train-set-row {
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 10px 4px;
+    gap: 6px;
+    padding: 8px 4px;
     border-bottom: 1px solid var(--border);
+    border-radius: 10px;
     transition: background .15s ease;
   }
   .train-set-row:last-child { border-bottom: none; }
-  .train-set-row.completed { background: rgba(52,211,153,.06); border-radius: 10px; }
+  .train-set-row.current { background: rgba(109,140,255,.08); }
+  .train-set-row.completed { background: rgba(52,211,153,.06); }
   .tsr-num {
-    width: 20px; flex-shrink: 0;
-    font-size: 12px; font-weight: 800; color: var(--muted); text-align: center;
+    width: 30px; flex-shrink: 0;
+    font-size: 14px; font-weight: 800; color: var(--text); text-align: center;
+    display: flex; flex-direction: column; align-items: center; line-height: 1.15;
   }
-  .tsr-meta { width: 78px; flex-shrink: 0; min-width: 0; }
-  .tsr-type-label { display: flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .tsr-target { display: block; font-size: 10px; color: var(--muted); margin-top: 1px; white-space: nowrap; }
+  .tsr-num.warmup { color: var(--warn); }
+  .tsr-type-tag { font-size: 8px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .02em; margin-top: 1px; }
+  .tsr-prev {
+    width: 46px; flex-shrink: 0;
+    font-size: 12px; font-weight: 600; color: var(--muted); text-align: center;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
   .tsr-field { flex: 1; min-width: 0; }
-  .tsr-field .stepper-row { justify-content: center; gap: 2px; }
+  .tsr-field .stepper-row { justify-content: center; gap: 1px; }
   .tsr-field .stepper-row input {
     background: none; border: none; padding: 0; min-height: auto;
-    font-size: 20px; font-weight: 800; text-align: center; color: var(--text); width: 100%;
+    font-size: 17px; font-weight: 800; text-align: center; color: var(--text);
+    width: 100%; min-width: 0;
   }
   .tsr-field .stepper-btn {
-    width: 26px; height: 26px;
+    width: 20px; height: 20px;
     border-radius: 50%;
     background: var(--panel-2);
     border: 1px solid var(--border);
-    font-size: 14px;
+    font-size: 12px;
     flex-shrink: 0;
   }
   .train-set-row.completed .tsr-field .stepper-row input { color: var(--accent-2); }
   .train-set-row.completed .tsr-field .stepper-btn { opacity: .4; pointer-events: none; }
   .train-set-complete-btn {
-    width: 38px; height: 38px;
+    width: 30px; height: 30px;
     border-radius: 50%;
     flex-shrink: 0;
     border: 2px solid var(--border-light);
@@ -1102,14 +1113,18 @@
     display: flex; align-items: center; justify-content: center;
     cursor: pointer;
   }
-  .train-set-complete-btn svg { width: 17px; height: 17px; stroke: currentColor; fill: none; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
+  .train-set-complete-btn svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
   .train-set-row.completed .train-set-complete-btn { background: var(--accent-2); border-color: var(--accent-2); color: white; }
   .train-remove-set-btn {
     background: none; border: none; color: var(--muted); cursor: pointer;
-    width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; border-radius: 8px; flex-shrink: 0;
+    width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; border-radius: 6px; flex-shrink: 0;
   }
-  .train-remove-set-btn svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .train-remove-set-btn svg { width: 11px; height: 11px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
   .train-remove-set-btn:hover { color: var(--danger); background: rgba(255,107,122,.1); }
+  @media (max-width: 380px) {
+    .tsr-prev { display: none; }
+    .train-set-rows-head .tsrh-prev { display: none; }
+  }
   .train-remove-ex-btn {
     background: none; border: none; color: var(--muted); cursor: pointer;
     width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 8px; flex-shrink: 0;
@@ -2678,24 +2693,42 @@
     });
   }
 
+  // Formats a historical set as compact "weight×reps" text for the Previous column,
+  // reusing the same lookup/fallback logic as prefill so the two stay consistent.
+  function formatPreviousSet(lastSets, i) {
+    if (!lastSets || !lastSets.length) return '–';
+    const hist = lastSets[i] || lastSets[lastSets.length - 1];
+    if (!hist || (!hist.weight && !hist.reps)) return '–';
+    return `${hist.weight || 0}×${hist.reps || 0}`;
+  }
+
   function renderTrainSetRows(session, ex) {
     const el = document.getElementById(`trainSetRows-${ex.id}`);
     if (!el) return;
+    const lastSets = lastLoggedSetsFor(ex.exercise);
+    // The first not-yet-completed set is "current" — the one we want to visually pull
+    // focus toward, same idea as the current-exercise focus but one level down.
+    const currentSetIdx = ex.sets.findIndex(s => !s.completed);
     const head = `
       <div class="train-set-rows-head">
-        <span class="tsrh-num"></span>
-        <span class="tsrh-meta"></span>
+        <span class="tsrh-num">Set</span>
+        <span class="tsrh-prev">Previous</span>
         <span class="tsrh-field">Weight</span>
         <span class="tsrh-field">Reps</span>
         <span class="tsrh-spacer"></span>
       </div>`;
-    el.innerHTML = head + ex.sets.map((s, i) => `
-      <div class="train-set-row ${s.completed ? 'completed' : ''}" data-exid="${ex.id}" data-setidx="${i}">
-        <div class="tsr-num">${i + 1}</div>
-        <div class="tsr-meta">
-          <div class="tsr-type-label"><span class="set-type-dot" data-type="${s.type}" style="position:static;"></span>${escapeHtml(typeLabel(s.type))}</div>
-          ${s.targetReps ? `<span class="tsr-target">Target ${escapeHtml(s.targetReps)}</span>` : ''}
+    el.innerHTML = head + ex.sets.map((s, i) => {
+      const isWarmup = s.type === 'warmup';
+      const isSpecial = !isWarmup && s.type !== 'working';
+      const badgeText = isWarmup ? 'W' : String(i + 1);
+      const repsPlaceholder = s.targetReps ? escapeHtml(s.targetReps) : '0';
+      return `
+      <div class="train-set-row ${s.completed ? 'completed' : ''} ${i === currentSetIdx ? 'current' : ''}" data-exid="${ex.id}" data-setidx="${i}">
+        <div class="tsr-num ${isWarmup ? 'warmup' : ''}">
+          ${badgeText}
+          ${isSpecial ? `<span class="tsr-type-tag">${escapeHtml(typeLabel(s.type))}</span>` : ''}
         </div>
+        <div class="tsr-prev">${formatPreviousSet(lastSets, i)}</div>
         <div class="tsr-field">
           <div class="stepper-row">
             <button type="button" class="stepper-btn" data-delta="-2.5">−</button>
@@ -2706,7 +2739,7 @@
         <div class="tsr-field">
           <div class="stepper-row">
             <button type="button" class="stepper-btn" data-delta="-1">−</button>
-            <input type="number" class="trainSetReps" placeholder="0" value="${s.reps}">
+            <input type="number" class="trainSetReps" placeholder="${repsPlaceholder}" value="${s.reps}">
             <button type="button" class="stepper-btn" data-delta="1">+</button>
           </div>
         </div>
@@ -2716,7 +2749,8 @@
         <button type="button" class="train-remove-set-btn" title="Remove set">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </button>
-      </div>`).join('');
+      </div>`;
+    }).join('');
 
     el.querySelectorAll('.train-set-row').forEach(row => {
       const idx = parseInt(row.dataset.setidx);
