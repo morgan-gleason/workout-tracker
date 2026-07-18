@@ -780,6 +780,13 @@
   .ex-set-count { color: var(--muted); font-size: 12px; white-space: nowrap; }
   .ex-chevron { width: 16px; height: 16px; stroke: var(--muted); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; transition: transform .15s ease; flex-shrink: 0; }
   .routine-ex-card.open .ex-chevron { transform: rotate(180deg); }
+
+  /* Train: current-exercise focus states */
+  .train-ex-card.ex-current { border-color: var(--accent); background: var(--panel-2); }
+  .train-ex-card.ex-completed { opacity: .6; }
+  .train-ex-card.ex-completed .ex-number-badge { background: var(--success, #3fbf7f); }
+  .train-ex-card.ex-completed .ex-number-badge svg { width: 14px; height: 14px; }
+  .train-ex-card.ex-upcoming { opacity: .85; }
   .ex-card-body { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); }
 
   /* Per-set table inside an expanded exercise card */
@@ -1011,6 +1018,30 @@
   .recurring-defaults-disclosure summary::before { content: '▸ '; }
   .recurring-defaults-disclosure[open] summary::before { content: '▾ '; }
   .recurring-defaults-disclosure summary:hover { color: var(--text); }
+
+  /* Train: compact header dashboard + persistent finish bar */
+  .train-header-bar { margin-bottom: 20px; padding: 0 2px; }
+  .train-header-top { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+  .train-header-top h2 { margin: 0; font-size: 21px; font-weight: 800; letter-spacing: -.01em; }
+  .train-cancel-link {
+    background: none; border: none; color: var(--muted);
+    font-size: 12.5px; font-weight: 600; cursor: pointer; padding: 4px 2px; flex-shrink: 0;
+  }
+  .train-cancel-link:hover { color: var(--danger); }
+  .train-header-stats { margin: 3px 0 0; color: var(--muted); font-size: 13px; }
+  #trainActive { padding-bottom: 84px; }
+  .train-finish-bar {
+    position: fixed;
+    left: 0; right: 0;
+    bottom: calc(64px + env(safe-area-inset-bottom));
+    padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
+    background: linear-gradient(to top, var(--bg) 60%, rgba(11,13,18,0));
+    z-index: 90;
+  }
+  .train-finish-bar .btn { width: 100%; max-width: 880px; margin: 0 auto; display: block; }
+  @media (min-width: 768px) {
+    .train-finish-bar { left: var(--sidebar-w); bottom: 0; padding: 14px 32px 20px; background: linear-gradient(to top, var(--bg) 70%, rgba(11,13,18,0)); }
+  }
 
   /* Train: active workout set rows — flat list, not a stack of little forms */
   .train-set-rows-head {
@@ -1531,15 +1562,12 @@
 
     <!-- TRAIN: ACTIVE SESSION -->
     <div id="trainActive" style="display:none;">
-      <div class="card">
-        <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px; margin-bottom:14px;">
-          <div>
-            <h2 style="margin-bottom:2px;" id="trainActiveName">Workout</h2>
-            <p class="caption" style="margin:0;" id="trainActiveMeta">0:00 elapsed</p>
-          </div>
-          <button class="btn small secondary" id="trainCancelBtn" type="button">Cancel</button>
+      <div class="train-header-bar">
+        <div class="train-header-top">
+          <h2 id="trainActiveName">Workout</h2>
+          <button class="train-cancel-link" id="trainCancelBtn" type="button">Cancel</button>
         </div>
-        <div class="progress-bar-track"><div class="progress-bar-fill" id="trainProgressFill" style="width:0%;"></div></div>
+        <p class="train-header-stats" id="trainActiveMeta">0:00 elapsed</p>
       </div>
 
       <div class="exercises-header">
@@ -1557,10 +1585,10 @@
       <div class="empty" id="trainNoExercisesHint" style="display:none;">
         <span class="empty-icon">🏋️</span>No exercises yet — tap "Add Exercise" to get started.
       </div>
+    </div>
 
-      <div class="btn-row" style="margin-top:8px;">
-        <button class="btn" id="trainFinishBtn" type="button" style="width:100%;">✓ Finish Workout</button>
-      </div>
+    <div class="train-finish-bar" id="trainFinishBar" style="display:none;">
+      <button class="btn" id="trainFinishBtn" type="button">✓ Finish Workout</button>
     </div>
 
     <!-- FINISH SUMMARY MODAL -->
@@ -2359,6 +2387,8 @@
     };
     state.sessions.push(session);
     state.activeSessionId = session.id;
+    exOpenOverrides = {};
+    lastCurrentExId = null;
     save();
     startTrainTimer();
     renderTrainView();
@@ -2392,7 +2422,10 @@
     const session = getActiveSession();
     const metaEl = document.getElementById('trainActiveMeta');
     if (!session || !metaEl) return;
-    metaEl.textContent = `${formatElapsed(Date.now() - session.startedAt)} elapsed`;
+    const { total, done } = sessionSetsCompletedCount(session);
+    const exercisesDone = session.exercises.filter(isExerciseComplete).length;
+    const elapsed = formatElapsed(Date.now() - session.startedAt);
+    metaEl.textContent = `${elapsed} · ${exercisesDone}/${session.exercises.length} exercises · ${done}/${total} sets`;
   }
 
   function renderTrainView() {
@@ -2405,6 +2438,7 @@
     } else {
       document.getElementById('trainStart').style.display = 'block';
       document.getElementById('trainActive').style.display = 'none';
+      document.getElementById('trainFinishBar').style.display = 'none';
       stopTrainTimer();
       renderTrainStart();
     }
@@ -2449,36 +2483,75 @@
     return { total, done };
   }
 
+  function isExerciseComplete(ex) {
+    return ex.sets.length > 0 && ex.sets.every(s => s.completed);
+  }
+  // Which exercise is "current" — the first one that isn't fully done yet. Once every
+  // exercise is complete, the last one stays flagged current (nothing left to advance to).
+  function currentExerciseId(session) {
+    const firstIncomplete = session.exercises.find(ex => !isExerciseComplete(ex));
+    if (firstIncomplete) return firstIncomplete.id;
+    return session.exercises.length ? session.exercises[session.exercises.length - 1].id : null;
+  }
+  // Manual open/closed overrides per exercise card, so a tap always wins over the
+  // auto-focus default. Cleared whenever a session starts/ends so the next workout
+  // begins fresh.
+  let exOpenOverrides = {};
+  // Tracks which exercise was "current" as of the last render. When focus moves to a
+  // new exercise (a set completed, or the current one got removed), any stale manual
+  // override on the newly-current card is cleared so it reliably auto-expands — a
+  // leftover "collapsed" tap from when it was just an upcoming card shouldn't be able
+  // to block it once it's actually up next.
+  let lastCurrentExId = null;
+  function isExerciseOpen(session, ex) {
+    if (Object.prototype.hasOwnProperty.call(exOpenOverrides, ex.id)) return exOpenOverrides[ex.id];
+    return ex.id === currentExerciseId(session);
+  }
+
   function renderTrainActive() {
     const session = getActiveSession();
     if (!session) return;
     document.getElementById('trainActiveName').textContent = session.name;
     updateTrainMeta();
-    const { total, done } = sessionSetsCompletedCount(session);
-    document.getElementById('trainProgressFill').style.width = total ? `${Math.round((done / total) * 100)}%` : '0%';
+    document.getElementById('trainFinishBar').style.display = session.exercises.length ? 'block' : 'none';
 
     const cardsEl = document.getElementById('trainExerciseCards');
     document.getElementById('trainNoExercisesHint').style.display = session.exercises.length === 0 ? 'block' : 'none';
-    const openIds = new Set([...cardsEl.querySelectorAll('.routine-ex-card.open')].map(c => c.dataset.exid));
+    const currentId = currentExerciseId(session);
+    if (currentId !== lastCurrentExId) {
+      delete exOpenOverrides[currentId];
+      lastCurrentExId = currentId;
+    }
 
     cardsEl.innerHTML = session.exercises.map((ex, i) => {
       const setsDone = ex.sets.filter(s => s.completed).length;
+      const complete = isExerciseComplete(ex);
+      const isCurrent = ex.id === currentId;
+      const open = isExerciseOpen(session, ex);
+      const stateClass = complete ? 'ex-completed' : (isCurrent ? 'ex-current' : 'ex-upcoming');
+      const badgeContent = complete ? ICON_SVGS.check : String(i + 1);
+      const subtitle = complete
+        ? `Completed · ${setsDone}/${ex.sets.length} sets`
+        : `${ex.equipment ? escapeHtml(ex.equipment) + ' · ' : ''}${setsDone} of ${ex.sets.length} sets`;
       return `
-      <div class="routine-ex-card ${openIds.has(ex.id) ? 'open' : ''}" data-exid="${ex.id}">
+      <div class="routine-ex-card train-ex-card ${stateClass} ${open ? 'open' : ''}" data-exid="${ex.id}">
         <div class="ex-card-header trainExCardHeader">
-          <div class="ex-number-badge">${i + 1}</div>
+          <div class="ex-number-badge">${badgeContent}</div>
           <div class="ex-card-title-wrap">
             <div class="ex-card-title">${escapeHtml(ex.exercise || '(unnamed exercise)')}</div>
-            <div class="ex-card-subtitle">${ex.equipment ? escapeHtml(ex.equipment) + ' · ' : ''}${setsDone} of ${ex.sets.length} sets</div>
+            <div class="ex-card-subtitle">${subtitle}</div>
           </div>
           <div class="ex-card-right">
-            <button class="train-remove-ex-btn" type="button" title="Remove exercise" data-exid="${ex.id}">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-            </button>
+            <div class="template-menu">
+              <button class="template-menu-btn trainExMenuBtn" type="button" title="More options" data-exid="${ex.id}">${ICON_SVGS.dots}</button>
+              <div class="template-menu-dropdown" data-menu-for="${ex.id}" style="display:none;">
+                <button type="button" class="menuDeleteBtn trainRemoveExBtn" data-exid="${ex.id}">Remove Exercise</button>
+              </div>
+            </div>
             <svg class="ex-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
           </div>
         </div>
-        <div class="ex-card-body" style="display:${openIds.has(ex.id) ? 'block' : 'none'};">
+        <div class="ex-card-body" style="display:${open ? 'block' : 'none'};">
           <div id="trainSetRows-${ex.id}"></div>
           <button type="button" class="link-btn trainAddSetBtn" data-exid="${ex.id}">
             <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
@@ -2492,16 +2565,28 @@
 
     cardsEl.querySelectorAll('.trainExCardHeader').forEach(header => {
       header.addEventListener('click', (e) => {
-        if (e.target.closest('.train-remove-ex-btn')) return;
-        toggleExCard(header.closest('.routine-ex-card'));
+        if (e.target.closest('.template-menu')) return;
+        const card = header.closest('.routine-ex-card');
+        exOpenOverrides[card.dataset.exid] = !card.classList.contains('open');
+        renderTrainActive();
       });
     });
-    cardsEl.querySelectorAll('.train-remove-ex-btn').forEach(btn => {
+    cardsEl.querySelectorAll('.trainExMenuBtn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const dropdown = cardsEl.querySelector(`.template-menu-dropdown[data-menu-for="${btn.dataset.exid}"]`);
+        const isOpen = dropdown.style.display === 'block';
+        cardsEl.querySelectorAll('.template-menu-dropdown').forEach(d => d.style.display = 'none');
+        dropdown.style.display = isOpen ? 'none' : 'block';
+      });
+    });
+    cardsEl.querySelectorAll('.trainRemoveExBtn').forEach(btn => {
       btn.addEventListener('click', (e) => {
         e.stopPropagation();
         const s = getActiveSession();
         if (!s) return;
         s.exercises = s.exercises.filter(x => x.id !== btn.dataset.exid);
+        delete exOpenOverrides[btn.dataset.exid];
         save();
         renderTrainActive();
       });
@@ -2576,11 +2661,16 @@
           set.weight = parseFloat(weightInput.value) || 0;
           set.reps = parseInt(repsInput.value) || 0;
         }
+        // Let auto-focus re-derive this card's open state (collapse if now done,
+        // stay open if it's still the current exercise) rather than keeping
+        // whatever manual override was set before this toggle.
+        delete exOpenOverrides[ex.id];
         save();
         renderTrainActive();
       });
       row.querySelector('.train-remove-set-btn').addEventListener('click', () => {
         ex.sets.splice(idx, 1);
+        delete exOpenOverrides[ex.id];
         save();
         renderTrainActive();
       });
@@ -2594,6 +2684,8 @@
     const session = getActiveSession();
     if (session) state.sessions = state.sessions.filter(s => s.id !== session.id);
     state.activeSessionId = null;
+    exOpenOverrides = {};
+    lastCurrentExId = null;
     save();
     renderTrainView();
     showToast('Workout cancelled', 'success');
@@ -2679,6 +2771,8 @@
     });
 
     state.activeSessionId = null;
+    exOpenOverrides = {};
+    lastCurrentExId = null;
     stopTrainTimer();
     save();
     updateDatalists();
@@ -3879,6 +3973,8 @@
       state.weeklyGoal = null;
       state.sessions = [];
       state.activeSessionId = null;
+      exOpenOverrides = {};
+      lastCurrentExId = null;
       stopTrainTimer();
       save();
       updateDatalists();
