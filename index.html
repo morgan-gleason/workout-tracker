@@ -1541,7 +1541,9 @@
       <div class="card">
         <h2>Start from a Template</h2>
         <p class="caption" id="trainNoTemplatesHint" style="display:none;">Create a template in the Plan tab to start a workout from it.</p>
+        <input type="text" id="trainTemplateSearch" placeholder="Search templates" style="margin-bottom:10px; display:none;" autocomplete="off">
         <div class="promo-list" id="trainTemplateList"></div>
+        <p class="caption" id="trainTemplateNoMatch" style="display:none; margin:6px 2px 0;">No templates match "<span id="trainTemplateNoMatchQuery"></span>".</p>
       </div>
 
       <div class="card">
@@ -2505,9 +2507,32 @@
       todayCard.style.display = 'none';
     }
 
+    renderTrainTemplateList();
+  }
+
+  function renderTrainTemplateList() {
     const listEl = document.getElementById('trainTemplateList');
-    document.getElementById('trainNoTemplatesHint').style.display = state.routines.length === 0 ? 'block' : 'none';
-    listEl.innerHTML = state.routines.map(r => {
+    const searchInput = document.getElementById('trainTemplateSearch');
+    const query = searchInput.value.trim().toLowerCase();
+    const hasAnyTemplates = state.routines.length > 0;
+
+    // Search box only makes sense once there's something to search through.
+    searchInput.style.display = hasAnyTemplates ? 'block' : 'none';
+    document.getElementById('trainNoTemplatesHint').style.display = hasAnyTemplates ? 'none' : 'block';
+
+    const filtered = query
+      ? state.routines.filter(r => r.name.toLowerCase().includes(query) || (r.category || '').toLowerCase().includes(query))
+      : state.routines;
+
+    const noMatchEl = document.getElementById('trainTemplateNoMatch');
+    if (hasAnyTemplates && query && filtered.length === 0) {
+      noMatchEl.style.display = 'block';
+      document.getElementById('trainTemplateNoMatchQuery').textContent = searchInput.value.trim();
+    } else {
+      noMatchEl.style.display = 'none';
+    }
+
+    listEl.innerHTML = filtered.map(r => {
       const { bg, svg } = routineIconBg(r);
       return `
       <div class="promo-row trainStartTemplateRow" data-id="${r.id}">
@@ -2520,6 +2545,7 @@
       row.addEventListener('click', () => startFromTemplate(row.dataset.id));
     });
   }
+  document.getElementById('trainTemplateSearch').addEventListener('input', renderTrainTemplateList);
 
   function sessionSetsCompletedCount(session) {
     let total = 0, done = 0;
