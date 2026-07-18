@@ -1012,6 +1012,51 @@
   .recurring-defaults-disclosure[open] summary::before { content: '▾ '; }
   .recurring-defaults-disclosure summary:hover { color: var(--text); }
 
+  /* Train: active workout set rows */
+  .train-set-row {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 10px 12px;
+    margin-bottom: 10px;
+    background: var(--panel-2);
+  }
+  .train-set-row-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 9px;
+  }
+  .train-set-row-top .tsr-label { display: flex; align-items: center; gap: 7px; font-size: 12.5px; font-weight: 700; }
+  .train-set-row-top .tsr-target { color: var(--muted); font-size: 11.5px; font-weight: 500; }
+  .train-set-row-bottom { display: flex; align-items: center; gap: 8px; }
+  .train-set-row-bottom .stepper-row { flex: 1; }
+  .train-set-complete-btn {
+    width: 42px; height: 42px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    border: 2px solid var(--border-light);
+    background: var(--panel);
+    color: var(--muted);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+  }
+  .train-set-complete-btn svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
+  .train-set-row.completed { border-color: rgba(52,211,153,.4); background: rgba(52,211,153,.07); }
+  .train-set-row.completed .train-set-complete-btn { background: var(--accent-2); border-color: var(--accent-2); color: white; }
+  .train-set-row.completed input { opacity: .55; pointer-events: none; }
+  .train-remove-set-btn {
+    background: none; border: none; color: var(--muted); cursor: pointer;
+    width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: 8px; flex-shrink: 0;
+  }
+  .train-remove-set-btn:hover { color: var(--danger); background: rgba(255,107,122,.1); }
+  .train-remove-ex-btn {
+    background: none; border: none; color: var(--muted); cursor: pointer;
+    width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 8px; flex-shrink: 0;
+  }
+  .train-remove-ex-btn:hover { color: var(--danger); background: rgba(255,107,122,.1); }
+  .train-remove-ex-btn svg { width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
   /* Day-assign bottom sheet */
   .day-sheet-option {
     display: flex;
@@ -1414,23 +1459,106 @@
   <div class="view active" id="view-log">
     <div class="page-header">
       <div>
-        <h1 class="page-title">Log Workout</h1>
-        <p class="page-subtitle">Track exercises, sets, and reps in the moment.</p>
+        <h1 class="page-title">Train</h1>
+        <p class="page-subtitle">Start, track, and finish your workouts.</p>
       </div>
     </div>
 
-    <div class="card">
-      <h2>Today's Plan</h2>
-      <p class="caption" id="scheduleHint"></p>
-      <div class="field">
-        <label>Use a template (optional)</label>
-        <select id="planRoutineSelect"><option value="">None — log freely</option></select>
+    <!-- TRAIN: START (no active session) -->
+    <div id="trainStart">
+      <div class="card" id="trainTodayCard" style="display:none;">
+        <h2>Today's Workout</h2>
+        <div class="template-card-head" style="margin-bottom:14px;">
+          <div class="template-icon-badge" id="trainTodayIcon"></div>
+          <div class="template-main">
+            <div class="name-row"><span class="name" id="trainTodayName"></span></div>
+            <div class="template-meta" id="trainTodayMeta"></div>
+          </div>
+        </div>
+        <button class="btn" id="trainStartTodayBtn" type="button" style="width:100%;">▶ Start Workout</button>
       </div>
-      <div id="planExerciseList"></div>
+
+      <div class="card">
+        <h2>Start from a Template</h2>
+        <p class="caption" id="trainNoTemplatesHint" style="display:none;">Create a template in the Plan tab to start a workout from it.</p>
+        <div class="promo-list" id="trainTemplateList"></div>
+      </div>
+
+      <div class="card">
+        <div class="promo-list">
+          <div class="promo-row" id="trainBlankBtn">
+            <div class="promo-icon" style="background:linear-gradient(135deg,#64748b,#475569);">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </div>
+            <div class="promo-text">
+              <div class="t">Quick Workout</div>
+              <div class="s">Start empty and add exercises as you go.</div>
+            </div>
+            <span class="promo-chevron">›</span>
+          </div>
+        </div>
+      </div>
     </div>
 
+    <!-- TRAIN: ACTIVE SESSION -->
+    <div id="trainActive" style="display:none;">
+      <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px; margin-bottom:14px;">
+          <div>
+            <h2 style="margin-bottom:2px;" id="trainActiveName">Workout</h2>
+            <p class="caption" style="margin:0;" id="trainActiveMeta">0:00 elapsed</p>
+          </div>
+          <button class="btn small secondary" id="trainCancelBtn" type="button">Cancel</button>
+        </div>
+        <div class="progress-bar-track"><div class="progress-bar-fill" id="trainProgressFill" style="width:0%;"></div></div>
+      </div>
+
+      <div class="exercises-header">
+        <label>Exercises</label>
+        <button type="button" class="link-btn" id="trainAddExerciseBtn">
+          <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Add Exercise
+        </button>
+      </div>
+      <div class="exercise-combobox" id="trainAddExerciseRow" style="display:none; margin-bottom:14px;">
+        <input type="text" id="trainAddExerciseInput" placeholder="Search or type an exercise" autocomplete="off">
+        <div class="exercise-combobox-list" id="trainAddExerciseList" style="display:none;"></div>
+      </div>
+      <div id="trainExerciseCards"></div>
+      <div class="empty" id="trainNoExercisesHint" style="display:none;">
+        <span class="empty-icon">🏋️</span>No exercises yet — tap "Add Exercise" to get started.
+      </div>
+
+      <div class="btn-row" style="margin-top:8px;">
+        <button class="btn" id="trainFinishBtn" type="button" style="width:100%;">✓ Finish Workout</button>
+      </div>
+    </div>
+
+    <!-- FINISH SUMMARY MODAL -->
+    <div class="modal-overlay" id="finishOverlay" style="display:none;">
+      <div class="modal-panel">
+        <div class="modal-header">
+          <h2>Workout Summary</h2>
+          <button class="modal-close-btn" id="finishCloseBtn" type="button" title="Close">
+            <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+        <div class="stat-row" id="finishStats"></div>
+        <div class="field" style="margin-top:14px;">
+          <label>Workout Notes</label>
+          <textarea id="finishNotes" placeholder="How did it go? Optional"></textarea>
+        </div>
+        <div class="btn-row">
+          <button class="btn" id="finishSaveBtn" type="button">✓ Save &amp; Finish</button>
+          <button class="btn secondary" id="finishBackBtn" type="button">Back to Workout</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- QUICK LOG (manual single-exercise entry, no session needed) -->
     <div class="card">
-      <h2>New Workout Session</h2>
+      <h2>Quick Log</h2>
+      <p class="caption">Log a single exercise without starting a full session.</p>
       <div class="grid">
         <div class="field">
           <label>Date</label>
@@ -1599,7 +1727,7 @@
     </button>
     <button data-view="log" class="active" type="button">
       <svg viewBox="0 0 24 24"><rect x="1" y="9" width="4" height="6" rx="1"/><rect x="19" y="9" width="4" height="6" rx="1"/><rect x="5" y="10" width="3" height="4"/><rect x="16" y="10" width="3" height="4"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
-      <span>Log</span>
+      <span>Train</span>
     </button>
     <button data-view="feel" type="button">
       <svg viewBox="0 0 24 24"><path d="M12 21s-7.5-4.6-10-9.3C.5 8 2 4.5 5.5 4c2-.3 3.7.6 4.9 2.2C11.6 4.6 13.3 3.7 15.3 4c3.5.5 5 4 3.5 7.7C19.5 16.4 12 21 12 21z"/></svg>
@@ -1648,7 +1776,9 @@
     { value: 'working', label: 'Working' },
     { value: 'warmup', label: 'Warm-up' },
     { value: 'failure', label: 'To Failure' },
-    { value: 'dropset', label: 'Drop Set' }
+    { value: 'dropset', label: 'Drop Set' },
+    { value: 'amrap', label: 'AMRAP' },
+    { value: 'assisted', label: 'Assisted' }
   ];
   function typeLabel(t) {
     const found = SET_TYPES.find(x => x.value === t);
@@ -1716,13 +1846,17 @@
     'Full Body': { color: 'amber', icon: 'star' },
     'Custom': { color: 'slate', icon: 'dumbbell' }
   };
-  function categoryBadgeHtml(routine) {
+  function routineIconBg(routine) {
     const cat = routine.category || 'Custom';
     const fallback = CATEGORY_STYLES[cat] || CATEGORY_STYLES['Custom'];
     const iconKey = routine.icon || fallback.icon;
     const colorKey = routine.color || fallback.color;
     const bg = COLOR_SWATCHES[colorKey] || COLOR_SWATCHES.slate;
-    return `<div class="template-icon-badge" style="background:${bg}">${ICON_SVGS[iconKey] || ICON_SVGS.dumbbell}</div>`;
+    return { bg, svg: ICON_SVGS[iconKey] || ICON_SVGS.dumbbell };
+  }
+  function categoryBadgeHtml(routine) {
+    const { bg, svg } = routineIconBg(routine);
+    return `<div class="template-icon-badge" style="background:${bg}">${svg}</div>`;
   }
   function inferMuscleGroups(routine) {
     const groups = new Set();
@@ -1807,7 +1941,7 @@
     schedule[2] = routines[1].id; // Tue: Pull
     schedule[3] = routines[2].id; // Wed: Legs
     schedule[5] = routines[0].id; // Fri: Push
-    return { workouts: [], feelings: [], routines, schedule, plannedWorkouts: {}, weeklyGoal: null };
+    return { workouts: [], feelings: [], routines, schedule, plannedWorkouts: {}, weeklyGoal: null, sessions: [], activeSessionId: null };
   }
 
   function load() {
@@ -1825,6 +1959,8 @@
       if (!s.schedule) s.schedule = emptySchedule();
       if (!s.plannedWorkouts) s.plannedWorkouts = {};
       if (s.weeklyGoal === undefined) s.weeklyGoal = null;
+      if (!s.sessions) s.sessions = [];
+      if (s.activeSessionId === undefined) s.activeSessionId = null;
     }
     s.routines.forEach(r => { r.exercises = (r.exercises || []).map(migrateExercise); });
     return s;
@@ -2005,7 +2141,7 @@
     if (view === 'history') renderHistory();
     if (view === 'feel') renderFeelHistory();
     if (view === 'plan') { renderRoutineList(); renderThisWeek(); renderSchedule(); renderCalendar(); renderStreaks(); }
-    if (view === 'log') { populatePlanRoutineSelect(); applyScheduleDefault(); renderPlanExercises(); }
+    if (view === 'log') { renderTrainView(); }
   }
   function goToView(view) { switchView(view); }
 
@@ -2037,7 +2173,6 @@
 
   // ---------- LOG WORKOUT ----------
   document.getElementById('logDate').value = todayStr();
-  document.getElementById('logDate').addEventListener('change', () => { applyScheduleDefault(); renderPlanExercises(); });
   const setRows = document.getElementById('setRows');
 
   function addSetRow(weight, reps, type) {
@@ -2110,8 +2245,6 @@
     const machine = document.getElementById('logMachine').value.trim();
     const unit = document.getElementById('logUnit').value;
     const notes = document.getElementById('logNotes').value.trim();
-    const routineSel = document.getElementById('planRoutineSelect');
-    const routine = routineSel.value ? (state.routines.find(r => r.id === routineSel.value) || {}).name : null;
 
     if (!date || !exercise) {
       showToast('Please fill in at least a date and exercise name.', 'error');
@@ -2129,7 +2262,7 @@
       return;
     }
 
-    state.workouts.push({ id: uid(), date, exercise, machine, unit, sets, notes, routine: routine || null, createdAt: Date.now() });
+    state.workouts.push({ id: uid(), date, exercise, machine, unit, sets, notes, routine: null, createdAt: Date.now() });
     save();
     updateDatalists();
 
@@ -2138,101 +2271,357 @@
     document.getElementById('logNotes').value = '';
     setRowCount(3);
 
-    renderPlanExercises();
     renderHeaderStreak();
     showToast('Workout saved ✓', 'success');
   });
 
-  // ---------- TODAY'S PLAN (template-driven logging) ----------
-  function populatePlanRoutineSelect() {
-    const sel = document.getElementById('planRoutineSelect');
-    const current = sel.value;
-    sel.innerHTML = '<option value="">None — log freely</option>' + state.routines.map(r => `<option value="${r.id}">${escapeHtml(r.name)}</option>`).join('');
-    if ([...sel.options].some(o => o.value === current)) sel.value = current;
+  // ---------- TRAIN: sessions ----------
+  function formatElapsed(ms) {
+    const totalMin = Math.floor(ms / 60000);
+    const h = Math.floor(totalMin / 60);
+    const m = totalMin % 60;
+    if (h > 0) return `${h}h ${String(m).padStart(2, '0')}m`;
+    const totalSec = Math.floor(ms / 1000);
+    const s = totalSec % 60;
+    return `${m}:${String(s).padStart(2, '0')}`;
   }
-  document.getElementById('planRoutineSelect').addEventListener('change', renderPlanExercises);
-
-  let currentDatePlan = null;
-  function applyScheduleDefault() {
-    const date = document.getElementById('logDate').value || todayStr();
-    const isToday = date === todayStr();
-    const plan = getPlanForDate(date);
-    currentDatePlan = plan;
-    const sel = document.getElementById('planRoutineSelect');
-    const hint = document.getElementById('scheduleHint');
-    const dayLabel = isToday ? 'Today' : fmtDate(date);
-
+  function getActiveSession() {
+    return state.sessions.find(s => s.id === state.activeSessionId) || null;
+  }
+  function sessionExerciseFromTemplateEx(ex) {
+    const sets = (ex.sets && ex.sets.length ? ex.sets : [{ type: 'working', reps: '' }]).map(s => ({
+      type: s.type || 'working', targetReps: s.reps || '', weight: '', reps: '', rpe: null, completed: false
+    }));
+    return { id: uid(), exercise: ex.exercise, equipment: ex.equipment || '', sets };
+  }
+  function sessionExerciseBlank(name) {
+    return {
+      id: uid(), exercise: name || '', equipment: '',
+      sets: [0, 1, 2].map(() => ({ type: 'working', targetReps: '', weight: '', reps: '', rpe: null, completed: false }))
+    };
+  }
+  function startSession(name, source, templateId, exercises) {
+    if (state.activeSessionId) return; // one active session at a time in Phase 1
+    const session = {
+      id: uid(), name, source, templateId: templateId || null,
+      date: todayStr(), startedAt: Date.now(), finishedAt: null,
+      exercises, notes: ''
+    };
+    state.sessions.push(session);
+    state.activeSessionId = session.id;
+    save();
+    startTrainTimer();
+    renderTrainView();
+  }
+  function startTodaysPlannedWorkout() {
+    const plan = getPlanForDate(todayStr());
     if (plan.type === 'template') {
-      hint.textContent = `📅 ${dayLabel} is planned: ${plan.template.name}`;
-      if (!sel.value) sel.value = plan.template.id;
+      startSession(plan.template.name, 'planned', plan.template.id, plan.template.exercises.map(sessionExerciseFromTemplateEx));
     } else if (plan.type === 'custom') {
-      hint.textContent = `📅 ${dayLabel} has a one-off plan: ${plan.exercises.length} exercise${plan.exercises.length === 1 ? '' : 's'}`;
+      startSession(plan.name || 'One-off Workout', 'planned', null, plan.exercises.map(sessionExerciseBlank));
+    }
+  }
+  function startFromTemplate(templateId) {
+    const t = state.routines.find(r => r.id === templateId);
+    if (!t) return;
+    startSession(t.name, 'template', t.id, t.exercises.map(sessionExerciseFromTemplateEx));
+  }
+  function startBlankWorkout() {
+    startSession('Quick Workout', 'blank', null, []);
+  }
+
+  let trainTimerHandle = null;
+  function startTrainTimer() {
+    stopTrainTimer();
+    trainTimerHandle = setInterval(updateTrainMeta, 1000);
+  }
+  function stopTrainTimer() {
+    if (trainTimerHandle) { clearInterval(trainTimerHandle); trainTimerHandle = null; }
+  }
+  function updateTrainMeta() {
+    const session = getActiveSession();
+    const metaEl = document.getElementById('trainActiveMeta');
+    if (!session || !metaEl) return;
+    metaEl.textContent = `${formatElapsed(Date.now() - session.startedAt)} elapsed`;
+  }
+
+  function renderTrainView() {
+    const session = getActiveSession();
+    if (session) {
+      document.getElementById('trainStart').style.display = 'none';
+      document.getElementById('trainActive').style.display = 'block';
+      startTrainTimer();
+      renderTrainActive();
     } else {
-      hint.textContent = `😴 ${dayLabel} is a rest day. Set a plan in the Plan tab, or log freely below.`;
+      document.getElementById('trainStart').style.display = 'block';
+      document.getElementById('trainActive').style.display = 'none';
+      stopTrainTimer();
+      renderTrainStart();
     }
   }
 
-  function renderPlanExercises() {
-    const sel = document.getElementById('planRoutineSelect');
-    const list = document.getElementById('planExerciseList');
-    const date = document.getElementById('logDate').value || todayStr();
-    const loggedToday = new Set(state.workouts.filter(w => w.date === date).map(w => w.exercise));
-
-    const routine = state.routines.find(r => r.id === sel.value);
-    if (routine) {
-      list.innerHTML = routine.exercises.map(ex => {
-        const done = loggedToday.has(ex.exercise);
-        return `
-          <div class="plan-item ${done ? 'done' : ''}">
-            <div class="info">
-              <span class="exname">${escapeHtml(ex.exercise)}${ex.equipment ? ` <span style="color:var(--muted); font-weight:400;">· ${escapeHtml(ex.equipment)}</span>` : ''}</span>
-              <span class="tags">${formatExPlan(ex)}</span>
-            </div>
-            ${done ? '<span class="check">✓ Logged</span>' : `<button class="btn small secondary planLogBtn" data-exid="${ex.id}" type="button">Log this</button>`}
-          </div>`;
-      }).join('') || '<div class="empty">This template has no exercises yet. Add some in the Plan tab.</div>';
-
-      list.querySelectorAll('.planLogBtn').forEach(btn => {
-        btn.addEventListener('click', () => {
-          const ex = routine.exercises.find(x => x.id === btn.dataset.exid);
-          if (!ex) return;
-          document.getElementById('logExercise').value = ex.exercise;
-          document.getElementById('logExercise').dispatchEvent(new Event('input'));
-          if (ex.equipment) document.getElementById('logMachine').value = ex.equipment;
-          setRowsFromPlanExercise(ex);
-          document.querySelector('#view-log .card:nth-child(2)').scrollIntoView({ behavior: 'smooth', block: 'start' });
-        });
-      });
-      return;
+  function renderTrainStart() {
+    const plan = getPlanForDate(todayStr());
+    const todayCard = document.getElementById('trainTodayCard');
+    if (plan.type === 'template' || plan.type === 'custom') {
+      todayCard.style.display = 'block';
+      const name = plan.type === 'template' ? plan.template.name : (plan.name || 'One-off Workout');
+      const count = plan.type === 'template' ? plan.template.exercises.length : plan.exercises.length;
+      document.getElementById('trainTodayName').textContent = name;
+      document.getElementById('trainTodayMeta').textContent = `${count} exercise${count === 1 ? '' : 's'}`;
+      const iconEl = document.getElementById('trainTodayIcon');
+      const iconInfo = plan.type === 'template' ? routineIconBg(plan.template) : { bg: COLOR_SWATCHES.slate, svg: ICON_SVGS.dumbbell };
+      iconEl.style.background = iconInfo.bg;
+      iconEl.innerHTML = iconInfo.svg;
+    } else {
+      todayCard.style.display = 'none';
     }
 
-    if (currentDatePlan && currentDatePlan.type === 'custom') {
-      list.innerHTML = currentDatePlan.exercises.map(name => {
-        const done = loggedToday.has(name);
-        return `
-          <div class="plan-item ${done ? 'done' : ''}">
-            <div class="info"><span class="exname">${escapeHtml(name)}</span></div>
-            ${done ? '<span class="check">✓ Logged</span>' : `<button class="btn small secondary planLogCustomBtn" data-exname="${escapeHtml(name)}" type="button">Log this</button>`}
-          </div>`;
-      }).join('');
-      list.querySelectorAll('.planLogCustomBtn').forEach(btn => {
-        btn.addEventListener('click', () => {
-          document.getElementById('logExercise').value = btn.dataset.exname;
-          document.getElementById('logExercise').dispatchEvent(new Event('input'));
-          setRowCount(3);
-          document.querySelector('#view-log .card:nth-child(2)').scrollIntoView({ behavior: 'smooth', block: 'start' });
-        });
-      });
-      return;
-    }
-
-    if (currentDatePlan && currentDatePlan.type === 'rest') {
-      list.innerHTML = '<div class="empty"><span class="empty-icon">😴</span>Rest day — nothing planned. Feel free to log freely below if you end up training.</div>';
-      return;
-    }
-
-    list.innerHTML = '';
+    const listEl = document.getElementById('trainTemplateList');
+    document.getElementById('trainNoTemplatesHint').style.display = state.routines.length === 0 ? 'block' : 'none';
+    listEl.innerHTML = state.routines.map(r => {
+      const { bg, svg } = routineIconBg(r);
+      return `
+      <div class="promo-row trainStartTemplateRow" data-id="${r.id}">
+        <div class="promo-icon" style="background:${bg};">${svg}</div>
+        <div class="promo-text"><div class="t">${escapeHtml(r.name)}</div><div class="s">${r.exercises.length} exercise${r.exercises.length === 1 ? '' : 's'}</div></div>
+        <span class="promo-chevron">›</span>
+      </div>`;
+    }).join('');
+    listEl.querySelectorAll('.trainStartTemplateRow').forEach(row => {
+      row.addEventListener('click', () => startFromTemplate(row.dataset.id));
+    });
   }
+
+  function sessionSetsCompletedCount(session) {
+    let total = 0, done = 0;
+    session.exercises.forEach(ex => { ex.sets.forEach(s => { total++; if (s.completed) done++; }); });
+    return { total, done };
+  }
+
+  function renderTrainActive() {
+    const session = getActiveSession();
+    if (!session) return;
+    document.getElementById('trainActiveName').textContent = session.name;
+    updateTrainMeta();
+    const { total, done } = sessionSetsCompletedCount(session);
+    document.getElementById('trainProgressFill').style.width = total ? `${Math.round((done / total) * 100)}%` : '0%';
+
+    const cardsEl = document.getElementById('trainExerciseCards');
+    document.getElementById('trainNoExercisesHint').style.display = session.exercises.length === 0 ? 'block' : 'none';
+    const openIds = new Set([...cardsEl.querySelectorAll('.routine-ex-card.open')].map(c => c.dataset.exid));
+
+    cardsEl.innerHTML = session.exercises.map((ex, i) => {
+      const setsDone = ex.sets.filter(s => s.completed).length;
+      return `
+      <div class="routine-ex-card ${openIds.has(ex.id) ? 'open' : ''}" data-exid="${ex.id}">
+        <div class="ex-card-header trainExCardHeader">
+          <div class="ex-number-badge">${i + 1}</div>
+          <div class="ex-card-title-wrap">
+            <div class="ex-card-title">${escapeHtml(ex.exercise || '(unnamed exercise)')}</div>
+            <div class="ex-card-subtitle">${ex.equipment ? escapeHtml(ex.equipment) + ' · ' : ''}${setsDone} of ${ex.sets.length} sets</div>
+          </div>
+          <div class="ex-card-right">
+            <button class="train-remove-ex-btn" type="button" title="Remove exercise" data-exid="${ex.id}">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+            <svg class="ex-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </div>
+        </div>
+        <div class="ex-card-body" style="display:${openIds.has(ex.id) ? 'block' : 'none'};">
+          <div id="trainSetRows-${ex.id}"></div>
+          <button type="button" class="link-btn trainAddSetBtn" data-exid="${ex.id}">
+            <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Add Set
+          </button>
+        </div>
+      </div>`;
+    }).join('');
+
+    session.exercises.forEach(ex => renderTrainSetRows(session, ex));
+
+    cardsEl.querySelectorAll('.trainExCardHeader').forEach(header => {
+      header.addEventListener('click', (e) => {
+        if (e.target.closest('.train-remove-ex-btn')) return;
+        toggleExCard(header.closest('.routine-ex-card'));
+      });
+    });
+    cardsEl.querySelectorAll('.train-remove-ex-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const s = getActiveSession();
+        if (!s) return;
+        s.exercises = s.exercises.filter(x => x.id !== btn.dataset.exid);
+        save();
+        renderTrainActive();
+      });
+    });
+    cardsEl.querySelectorAll('.trainAddSetBtn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const s = getActiveSession();
+        const ex = s.exercises.find(x => x.id === btn.dataset.exid);
+        if (!ex) return;
+        const last = ex.sets[ex.sets.length - 1];
+        ex.sets.push({ type: last ? last.type : 'working', targetReps: last ? last.targetReps : '', weight: '', reps: '', rpe: null, completed: false });
+        save();
+        renderTrainActive();
+      });
+    });
+  }
+
+  function renderTrainSetRows(session, ex) {
+    const el = document.getElementById(`trainSetRows-${ex.id}`);
+    if (!el) return;
+    el.innerHTML = ex.sets.map((s, i) => `
+      <div class="train-set-row ${s.completed ? 'completed' : ''}" data-exid="${ex.id}" data-setidx="${i}">
+        <div class="train-set-row-top">
+          <span class="tsr-label"><span class="set-type-dot" data-type="${s.type}" style="position:static;"></span>Set ${i + 1} · ${escapeHtml(typeLabel(s.type))}</span>
+          ${s.targetReps ? `<span class="tsr-target">Target: ${escapeHtml(s.targetReps)} reps</span>` : ''}
+        </div>
+        <div class="train-set-row-bottom">
+          <div class="stepper-row">
+            <button type="button" class="stepper-btn" data-delta="-2.5">−</button>
+            <input type="number" class="trainSetWeight" step="0.5" placeholder="0" value="${s.weight}">
+            <button type="button" class="stepper-btn" data-delta="2.5">+</button>
+          </div>
+          <div class="stepper-row">
+            <button type="button" class="stepper-btn" data-delta="-1">−</button>
+            <input type="number" class="trainSetReps" placeholder="0" value="${s.reps}">
+            <button type="button" class="stepper-btn" data-delta="1">+</button>
+          </div>
+          <button type="button" class="train-set-complete-btn" title="${s.completed ? 'Reopen set' : 'Mark complete'}">
+            ${s.completed ? ICON_SVGS.check : ''}
+          </button>
+          <button type="button" class="train-remove-set-btn" title="Remove set">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+      </div>`).join('');
+
+    el.querySelectorAll('.train-set-row').forEach(row => {
+      const idx = parseInt(row.dataset.setidx);
+      const weightInput = row.querySelector('.trainSetWeight');
+      const repsInput = row.querySelector('.trainSetReps');
+      weightInput.addEventListener('change', () => { ex.sets[idx].weight = weightInput.value; save(); });
+      repsInput.addEventListener('change', () => { ex.sets[idx].reps = repsInput.value; save(); });
+      row.querySelector('.train-set-complete-btn').addEventListener('click', () => {
+        const set = ex.sets[idx];
+        set.completed = !set.completed;
+        if (set.completed) {
+          set.weight = parseFloat(weightInput.value) || 0;
+          set.reps = parseInt(repsInput.value) || 0;
+        }
+        save();
+        renderTrainActive();
+      });
+      row.querySelector('.train-remove-set-btn').addEventListener('click', () => {
+        ex.sets.splice(idx, 1);
+        save();
+        renderTrainActive();
+      });
+    });
+  }
+
+  document.getElementById('trainStartTodayBtn').addEventListener('click', startTodaysPlannedWorkout);
+  document.getElementById('trainBlankBtn').addEventListener('click', startBlankWorkout);
+  document.getElementById('trainCancelBtn').addEventListener('click', () => {
+    if (!confirm('Cancel this workout? Nothing from it will be saved.')) return;
+    const session = getActiveSession();
+    if (session) state.sessions = state.sessions.filter(s => s.id !== session.id);
+    state.activeSessionId = null;
+    save();
+    renderTrainView();
+    showToast('Workout cancelled', 'success');
+  });
+
+  document.getElementById('trainAddExerciseBtn').addEventListener('click', () => {
+    const row = document.getElementById('trainAddExerciseRow');
+    const opening = row.style.display === 'none';
+    row.style.display = opening ? 'block' : 'none';
+    if (opening) {
+      document.getElementById('trainAddExerciseInput').value = '';
+      document.getElementById('trainAddExerciseInput').focus();
+    }
+  });
+  attachExerciseCombobox(document.getElementById('trainAddExerciseInput'));
+  document.getElementById('trainAddExerciseInput').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      const name = e.target.value.trim();
+      if (!name) return;
+      const session = getActiveSession();
+      if (!session) return;
+      session.exercises.push(sessionExerciseBlank(name));
+      save();
+      document.getElementById('trainAddExerciseRow').style.display = 'none';
+      renderTrainActive();
+      const newCard = document.querySelector(`.routine-ex-card[data-exid="${session.exercises[session.exercises.length - 1].id}"]`);
+      if (newCard) toggleExCard(newCard, true);
+    }
+  });
+  document.addEventListener('click', (e) => {
+    const opt = e.target.closest('#trainAddExerciseList .combobox-option');
+    if (!opt) return;
+    const session = getActiveSession();
+    if (!session) return;
+    session.exercises.push(sessionExerciseBlank(opt.dataset.name));
+    save();
+    document.getElementById('trainAddExerciseRow').style.display = 'none';
+    renderTrainActive();
+    const newCard = document.querySelector(`.routine-ex-card[data-exid="${session.exercises[session.exercises.length - 1].id}"]`);
+    if (newCard) toggleExCard(newCard, true);
+  });
+
+  // ---------- FINISH WORKOUT ----------
+  document.getElementById('trainFinishBtn').addEventListener('click', () => {
+    const session = getActiveSession();
+    if (!session) return;
+    const { total, done } = sessionSetsCompletedCount(session);
+    const exercisesLogged = session.exercises.filter(ex => ex.sets.some(s => s.completed)).length;
+    document.getElementById('finishStats').innerHTML = `
+      <div class="stat"><div class="num">${formatElapsed(Date.now() - session.startedAt)}</div><div class="lbl">Duration</div></div>
+      <div class="stat"><div class="num">${exercisesLogged} of ${session.exercises.length}</div><div class="lbl">Exercises logged</div></div>
+      <div class="stat"><div class="num">${done} of ${total}</div><div class="lbl">Sets completed</div></div>
+    `;
+    document.getElementById('finishNotes').value = session.notes || '';
+    document.getElementById('finishOverlay').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+  });
+  document.getElementById('finishBackBtn').addEventListener('click', closeFinishOverlay);
+  document.getElementById('finishCloseBtn').addEventListener('click', closeFinishOverlay);
+  document.getElementById('finishOverlay').addEventListener('click', (e) => {
+    if (e.target.id === 'finishOverlay') closeFinishOverlay();
+  });
+  function closeFinishOverlay() {
+    document.getElementById('finishOverlay').style.display = 'none';
+    document.body.style.overflow = '';
+  }
+  document.getElementById('finishSaveBtn').addEventListener('click', () => {
+    const session = getActiveSession();
+    if (!session) return;
+    session.notes = document.getElementById('finishNotes').value.trim();
+    session.finishedAt = Date.now();
+
+    session.exercises.forEach(ex => {
+      const completedSets = ex.sets.filter(s => s.completed).map(s => ({
+        weight: parseFloat(s.weight) || 0, reps: parseInt(s.reps) || 0, rpe: s.rpe || null, type: s.type
+      })).filter(s => s.weight > 0 || s.reps > 0);
+      if (completedSets.length === 0) return;
+      state.workouts.push({
+        id: uid(), date: session.date, exercise: ex.exercise, machine: ex.equipment || '', unit: 'lb',
+        sets: completedSets, notes: '', routine: session.name || null, createdAt: Date.now(), sessionId: session.id
+      });
+    });
+
+    state.activeSessionId = null;
+    stopTrainTimer();
+    save();
+    updateDatalists();
+    closeFinishOverlay();
+    renderTrainView();
+    renderHeaderStreak();
+    showToast('Workout saved ✓', 'success');
+  });
 
   // ---------- TEMPLATES ----------
   let editingRoutineId = null;
@@ -2661,12 +3050,10 @@
     save();
     closeRoutineEditor();
     renderRoutineList();
-    populatePlanRoutineSelect();
     renderThisWeek();
     renderSchedule();
     renderCalendar();
-    applyScheduleDefault();
-    renderPlanExercises();
+    renderTrainView();
     showToast('Template saved ✓', 'success');
   });
 
@@ -2683,12 +3070,10 @@
     save();
     closeRoutineEditor();
     renderRoutineList();
-    populatePlanRoutineSelect();
     renderThisWeek();
     renderSchedule();
     renderCalendar();
-    applyScheduleDefault();
-    renderPlanExercises();
+    renderTrainView();
     showToast('Template deleted', 'success');
   }
 
@@ -2744,7 +3129,7 @@
             ${moreCount > 0 ? `<span class="ex-tag">+${moreCount} more</span>` : ''}
           </div>
           <div class="template-actions-row">
-            <button class="btn useRoutineBtn" data-id="${r.id}" type="button">Use in Log ${ICON_SVGS.arrow}</button>
+            <button class="btn useRoutineBtn" data-id="${r.id}" type="button">Start Workout ${ICON_SVGS.arrow}</button>
             <button class="icon-btn duplicateRoutineBtn" data-id="${r.id}" type="button" title="Duplicate">${ICON_SVGS.copy}</button>
             <button class="icon-btn editRoutineBtn" data-id="${r.id}" type="button" title="Edit">${ICON_SVGS.pencil}</button>
           </div>
@@ -2774,16 +3159,17 @@
         state.routines.push(clone);
         save();
         renderRoutineList();
-        populatePlanRoutineSelect();
         showToast('Template duplicated ✓', 'success');
       });
     });
     el.querySelectorAll('.useRoutineBtn').forEach(btn => {
       btn.addEventListener('click', () => {
+        if (state.activeSessionId) {
+          showToast('Finish or cancel your current workout first.', 'error');
+          return;
+        }
+        startFromTemplate(btn.dataset.id);
         goToView('log');
-        populatePlanRoutineSelect();
-        document.getElementById('planRoutineSelect').value = btn.dataset.id;
-        renderPlanExercises();
       });
     });
     el.querySelectorAll('.template-menu-btn').forEach(btn => {
@@ -2896,8 +3282,7 @@
     renderSchedule();
     renderCalendar();
     renderStreaks();
-    applyScheduleDefault();
-    renderPlanExercises();
+    renderTrainView();
     renderHeaderStreak();
   }
   function handleDaySheetAction(iso, action, templateId) {
@@ -3057,8 +3442,7 @@
     document.getElementById('calDayEditor').style.display = 'none';
     renderThisWeek();
     renderCalendar();
-    applyScheduleDefault();
-    renderPlanExercises();
+    renderTrainView();
     showToast('Plan saved ✓', 'success');
   });
   document.getElementById('calCancelBtn').addEventListener('click', () => {
@@ -3399,6 +3783,8 @@
         state.schedule = imported.schedule || emptySchedule();
         state.plannedWorkouts = imported.plannedWorkouts || {};
         state.weeklyGoal = imported.weeklyGoal !== undefined ? imported.weeklyGoal : null;
+        state.sessions = imported.sessions || [];
+        state.activeSessionId = imported.activeSessionId !== undefined ? imported.activeSessionId : null;
         save();
         updateDatalists();
         renderHistory();
@@ -3408,9 +3794,7 @@
         renderSchedule();
         renderCalendar();
         renderStreaks();
-        populatePlanRoutineSelect();
-        applyScheduleDefault();
-        renderPlanExercises();
+        renderTrainView();
         renderHeaderStreak();
         showToast('Data imported successfully ✓', 'success');
       } catch (err) {
@@ -3428,6 +3812,9 @@
       state.schedule = emptySchedule();
       state.plannedWorkouts = {};
       state.weeklyGoal = null;
+      state.sessions = [];
+      state.activeSessionId = null;
+      stopTrainTimer();
       save();
       updateDatalists();
       renderHistory();
@@ -3437,9 +3824,7 @@
       renderSchedule();
       renderCalendar();
       renderStreaks();
-      populatePlanRoutineSelect();
-      applyScheduleDefault();
-      renderPlanExercises();
+      renderTrainView();
       renderHeaderStreak();
       showToast('All data cleared', 'success');
     }
@@ -3454,9 +3839,7 @@
   renderSchedule();
   renderCalendar();
   renderStreaks();
-  populatePlanRoutineSelect();
-  applyScheduleDefault();
-  renderPlanExercises();
+  renderTrainView();
   renderHeaderStreak();
 })();
 </script>
