@@ -1328,7 +1328,13 @@
 
         <div id="planningWeekly">
           <p class="caption">Tap a day to assign a workout, mark it a rest day, or clear it.</p>
+          <div class="cal-header" style="margin-bottom:12px;">
+            <button class="btn small secondary" id="thisWeekPrevBtn" type="button">‹</button>
+            <span id="thisWeekLabel">This Week</span>
+            <button class="btn small secondary" id="thisWeekNextBtn" type="button">›</button>
+          </div>
           <div class="thisweek-row" id="thisWeekRow"></div>
+          <button class="link-btn" id="thisWeekTodayBtn" type="button" style="display:none; margin-top:4px;">↺ Jump to this week</button>
 
           <details class="recurring-defaults-disclosure">
             <summary>Recurring weekly defaults</summary>
@@ -1906,8 +1912,10 @@
     d.setDate(d.getDate() - d.getDay());
     return d;
   }
-  function currentWeekDates() {
+  function currentWeekDates(offset) {
+    offset = offset || 0;
     const start = weekStartFor(new Date(todayStr() + 'T00:00:00'));
+    start.setDate(start.getDate() + offset * 7);
     const arr = [];
     for (let i = 0; i < 7; i++) {
       const d = new Date(start);
@@ -1915,6 +1923,14 @@
       arr.push(d.toISOString().slice(0, 10));
     }
     return arr;
+  }
+  function formatWeekLabel(offset) {
+    if (offset === 0) return 'This Week';
+    if (offset === 1) return 'Next Week';
+    if (offset === -1) return 'Last Week';
+    const dates = currentWeekDates(offset);
+    const fmt = (iso) => new Date(iso + 'T00:00:00').toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+    return `${fmt(dates[0])} – ${fmt(dates[6])}`;
   }
 
   // ---------- Unified exercise search/type combobox ----------
@@ -2791,11 +2807,14 @@
   });
 
   // ---------- THIS WEEK (interactive day cells + tap-to-assign bottom sheet) ----------
+  let thisWeekOffset = 0;
   function renderThisWeek() {
     const el = document.getElementById('thisWeekRow');
     if (!el) return;
+    document.getElementById('thisWeekLabel').textContent = formatWeekLabel(thisWeekOffset);
+    document.getElementById('thisWeekTodayBtn').style.display = thisWeekOffset !== 0 ? 'inline-flex' : 'none';
     const todayIso = todayStr();
-    el.innerHTML = currentWeekDates().map(iso => {
+    el.innerHTML = currentWeekDates(thisWeekOffset).map(iso => {
       const d = new Date(iso + 'T00:00:00');
       const dow = d.getDay();
       const state_ = dayDisplayState(iso);
@@ -2924,6 +2943,9 @@
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && document.getElementById('daySheetOverlay').style.display === 'flex') closeDaySheet();
   });
+  document.getElementById('thisWeekPrevBtn').addEventListener('click', () => { thisWeekOffset--; renderThisWeek(); });
+  document.getElementById('thisWeekNextBtn').addEventListener('click', () => { thisWeekOffset++; renderThisWeek(); });
+  document.getElementById('thisWeekTodayBtn').addEventListener('click', () => { thisWeekOffset = 0; renderThisWeek(); });
 
   // ---------- WEEKLY SCHEDULE ----------
   function renderSchedule() {
