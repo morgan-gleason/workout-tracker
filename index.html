@@ -254,11 +254,10 @@
   .sub-view.active { display: block; }
   .card {
     background: var(--panel);
-    border: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
     border-radius: var(--radius);
     padding: 20px;
     margin-bottom: 16px;
-    box-shadow: var(--shadow-sm);
   }
   .card h2 {
     margin: 0 0 14px;
@@ -340,7 +339,6 @@
     margin-bottom: 10px;
     align-items: end;
     background: var(--panel-2);
-    border: 1px solid var(--border);
     border-radius: var(--radius-sm);
     padding: 10px;
   }
@@ -442,7 +440,7 @@
   }
   .empty .empty-icon { font-size: 28px; display: block; margin-bottom: 8px; }
   .session-item {
-    border: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
     border-radius: var(--radius-sm);
     padding: 13px 15px;
     margin-bottom: 10px;
@@ -489,7 +487,7 @@
     flex: 1;
     min-width: 120px;
     background: var(--panel-2);
-    border: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
     border-radius: var(--radius-sm);
     padding: 14px 15px;
   }
@@ -521,12 +519,11 @@
 
   /* Promo / create rows */
   .promo-list {
-    border: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
     border-radius: 16px;
     overflow: hidden;
     margin-bottom: 16px;
     background: var(--panel-2);
-    box-shadow: var(--shadow-sm);
   }
   .promo-row {
     display: flex;
@@ -556,12 +553,11 @@
   /* Template cards */
   .template-card-v2 {
     padding: 16px;
-    border: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
     border-radius: 16px;
     background: var(--panel-2);
     margin-bottom: 12px;
     position: relative;
-    box-shadow: var(--shadow-sm);
   }
   .template-card-head {
     display: flex;
@@ -683,18 +679,16 @@
     flex-shrink: 0;
   }
   .routine-ex-card {
-    border: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
     border-radius: var(--radius-sm);
     padding: 14px;
     margin-bottom: 12px;
     background: var(--panel-2);
     touch-action: pan-y;
-    box-shadow: var(--shadow-sm);
   }
   .routine-ex-card.dragging {
     opacity: .92;
-    box-shadow: var(--shadow-md);
-    border-color: var(--accent);
+    box-shadow: 0 0 0 1.5px var(--accent), var(--shadow-md);
     z-index: 50;
   }
   .drag-placeholder {
@@ -727,7 +721,7 @@
     align-items: center;
     gap: 10px;
     background: var(--panel-2);
-    border: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
     border-radius: 12px;
     padding: 12px 14px;
     min-width: 0;
@@ -785,7 +779,9 @@
   .routine-ex-card.open .ex-chevron { transform: rotate(180deg); }
 
   /* Train: current-exercise focus states */
-  .train-ex-card.ex-current { border-color: var(--accent); background: var(--panel-2); }
+  /* Current-exercise focus uses a soft accent glow (shadow ring) rather than a hard
+     border, consistent with the rest of the app's borderless, elevation-based cards. */
+  .train-ex-card.ex-current { background: var(--panel-2); box-shadow: 0 0 0 1.5px var(--accent), 0 6px 20px rgba(109,140,255,.12); }
   .train-ex-card.ex-completed { opacity: .6; }
   .train-ex-card.ex-completed .ex-number-badge { background: var(--accent-2); }
   .train-ex-card.ex-completed .ex-number-badge svg { width: 14px; height: 14px; }
@@ -873,7 +869,7 @@
 
   /* Add-exercise picker */
   .ex-picker {
-    border: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
     border-radius: 14px;
     background: var(--panel-2);
     padding: 14px;
@@ -912,14 +908,14 @@
     justify-content: space-between;
     align-items: center;
     gap: 10px;
-    border: 1px solid var(--border);
     border-radius: var(--radius-sm);
     padding: 12px 14px;
     margin-bottom: 8px;
     background: var(--panel-2);
     flex-wrap: wrap;
+    box-shadow: var(--shadow-sm);
   }
-  .plan-item.done { border-color: rgba(52,211,153,.4); background: rgba(52,211,153,.06); }
+  .plan-item.done { background: rgba(52,211,153,.1); }
   .plan-item .info { display: flex; flex-direction: column; gap: 4px; }
   .plan-item .info .exname { font-weight: 700; font-size: 13.5px; }
   .plan-item .info .tags { display: flex; flex-wrap: wrap; gap: 5px; }
