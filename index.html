@@ -1558,6 +1558,13 @@
           </div>
         </div>
       </div>
+
+      <div style="text-align:center; margin-top:8px;">
+        <button type="button" class="link-btn" id="openQuickLogBtn" style="margin:0 auto;">
+          <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Log a Past Workout
+        </button>
+      </div>
     </div>
 
     <!-- TRAIN: ACTIVE SESSION -->
@@ -1612,47 +1619,54 @@
       </div>
     </div>
 
-    <!-- QUICK LOG (manual single-exercise entry, no session needed) -->
-    <div class="card">
-      <h2>Quick Log</h2>
-      <p class="caption">Log a single exercise without starting a full session.</p>
-      <div class="grid">
-        <div class="field">
-          <label>Date</label>
-          <input type="date" id="logDate">
+    <!-- QUICK LOG MODAL (manual single-exercise / backfill entry, no session needed) -->
+    <div class="modal-overlay" id="quickLogOverlay" style="display:none;">
+      <div class="modal-panel">
+        <div class="modal-header">
+          <h2>Log a Past Workout</h2>
+          <button class="modal-close-btn" id="quickLogCloseBtn" type="button" title="Close">
+            <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
         </div>
-        <div class="field" style="grid-column: span 2;">
-          <label>Exercise</label>
-          <div class="exercise-combobox">
-            <input type="text" id="logExercise" placeholder="Search or type an exercise" autocomplete="off">
-            <div class="exercise-combobox-list" id="logExerciseComboList" style="display:none;"></div>
+        <p class="caption">Log a single exercise for any date, without starting a full session.</p>
+        <div class="grid">
+          <div class="field">
+            <label>Date</label>
+            <input type="date" id="logDate">
+          </div>
+          <div class="field" style="grid-column: span 2;">
+            <label>Exercise</label>
+            <div class="exercise-combobox">
+              <input type="text" id="logExercise" placeholder="Search or type an exercise" autocomplete="off">
+              <div class="exercise-combobox-list" id="logExerciseComboList" style="display:none;"></div>
+            </div>
+          </div>
+          <div class="field">
+            <label>Unit</label>
+            <select id="logUnit">
+              <option value="lb">lb</option>
+              <option value="kg">kg</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Machine / Equipment</label>
+            <input type="text" id="logMachine" list="machineList" placeholder="e.g. Smith Machine">
+            <datalist id="machineList"></datalist>
           </div>
         </div>
-        <div class="field">
-          <label>Unit</label>
-          <select id="logUnit">
-            <option value="lb">lb</option>
-            <option value="kg">kg</option>
-          </select>
+
+        <label>Sets</label>
+        <div class="set-rows" id="setRows"></div>
+        <button class="btn secondary" id="addSetBtn" type="button">+ Add Set</button>
+
+        <div class="field" style="margin-top:14px;">
+          <label>Notes (form cues, how it felt during the set, etc.)</label>
+          <textarea id="logNotes" placeholder="Optional"></textarea>
         </div>
-        <div class="field">
-          <label>Machine / Equipment</label>
-          <input type="text" id="logMachine" list="machineList" placeholder="e.g. Smith Machine">
-          <datalist id="machineList"></datalist>
+
+        <div class="btn-row">
+          <button class="btn" id="saveWorkoutBtn" type="button">✓ Save Workout</button>
         </div>
-      </div>
-
-      <label>Sets</label>
-      <div class="set-rows" id="setRows"></div>
-      <button class="btn secondary" id="addSetBtn" type="button">+ Add Set</button>
-
-      <div class="field" style="margin-top:14px;">
-        <label>Notes (form cues, how it felt during the set, etc.)</label>
-        <textarea id="logNotes" placeholder="Optional"></textarea>
-      </div>
-
-      <div class="btn-row">
-        <button class="btn" id="saveWorkoutBtn" type="button">✓ Save Workout</button>
       </div>
     </div>
   </div>
@@ -2240,9 +2254,27 @@
     });
   });
 
-  // ---------- LOG WORKOUT ----------
+  // ---------- LOG WORKOUT (Quick Log modal) ----------
   document.getElementById('logDate').value = todayStr();
   const setRows = document.getElementById('setRows');
+
+  function openQuickLogOverlay() {
+    document.getElementById('logDate').value = todayStr();
+    document.getElementById('quickLogOverlay').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+  }
+  function closeQuickLogOverlay() {
+    document.getElementById('quickLogOverlay').style.display = 'none';
+    document.body.style.overflow = '';
+  }
+  document.getElementById('openQuickLogBtn').addEventListener('click', openQuickLogOverlay);
+  document.getElementById('quickLogCloseBtn').addEventListener('click', closeQuickLogOverlay);
+  document.getElementById('quickLogOverlay').addEventListener('click', (e) => {
+    if (e.target.id === 'quickLogOverlay') closeQuickLogOverlay();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && document.getElementById('quickLogOverlay').style.display === 'flex') closeQuickLogOverlay();
+  });
 
   function addSetRow(weight, reps, type) {
     const row = document.createElement('div');
@@ -2341,6 +2373,7 @@
     setRowCount(3);
 
     renderHeaderStreak();
+    closeQuickLogOverlay();
     showToast('Workout saved ✓', 'success');
   });
 
