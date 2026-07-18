@@ -1020,7 +1020,24 @@
   .recurring-defaults-disclosure summary:hover { color: var(--text); }
 
   /* Train: compact header dashboard + persistent finish bar */
-  .train-header-bar { margin-bottom: 20px; padding: 0 2px; }
+  /* Sticks to the top of the viewport while scrolling through exercises, so you always
+     know which workout you're in and how far along you are without the generic app
+     masthead/streak taking up space above it (hidden separately, see body.train-session-active). */
+  .train-header-bar {
+    margin: -18px -16px 20px;
+    padding: 18px 16px 12px;
+    position: sticky;
+    top: 0;
+    z-index: 15;
+    background: rgba(11,13,18,.94);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+  body.train-session-active header,
+  body.train-session-active #view-log > .page-header { display: none; }
+  @media (min-width: 768px) {
+    .train-header-bar { margin: -28px -32px 20px; padding: 20px 32px 14px; }
+  }
   .train-header-top { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
   .train-header-top h2 { margin: 0; font-size: 21px; font-weight: 800; letter-spacing: -.01em; }
   .train-cancel-link {
@@ -1062,18 +1079,38 @@
   .train-set-rows-head .tsrh-prev { width: 46px; flex-shrink: 0; text-align: center; }
   .train-set-rows-head .tsrh-field { flex: 1; min-width: 0; text-align: center; }
   .train-set-rows-head .tsrh-spacer { width: 50px; flex-shrink: 0; }
+  /* Swipe-to-delete: the row itself slides via transform, revealing a red delete
+     button that sits behind it. The row needs an opaque background so it fully
+     covers that button until swiped. */
+  .train-set-row-wrap {
+    position: relative;
+    overflow: hidden;
+    border-bottom: 1px solid var(--border);
+  }
+  .train-set-row-wrap:last-child { border-bottom: none; }
+  .tsr-swipe-delete {
+    position: absolute;
+    top: 0; right: 0; bottom: 0;
+    width: 76px;
+    border: none;
+    background: var(--danger);
+    color: white;
+    font-size: 12.5px;
+    font-weight: 700;
+    cursor: pointer;
+  }
   .train-set-row {
+    position: relative;
     display: flex;
     align-items: center;
     gap: 6px;
     padding: 8px 4px;
-    border-bottom: 1px solid var(--border);
-    border-radius: 10px;
+    background: var(--panel-2);
+    touch-action: pan-y;
     transition: background .15s ease;
   }
-  .train-set-row:last-child { border-bottom: none; }
-  .train-set-row.current { background: rgba(109,140,255,.08); }
-  .train-set-row.completed { background: rgba(52,211,153,.06); }
+  .train-set-row.current { background: #222a3d; }
+  .train-set-row.completed { background: #1d2c33; }
   .tsr-num {
     width: 30px; flex-shrink: 0;
     font-size: 14px; font-weight: 800; color: var(--text); text-align: center;
@@ -1115,12 +1152,6 @@
   }
   .train-set-complete-btn svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
   .train-set-row.completed .train-set-complete-btn { background: var(--accent-2); border-color: var(--accent-2); color: white; }
-  .train-remove-set-btn {
-    background: none; border: none; color: var(--muted); cursor: pointer;
-    width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; border-radius: 6px; flex-shrink: 0;
-  }
-  .train-remove-set-btn svg { width: 11px; height: 11px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-  .train-remove-set-btn:hover { color: var(--danger); background: rgba(255,107,122,.1); }
   @media (max-width: 380px) {
     .tsr-prev { display: none; }
     .train-set-rows-head .tsrh-prev { display: none; }
@@ -2242,6 +2273,10 @@
     if (view === 'feel') renderFeelHistory();
     if (view === 'plan') { renderRoutineList(); renderThisWeek(); renderSchedule(); renderCalendar(); renderStreaks(); }
     if (view === 'log') { renderTrainView(); }
+    // The compact "no masthead, sticky workout bar" treatment only makes sense while
+    // actually looking at an in-progress workout — not just because a session happens
+    // to exist somewhere in the background while you're on another tab.
+    document.body.classList.toggle('train-session-active', view === 'log' && !!getActiveSession());
   }
   function goToView(view) { switchView(view); }
 
@@ -2494,12 +2529,14 @@
     if (session) {
       document.getElementById('trainStart').style.display = 'none';
       document.getElementById('trainActive').style.display = 'block';
+      document.body.classList.add('train-session-active');
       startTrainTimer();
       renderTrainActive();
     } else {
       document.getElementById('trainStart').style.display = 'block';
       document.getElementById('trainActive').style.display = 'none';
       document.getElementById('trainFinishBar').style.display = 'none';
+      document.body.classList.remove('train-session-active');
       stopTrainTimer();
       renderTrainStart();
     }
@@ -2702,6 +2739,63 @@
     return `${hist.weight || 0}×${hist.reps || 0}`;
   }
 
+  // Swipe-left-to-reveal-delete for a set row, iOS-list style, unified across touch
+  // and mouse via Pointer Events. A drag starting on an interactive control (input,
+  // stepper button, checkmark) is ignored so normal taps still work; a drag starting
+  // on the row's "dead space" (the set/previous columns) drives the swipe.
+  function attachSwipeToDelete(wrapEl, onDelete) {
+    const row = wrapEl.querySelector('.train-set-row');
+    const deleteBtn = wrapEl.querySelector('.tsr-swipe-delete');
+    const OPEN_X = -76;
+    let startX = 0, startY = 0, baseX = 0, dragging = false, decided = false, horizontal = false, open = false;
+
+    function setX(x, animate) {
+      row.style.transition = animate ? 'transform .2s ease' : 'none';
+      row.style.transform = `translateX(${x}px)`;
+    }
+    function onDown(e) {
+      if (e.target.closest('input, button')) return;
+      dragging = true; decided = false; horizontal = false;
+      startX = e.clientX; startY = e.clientY;
+      baseX = open ? OPEN_X : 0;
+      row.style.transition = 'none';
+    }
+    function onMove(e) {
+      if (!dragging) return;
+      const dx = e.clientX - startX;
+      const dy = e.clientY - startY;
+      if (!decided) {
+        if (Math.abs(dx) < 6 && Math.abs(dy) < 6) return;
+        decided = true;
+        horizontal = Math.abs(dx) > Math.abs(dy);
+        if (!horizontal) { dragging = false; return; }
+      }
+      if (!horizontal) return;
+      e.preventDefault();
+      const x = Math.max(OPEN_X, Math.min(0, baseX + dx));
+      setX(x, false);
+    }
+    function onUp(e) {
+      if (!dragging) return;
+      dragging = false;
+      if (!horizontal) return;
+      const dx = e.clientX - startX;
+      const finalX = Math.max(OPEN_X, Math.min(0, baseX + dx));
+      open = finalX < OPEN_X / 2;
+      setX(open ? OPEN_X : 0, true);
+    }
+    row.addEventListener('pointerdown', onDown);
+    row.addEventListener('pointermove', onMove);
+    row.addEventListener('pointerup', onUp);
+    row.addEventListener('pointercancel', onUp);
+    // While open, the first tap anywhere on the row just closes it instead of
+    // reaching whatever control is underneath.
+    row.addEventListener('click', (e) => {
+      if (open) { e.preventDefault(); e.stopPropagation(); setX(0, true); open = false; }
+    }, true);
+    deleteBtn.addEventListener('click', onDelete);
+  }
+
   function renderTrainSetRows(session, ex) {
     const el = document.getElementById(`trainSetRows-${ex.id}`);
     if (!el) return;
@@ -2723,37 +2817,38 @@
       const badgeText = isWarmup ? 'W' : String(i + 1);
       const repsPlaceholder = s.targetReps ? escapeHtml(s.targetReps) : '0';
       return `
-      <div class="train-set-row ${s.completed ? 'completed' : ''} ${i === currentSetIdx ? 'current' : ''}" data-exid="${ex.id}" data-setidx="${i}">
-        <div class="tsr-num ${isWarmup ? 'warmup' : ''}">
-          ${badgeText}
-          ${isSpecial ? `<span class="tsr-type-tag">${escapeHtml(typeLabel(s.type))}</span>` : ''}
-        </div>
-        <div class="tsr-prev">${formatPreviousSet(lastSets, i)}</div>
-        <div class="tsr-field">
-          <div class="stepper-row">
-            <button type="button" class="stepper-btn" data-delta="-2.5">−</button>
-            <input type="number" class="trainSetWeight" step="0.5" placeholder="0" value="${s.weight}">
-            <button type="button" class="stepper-btn" data-delta="2.5">+</button>
+      <div class="train-set-row-wrap" data-exid="${ex.id}" data-setidx="${i}">
+        <button type="button" class="tsr-swipe-delete" title="Remove set">Delete</button>
+        <div class="train-set-row ${s.completed ? 'completed' : ''} ${i === currentSetIdx ? 'current' : ''}">
+          <div class="tsr-num ${isWarmup ? 'warmup' : ''}">
+            ${badgeText}
+            ${isSpecial ? `<span class="tsr-type-tag">${escapeHtml(typeLabel(s.type))}</span>` : ''}
           </div>
-        </div>
-        <div class="tsr-field">
-          <div class="stepper-row">
-            <button type="button" class="stepper-btn" data-delta="-1">−</button>
-            <input type="number" class="trainSetReps" placeholder="${repsPlaceholder}" value="${s.reps}">
-            <button type="button" class="stepper-btn" data-delta="1">+</button>
+          <div class="tsr-prev">${formatPreviousSet(lastSets, i)}</div>
+          <div class="tsr-field">
+            <div class="stepper-row">
+              <button type="button" class="stepper-btn" data-delta="-2.5">−</button>
+              <input type="number" class="trainSetWeight" step="0.5" placeholder="0" value="${s.weight}">
+              <button type="button" class="stepper-btn" data-delta="2.5">+</button>
+            </div>
           </div>
+          <div class="tsr-field">
+            <div class="stepper-row">
+              <button type="button" class="stepper-btn" data-delta="-1">−</button>
+              <input type="number" class="trainSetReps" placeholder="${repsPlaceholder}" value="${s.reps}">
+              <button type="button" class="stepper-btn" data-delta="1">+</button>
+            </div>
+          </div>
+          <button type="button" class="train-set-complete-btn" title="${s.completed ? 'Reopen set' : 'Mark complete'}">
+            ${s.completed ? ICON_SVGS.check : ''}
+          </button>
         </div>
-        <button type="button" class="train-set-complete-btn" title="${s.completed ? 'Reopen set' : 'Mark complete'}">
-          ${s.completed ? ICON_SVGS.check : ''}
-        </button>
-        <button type="button" class="train-remove-set-btn" title="Remove set">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-        </button>
       </div>`;
     }).join('');
 
-    el.querySelectorAll('.train-set-row').forEach(row => {
-      const idx = parseInt(row.dataset.setidx);
+    el.querySelectorAll('.train-set-row-wrap').forEach(wrap => {
+      const idx = parseInt(wrap.dataset.setidx);
+      const row = wrap.querySelector('.train-set-row');
       const weightInput = row.querySelector('.trainSetWeight');
       const repsInput = row.querySelector('.trainSetReps');
       weightInput.addEventListener('change', () => { ex.sets[idx].weight = weightInput.value; save(); });
@@ -2772,7 +2867,7 @@
         save();
         renderTrainActive();
       });
-      row.querySelector('.train-remove-set-btn').addEventListener('click', () => {
+      attachSwipeToDelete(wrap, () => {
         ex.sets.splice(idx, 1);
         delete exOpenOverrides[ex.id];
         save();
