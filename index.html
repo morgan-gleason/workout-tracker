@@ -526,6 +526,7 @@
     overflow: hidden;
     margin-bottom: 16px;
     background: var(--panel-2);
+    box-shadow: var(--shadow-sm);
   }
   .promo-row {
     display: flex;
@@ -560,6 +561,7 @@
     background: var(--panel-2);
     margin-bottom: 12px;
     position: relative;
+    box-shadow: var(--shadow-sm);
   }
   .template-card-head {
     display: flex;
@@ -687,6 +689,7 @@
     margin-bottom: 12px;
     background: var(--panel-2);
     touch-action: pan-y;
+    box-shadow: var(--shadow-sm);
   }
   .routine-ex-card.dragging {
     opacity: .92;
@@ -784,7 +787,7 @@
   /* Train: current-exercise focus states */
   .train-ex-card.ex-current { border-color: var(--accent); background: var(--panel-2); }
   .train-ex-card.ex-completed { opacity: .6; }
-  .train-ex-card.ex-completed .ex-number-badge { background: var(--success, #3fbf7f); }
+  .train-ex-card.ex-completed .ex-number-badge { background: var(--accent-2); }
   .train-ex-card.ex-completed .ex-number-badge svg { width: 14px; height: 14px; }
   .train-ex-card.ex-upcoming { opacity: .85; }
   .ex-card-body { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); }
@@ -824,12 +827,13 @@
     transform: translateY(-50%);
     width: 8px; height: 8px;
     border-radius: 50%;
-    background: var(--accent-2);
+    /* Neutral by default: set-type identity (working/failure/dropset/etc.) shouldn't
+       borrow the green that means "completed" elsewhere in the app. */
+    background: var(--muted);
     pointer-events: none;
     z-index: 1;
   }
   .set-type-dot[data-type="warmup"] { background: var(--warn); }
-  .set-type-dot[data-type="working"] { background: var(--accent-2); }
   .setPlanReps { min-height: 40px; }
   .setPlanRemove {
     background: none; border: none; color: var(--muted); cursor: pointer;
@@ -1883,24 +1887,27 @@
     'Barbell Curl': 'Isolation', 'Dumbbell Curl': 'Isolation', 'Hammer Curl': 'Isolation', 'Preacher Curl': 'Isolation', 'Tricep Pushdown': 'Isolation', 'Skull Crusher': 'Isolation', 'Overhead Tricep Extension': 'Isolation', 'Close-Grip Bench Press': 'Compound',
     'Plank': 'Isolation', 'Hanging Leg Raise': 'Isolation', 'Cable Crunch': 'Isolation', 'Russian Twist': 'Isolation', 'Ab Wheel Rollout': 'Compound', 'Sit-Up': 'Isolation'
   };
+  // Template personalization colors. Kept deliberately distinct from the app's semantic
+  // state colors (--accent blue = active/primary, --accent-2 green = completed, --warn
+  // amber = warm-up, --danger red = destructive) so a template's badge never gets mistaken
+  // for one of those meanings. Each is a soft single-hue gradient (not a cross-hue blend)
+  // to stay muted and cohesive rather than saturated/decorative.
   const COLOR_SWATCHES = {
-    indigo: 'linear-gradient(135deg,#7c5cff,#5b8cff)',
-    green: 'linear-gradient(135deg,#0ea371,#34d399)',
-    orange: 'linear-gradient(135deg,#f0913a,#f2617a)',
-    amber: 'linear-gradient(135deg,#f2c94c,#f0913a)',
-    blue: 'linear-gradient(135deg,#3aa0f0,#5b8cff)',
-    pink: 'linear-gradient(135deg,#f0619f,#f2617a)',
-    teal: 'linear-gradient(135deg,#14b8a6,#34d399)',
-    slate: 'linear-gradient(135deg,#64748b,#475569)'
+    plum: 'linear-gradient(135deg,#ac8ed1,#8a63b3)',
+    teal: 'linear-gradient(135deg,#5cc4b9,#3a9d93)',
+    clay: 'linear-gradient(135deg,#d99b70,#b8734a)',
+    denim: 'linear-gradient(135deg,#8299b0,#62788f)',
+    rose: 'linear-gradient(135deg,#e08aa3,#c8617f)',
+    slate: 'linear-gradient(135deg,#78899e,#55657a)'
   };
   const ICON_PICKER_KEYS = ['dumbbell', 'pull', 'legs', 'star', 'flame', 'heart', 'bolt', 'target'];
   const CATEGORY_STYLES = {
-    'Push': { color: 'indigo', icon: 'dumbbell' },
-    'Pull': { color: 'green', icon: 'pull' },
-    'Legs': { color: 'orange', icon: 'legs' },
-    'Upper': { color: 'blue', icon: 'dumbbell' },
-    'Lower': { color: 'amber', icon: 'legs' },
-    'Full Body': { color: 'amber', icon: 'star' },
+    'Push': { color: 'plum', icon: 'dumbbell' },
+    'Pull': { color: 'teal', icon: 'pull' },
+    'Legs': { color: 'clay', icon: 'legs' },
+    'Upper': { color: 'denim', icon: 'dumbbell' },
+    'Lower': { color: 'rose', icon: 'legs' },
+    'Full Body': { color: 'slate', icon: 'star' },
     'Custom': { color: 'slate', icon: 'dumbbell' }
   };
   function routineIconBg(routine) {
