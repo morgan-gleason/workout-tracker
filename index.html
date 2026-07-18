@@ -788,6 +788,48 @@
   .train-ex-card.ex-upcoming { opacity: .85; }
   .ex-card-body { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); }
 
+  /* Machine Setup — must never read as a form to fill out before lifting. Saved state is
+     one compact row; unsaved state is a single quiet line, not an empty card. */
+  .ms-row { margin-bottom: 12px; }
+  .ms-row-saved, .ms-row-expanded {
+    display: flex; align-items: flex-start; justify-content: space-between; gap: 10px;
+    padding: 9px 10px; background: var(--panel-2); border-radius: 10px; cursor: pointer;
+  }
+  .ms-row-expanded { flex-direction: column; }
+  .ms-row-expanded > .ms-edit-btn { align-self: flex-start; margin-top: 2px; }
+  .ms-label { font-size: 10px; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+  .ms-row-main { min-width: 0; }
+  .ms-summary { font-size: 13px; font-weight: 600; margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .ms-machine-name { font-size: 13.5px; font-weight: 700; margin: 3px 0 6px; }
+  .ms-detail-list { display: flex; flex-direction: column; gap: 4px; width: 100%; margin: 6px 0 4px; }
+  .ms-detail-line { display: flex; justify-content: space-between; gap: 10px; font-size: 13px; }
+  .ms-detail-line span:first-child { color: var(--muted); }
+  .ms-detail-line span:last-child { font-weight: 600; text-align: right; }
+  .ms-row-empty { margin-bottom: 12px; }
+  .ms-row-empty .link-btn { padding-left: 0; }
+  .ms-row-empty-first { margin-bottom: 12px; padding: 10px 10px 8px; background: var(--panel-2); border-radius: 10px; }
+  .ms-row-empty-first .ms-label { text-transform: none; font-size: 13px; font-weight: 700; color: var(--text); letter-spacing: normal; }
+  .ms-hint { font-size: 12px; color: var(--muted); margin: 3px 0 4px; }
+  .ms-row-prompt {
+    display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    padding: 9px 10px; margin-bottom: 12px; background: rgba(109,140,255,.08); border-radius: 10px;
+  }
+  .ms-prompt-text { font-size: 13px; font-weight: 600; min-width: 0; }
+  .ms-prompt-actions { display: flex; gap: 2px; flex-shrink: 0; }
+
+  /* Machine Setup edit sheet */
+  .ms-field-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .ms-field-row .ms-field-label-input, .ms-field-row .ms-field-value-input { flex: 1; min-width: 0; }
+  .ms-field-remove-btn svg { width: 14px; height: 14px; }
+  .ms-add-detail-wrap { position: relative; margin: 2px 0 8px; }
+  .ms-detail-picker { display: none; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+  .ms-preset-btn {
+    background: var(--panel-2); border: 1px solid var(--border-light); color: var(--text);
+    font-size: 12.5px; font-weight: 600; padding: 6px 11px; border-radius: 999px; cursor: pointer;
+  }
+  .ms-preset-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .ms-preset-custom { color: var(--muted); }
+
   /* Per-set table inside an expanded exercise card */
   .set-table-head {
     display: grid;
@@ -1717,6 +1759,35 @@
         </div>
       </div>
     </div>
+
+    <!-- MACHINE SETUP EDIT SHEET (dynamic content, reused per-exercise) -->
+    <div class="modal-overlay" id="machineSetupOverlay" style="display:none;">
+      <div class="modal-panel">
+        <div class="modal-header">
+          <h2>Machine Setup</h2>
+          <button class="modal-close-btn" id="machineSetupCloseBtn" type="button" title="Close">
+            <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+        <p class="caption" id="machineSetupExerciseLabel"></p>
+        <div class="field">
+          <label>Machine / gym (optional)</label>
+          <input type="text" id="machineSetupName" placeholder="e.g. Technogym, Planet Fitness">
+        </div>
+        <div id="machineSetupFieldRows"></div>
+        <div class="ms-add-detail-wrap">
+          <button type="button" class="link-btn" id="machineSetupAddDetailBtn">
+            <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Add detail
+          </button>
+          <div class="ms-detail-picker" id="machineSetupDetailPicker" style="display:none;"></div>
+        </div>
+        <div class="btn-row" style="margin-top:14px;">
+          <button class="btn" id="machineSetupSaveBtn" type="button">✓ Save Setup</button>
+          <button class="btn secondary" id="machineSetupRemoveBtn" type="button" style="display:none;">Remove Setup</button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- HOW I FEEL -->
@@ -1890,6 +1961,23 @@
   Object.entries(EXERCISE_CATALOG).forEach(([group, list]) => list.forEach(ex => { EXERCISE_TO_GROUP[ex] = group; }));
 
   const EQUIPMENT_OPTIONS = ['Barbell', 'Dumbbell', 'Machine', 'Smith Machine', 'Cable', 'Bodyweight', 'Kettlebell', 'Resistance Band', 'Other'];
+  // Suggested Machine Setup detail labels, tailored to what's actually adjustable on
+  // that type of equipment — a dumbbell bench doesn't have a "seat position" and a
+  // machine doesn't have a "grip", so the "+ Add detail" picker only offers what's
+  // plausible for the exercise's own equipment rather than one fixed field list.
+  const EQUIPMENT_FIELD_PRESETS = {
+    'Machine': ['Seat position', 'Back pad', 'Handle position', 'Cable height', 'Foot placement'],
+    'Smith Machine': ['Bar height', 'Seat position', 'Foot placement'],
+    'Cable': ['Cable height', 'Handle position', 'Foot placement'],
+    'Barbell': ['Bench angle', 'Grip', 'Foot placement'],
+    'Dumbbell': ['Bench angle', 'Grip'],
+    'Kettlebell': ['Grip'],
+    'Resistance Band': ['Anchor height', 'Band strength']
+  };
+  function machineSetupPresetLabels(equipment) {
+    const base = EQUIPMENT_FIELD_PRESETS[equipment] || ['Seat position', 'Bench angle', 'Grip'];
+    return base.concat(['General note']);
+  }
 
   const SET_TYPES = [
     { value: 'working', label: 'Working' },
@@ -2067,7 +2155,7 @@
     schedule[2] = routines[1].id; // Tue: Pull
     schedule[3] = routines[2].id; // Wed: Legs
     schedule[5] = routines[0].id; // Fri: Push
-    return { workouts: [], feelings: [], routines, schedule, plannedWorkouts: {}, weeklyGoal: null, sessions: [], activeSessionId: null };
+    return { workouts: [], feelings: [], routines, schedule, plannedWorkouts: {}, weeklyGoal: null, sessions: [], activeSessionId: null, machineSetups: {} };
   }
 
   function load() {
@@ -2087,6 +2175,7 @@
       if (s.weeklyGoal === undefined) s.weeklyGoal = null;
       if (!s.sessions) s.sessions = [];
       if (s.activeSessionId === undefined) s.activeSessionId = null;
+      if (!s.machineSetups) s.machineSetups = {};
     }
     s.routines.forEach(r => {
       r.exercises = (r.exercises || []).map(migrateExercise);
@@ -2332,6 +2421,49 @@
     if (e.key === 'Escape' && document.getElementById('quickLogOverlay').style.display === 'flex') closeQuickLogOverlay();
   });
 
+  // ---------- MACHINE SETUP SHEET ----------
+  document.getElementById('machineSetupCloseBtn').addEventListener('click', closeMachineSetupSheet);
+  document.getElementById('machineSetupOverlay').addEventListener('click', (e) => {
+    if (e.target.id === 'machineSetupOverlay') closeMachineSetupSheet();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && document.getElementById('machineSetupOverlay').style.display === 'flex') closeMachineSetupSheet();
+  });
+  document.getElementById('machineSetupAddDetailBtn').addEventListener('click', () => {
+    const picker = document.getElementById('machineSetupDetailPicker');
+    if (picker.style.display === 'flex') { picker.style.display = 'none'; return; }
+    renderMachineSetupDetailPicker();
+    picker.style.display = 'flex';
+  });
+  document.getElementById('machineSetupSaveBtn').addEventListener('click', () => {
+    const session = getActiveSession();
+    const ex = session && session.exercises.find(x => x.id === machineSetupEditingExId);
+    if (!ex) return;
+    const machine = document.getElementById('machineSetupName').value.trim();
+    const fields = machineSetupDraftFields
+      .map(f => ({ label: f.label.trim(), value: f.value.trim() }))
+      .filter(f => f.label && f.value);
+    if (!machine && !fields.length) {
+      delete state.machineSetups[ex.exercise];
+    } else {
+      state.machineSetups[ex.exercise] = { machine, fields, updatedAt: Date.now() };
+    }
+    delete machineSetupPromptDismissed[ex.id];
+    save();
+    closeMachineSetupSheet();
+    renderTrainActive();
+    showToast('Machine setup saved');
+  });
+  document.getElementById('machineSetupRemoveBtn').addEventListener('click', () => {
+    const session = getActiveSession();
+    const ex = session && session.exercises.find(x => x.id === machineSetupEditingExId);
+    if (ex) delete state.machineSetups[ex.exercise];
+    save();
+    closeMachineSetupSheet();
+    renderTrainActive();
+    showToast('Machine setup removed');
+  });
+
   function addSetRow(weight, reps, type) {
     const row = document.createElement('div');
     row.className = 'set-row';
@@ -2454,6 +2586,16 @@
       .filter(w => w.exercise === exerciseName && w.sets && w.sets.length)
       .sort((a, b) => b.date.localeCompare(a.date) || b.createdAt - a.createdAt);
     return entries.length ? entries[0].sets : null;
+  }
+  // Machine Setup belongs to the exercise itself (keyed by name), not the workout
+  // template or session — a saved Chest Press setup should show up automatically
+  // any time Chest Press appears, in any workout.
+  function getMachineSetup(exerciseName) {
+    return (exerciseName && state.machineSetups[exerciseName]) || null;
+  }
+  function hasMachineSetup(exerciseName) {
+    const setup = getMachineSetup(exerciseName);
+    return !!(setup && (setup.machine || (setup.fields && setup.fields.length)));
   }
   function sessionExerciseFromTemplateEx(ex) {
     const lastSets = lastLoggedSetsFor(ex.exercise);
@@ -2629,6 +2771,13 @@
   // leftover "collapsed" tap from when it was just an upcoming card shouldn't be able
   // to block it once it's actually up next.
   let lastCurrentExId = null;
+  // Machine Setup UI state — in-memory only (resets on reload), so a dismissed
+  // "save this for next time?" nudge doesn't nag again this session, but also
+  // doesn't need a persisted flag cluttering the saved data.
+  let machineSetupExpanded = {};
+  let machineSetupPromptDismissed = {};
+  let machineSetupEditingExId = null;
+  let machineSetupDraftFields = [];
   function isExerciseOpen(session, ex) {
     if (Object.prototype.hasOwnProperty.call(exOpenOverrides, ex.id)) return exOpenOverrides[ex.id];
     return ex.id === currentExerciseId(session);
@@ -2678,6 +2827,7 @@
           </div>
         </div>
         <div class="ex-card-body" style="display:${open ? 'block' : 'none'};">
+          ${renderMachineSetupBlock(ex)}
           <div id="trainSetRows-${ex.id}"></div>
           <button type="button" class="link-btn trainAddSetBtn" data-exid="${ex.id}">
             <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
@@ -2732,6 +2882,26 @@
         renderTrainActive();
       });
     });
+    cardsEl.querySelectorAll('.ms-row-saved, .ms-row-expanded').forEach(row => {
+      row.addEventListener('click', (e) => {
+        if (e.target.closest('.ms-edit-btn')) return;
+        machineSetupExpanded[row.dataset.exid] = !machineSetupExpanded[row.dataset.exid];
+        renderTrainActive();
+      });
+    });
+    cardsEl.querySelectorAll('.ms-edit-btn, .ms-add-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        openMachineSetupSheet(btn.dataset.exid);
+      });
+    });
+    cardsEl.querySelectorAll('.ms-dismiss-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        machineSetupPromptDismissed[btn.dataset.exid] = true;
+        renderTrainActive();
+      });
+    });
   }
 
   // Formats a historical set as compact "weight×reps" text for the Previous column,
@@ -2741,6 +2911,70 @@
     const hist = lastSets[i] || lastSets[lastSets.length - 1];
     if (!hist || (!hist.weight && !hist.reps)) return '–';
     return `${hist.weight || 0}×${hist.reps || 0}`;
+  }
+
+  // Machine Setup — optional, contextual info that "belongs" to an exercise. Renders one
+  // of five states: hidden entirely (bodyweight exercise, nothing saved), a lightweight
+  // post-completion nudge, a first-time hint with a short explanation, a quiet one-line
+  // "+ Save machine setup" prompt, or the saved summary (collapsed or expanded). It's
+  // never a large empty card — the empty states are a single subtle line, not a form.
+  function renderMachineSetupBlock(ex) {
+    const setup = getMachineSetup(ex.exercise);
+    const saved = hasMachineSetup(ex.exercise);
+    if (!saved && (ex.equipment || '') === 'Bodyweight') return '';
+
+    if (saved) {
+      const expanded = !!machineSetupExpanded[ex.id];
+      const fields = setup.fields || [];
+      if (!expanded) {
+        const parts = [];
+        if (setup.machine) parts.push(setup.machine);
+        fields.slice(0, setup.machine ? 2 : 3).forEach(f => parts.push(`${f.label} ${f.value}`));
+        const summary = escapeHtml(parts.join(' · ') || 'Saved');
+        return `
+        <div class="ms-row ms-row-saved" data-exid="${ex.id}">
+          <div class="ms-row-main">
+            <div class="ms-label">Machine setup</div>
+            <div class="ms-summary">${summary}</div>
+          </div>
+          <button type="button" class="link-btn ms-edit-btn" data-exid="${ex.id}">Edit</button>
+        </div>`;
+      }
+      const lines = fields.map(f => `<div class="ms-detail-line"><span>${escapeHtml(f.label)}</span><span>${escapeHtml(f.value)}</span></div>`).join('');
+      return `
+      <div class="ms-row ms-row-expanded" data-exid="${ex.id}">
+        <div class="ms-label">Machine setup</div>
+        ${setup.machine ? `<div class="ms-machine-name">${escapeHtml(setup.machine)}</div>` : ''}
+        <div class="ms-detail-list">${lines}</div>
+        <button type="button" class="link-btn ms-edit-btn" data-exid="${ex.id}">Edit setup</button>
+      </div>`;
+    }
+
+    // Nothing saved yet. Right after finishing the exercise is the best moment to ask,
+    // since the settings are fresh in mind — but only once per session per exercise.
+    if (isExerciseComplete(ex) && !machineSetupPromptDismissed[ex.id]) {
+      return `
+      <div class="ms-row ms-row-prompt" data-exid="${ex.id}">
+        <div class="ms-prompt-text">Save this machine setup for next time?</div>
+        <div class="ms-prompt-actions">
+          <button type="button" class="link-btn ms-add-btn" data-exid="${ex.id}">Save</button>
+          <button type="button" class="link-btn ms-dismiss-btn" data-exid="${ex.id}">Not now</button>
+        </div>
+      </div>`;
+    }
+
+    if (!lastLoggedSetsFor(ex.exercise)) {
+      return `
+      <div class="ms-row ms-row-empty-first" data-exid="${ex.id}">
+        <div class="ms-label">No machine setup saved</div>
+        <div class="ms-hint">Save seat positions or equipment settings so they appear automatically next time.</div>
+        <button type="button" class="link-btn ms-add-btn" data-exid="${ex.id}">+ Add setup</button>
+      </div>`;
+    }
+    return `
+    <div class="ms-row ms-row-empty" data-exid="${ex.id}">
+      <button type="button" class="link-btn ms-add-btn" data-exid="${ex.id}">+ Save machine setup</button>
+    </div>`;
   }
 
   // Swipe-left-to-reveal-delete for a set row, iOS-list style, unified across touch
@@ -2805,6 +3039,81 @@
       if (open) { e.preventDefault(); e.stopPropagation(); setX(0, true); open = false; }
     }, true);
     deleteBtn.addEventListener('click', onDelete);
+  }
+
+  // Machine Setup edit sheet — one static overlay reused for whichever exercise is being
+  // edited (same pattern as the Day-assign sheet), rather than a modal built fresh per
+  // exercise. Fields are a flexible label/value list (not a fixed form) so only what's
+  // relevant to that equipment ends up on screen.
+  function openMachineSetupSheet(exId) {
+    const session = getActiveSession();
+    const ex = session && session.exercises.find(x => x.id === exId);
+    if (!ex) return;
+    machineSetupEditingExId = exId;
+    const setup = getMachineSetup(ex.exercise);
+    machineSetupDraftFields = (setup && setup.fields) ? setup.fields.map(f => ({ label: f.label, value: f.value })) : [];
+    document.getElementById('machineSetupExerciseLabel').textContent =
+      ex.exercise + (ex.equipment ? ' · ' + ex.equipment : '');
+    document.getElementById('machineSetupName').value = (setup && setup.machine) || '';
+    document.getElementById('machineSetupRemoveBtn').style.display = setup ? 'inline-flex' : 'none';
+    document.getElementById('machineSetupDetailPicker').style.display = 'none';
+    renderMachineSetupDraftRows();
+    document.getElementById('machineSetupOverlay').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+  }
+  function closeMachineSetupSheet() {
+    document.getElementById('machineSetupOverlay').style.display = 'none';
+    document.body.style.overflow = '';
+    machineSetupEditingExId = null;
+  }
+  function renderMachineSetupDraftRows() {
+    const el = document.getElementById('machineSetupFieldRows');
+    el.innerHTML = machineSetupDraftFields.map((f, i) => `
+      <div class="ms-field-row" data-idx="${i}">
+        <input type="text" class="ms-field-label-input" value="${escapeHtml(f.label)}" placeholder="Label">
+        <input type="text" class="ms-field-value-input" value="${escapeHtml(f.value)}" placeholder="Value">
+        <button type="button" class="icon-btn ms-field-remove-btn" data-idx="${i}" title="Remove">${ICON_SVGS.x}</button>
+      </div>`).join('');
+    el.querySelectorAll('.ms-field-label-input').forEach(inp => {
+      inp.addEventListener('input', () => {
+        machineSetupDraftFields[+inp.closest('.ms-field-row').dataset.idx].label = inp.value;
+      });
+    });
+    el.querySelectorAll('.ms-field-value-input').forEach(inp => {
+      inp.addEventListener('input', () => {
+        machineSetupDraftFields[+inp.closest('.ms-field-row').dataset.idx].value = inp.value;
+      });
+    });
+    el.querySelectorAll('.ms-field-remove-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        machineSetupDraftFields.splice(+btn.dataset.idx, 1);
+        renderMachineSetupDraftRows();
+      });
+    });
+  }
+  function renderMachineSetupDetailPicker() {
+    const session = getActiveSession();
+    const ex = session && session.exercises.find(x => x.id === machineSetupEditingExId);
+    const used = machineSetupDraftFields.map(f => f.label.trim().toLowerCase());
+    const presets = machineSetupPresetLabels(ex ? ex.equipment : '').filter(l => !used.includes(l.toLowerCase()));
+    const picker = document.getElementById('machineSetupDetailPicker');
+    picker.innerHTML = presets.map(l => `<button type="button" class="ms-preset-btn" data-label="${escapeHtml(l)}">${escapeHtml(l)}</button>`).join('')
+      + `<button type="button" class="ms-preset-btn ms-preset-custom" data-label="">Custom…</button>`;
+    picker.querySelectorAll('.ms-preset-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        machineSetupDraftFields.push({ label: btn.dataset.label || '', value: '' });
+        picker.style.display = 'none';
+        renderMachineSetupDraftRows();
+        const rows = document.querySelectorAll('#machineSetupFieldRows .ms-field-row');
+        const last = rows[rows.length - 1];
+        if (last) {
+          const focusTarget = btn.dataset.label
+            ? last.querySelector('.ms-field-value-input')
+            : last.querySelector('.ms-field-label-input');
+          if (focusTarget) focusTarget.focus();
+        }
+      });
+    });
   }
 
   function renderTrainSetRows(session, ex) {
