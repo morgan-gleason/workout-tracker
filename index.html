@@ -2026,7 +2026,15 @@
       if (!s.sessions) s.sessions = [];
       if (s.activeSessionId === undefined) s.activeSessionId = null;
     }
-    s.routines.forEach(r => { r.exercises = (r.exercises || []).map(migrateExercise); });
+    s.routines.forEach(r => {
+      r.exercises = (r.exercises || []).map(migrateExercise);
+      // The template color palette was renamed to keep personalization colors distinct
+      // from the app's semantic state colors (blue=active, green=completed, etc). Any
+      // routine still pointing at a retired key (e.g. old 'blue'/'green'/'indigo') would
+      // otherwise silently collapse to the same gray fallback — clear it so the routine
+      // falls back to its category's new default color instead.
+      if (r.color && !COLOR_SWATCHES[r.color]) r.color = null;
+    });
     return s;
   }
   const state = load();
