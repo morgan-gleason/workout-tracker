@@ -2740,25 +2740,28 @@
   }
 
   // Swipe-left-to-reveal-delete for a set row, iOS-list style, unified across touch
-  // and mouse via Pointer Events. A drag starting on an interactive control (input,
-  // stepper button, checkmark) is ignored so normal taps still work; a drag starting
-  // on the row's "dead space" (the set/previous columns) drives the swipe.
+  // and mouse via Pointer Events. A drag can start anywhere on the row, including on
+  // top of a stepper/checkmark button — a tap (no meaningful movement) still reaches
+  // that button normally, while a horizontal drag takes over and suppresses the click
+  // that would otherwise fire underneath it. Pointer capture keeps the drag tracking
+  // even if the cursor strays outside the row's bounds mid-gesture (common with a
+  // mouse, less so with a finger), which is what made mouse-based swiping unreliable.
   function attachSwipeToDelete(wrapEl, onDelete) {
     const row = wrapEl.querySelector('.train-set-row');
     const deleteBtn = wrapEl.querySelector('.tsr-swipe-delete');
     const OPEN_X = -76;
-    let startX = 0, startY = 0, baseX = 0, dragging = false, decided = false, horizontal = false, open = false;
+    let startX = 0, startY = 0, baseX = 0, dragging = false, decided = false, horizontal = false, open = false, justDragged = false;
 
     function setX(x, animate) {
       row.style.transition = animate ? 'transform .2s ease' : 'none';
       row.style.transform = `translateX(${x}px)`;
     }
     function onDown(e) {
-      if (e.target.closest('input, button')) return;
       dragging = true; decided = false; horizontal = false;
       startX = e.clientX; startY = e.clientY;
       baseX = open ? OPEN_X : 0;
       row.style.transition = 'none';
+      try { row.setPointerCapture(e.pointerId); } catch (err) {}
     }
     function onMove(e) {
       if (!dragging) return;
@@ -2768,6 +2771,7 @@
         if (Math.abs(dx) < 6 && Math.abs(dy) < 6) return;
         decided = true;
         horizontal = Math.abs(dx) > Math.abs(dy);
+        if (horizontal) justDragged = true;
         if (!horizontal) { dragging = false; return; }
       }
       if (!horizontal) return;
@@ -2776,6 +2780,7 @@
       setX(x, false);
     }
     function onUp(e) {
+      try { row.releasePointerCapture(e.pointerId); } catch (err) {}
       if (!dragging) return;
       dragging = false;
       if (!horizontal) return;
@@ -2788,9 +2793,11 @@
     row.addEventListener('pointermove', onMove);
     row.addEventListener('pointerup', onUp);
     row.addEventListener('pointercancel', onUp);
-    // While open, the first tap anywhere on the row just closes it instead of
-    // reaching whatever control is underneath.
+    // Suppress the synthetic click that follows a horizontal drag (so the
+    // stepper/checkmark button underneath doesn't also fire), and treat a tap
+    // on an already-open row as "close" rather than reaching the control beneath it.
     row.addEventListener('click', (e) => {
+      if (justDragged) { justDragged = false; e.preventDefault(); e.stopPropagation(); return; }
       if (open) { e.preventDefault(); e.stopPropagation(); setX(0, true); open = false; }
     }, true);
     deleteBtn.addEventListener('click', onDelete);
