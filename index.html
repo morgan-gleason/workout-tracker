@@ -33,32 +33,6 @@
     color: var(--text);
     -webkit-font-smoothing: antialiased;
   }
-  header {
-    padding: 16px 20px 12px;
-    border-bottom: 1px solid var(--border);
-    position: sticky;
-    top: 0;
-    background: rgba(11,13,18,.92);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    z-index: 10;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-    flex-wrap: wrap;
-  }
-  header .title-block h1 {
-    margin: 0 0 2px;
-    font-size: 19px;
-    font-weight: 800;
-    letter-spacing: -.01em;
-  }
-  header .title-block p {
-    margin: 0;
-    color: var(--muted);
-    font-size: 12.5px;
-  }
   .header-streak-badge {
     display: inline-flex;
     align-items: center;
@@ -204,7 +178,6 @@
       flex-shrink: 0;
     }
     .nav-footer-text { font-size: 13px; font-weight: 700; }
-    header { display: none; }
     main { margin-left: var(--sidebar-w); max-width: none; padding: 28px 32px 40px; }
     .footer-note { margin-left: var(--sidebar-w); padding-bottom: 24px !important; }
     #toastContainer { left: var(--sidebar-w); }
@@ -754,6 +727,8 @@
   }
   .link-btn svg { width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-width: 2.3; stroke-linecap: round; stroke-linejoin: round; }
   .link-btn:hover { filter: brightness(1.15); }
+  .link-btn-danger { color: var(--danger); }
+  .ms-remove-link { display: flex; justify-content: center; width: 100%; margin-top: 10px; }
 
   .exercises-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
   .exercises-header label { margin: 0; }
@@ -863,19 +838,50 @@
   .exinfo-progress-track { height: 3px; background: rgba(255,255,255,.08); border-radius: 2px; margin-top: 7px; overflow: hidden; }
   .exinfo-progress-fill { height: 100%; background: var(--accent); border-radius: 2px; }
 
-  /* Machine Setup edit sheet */
-  .ms-field-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
-  .ms-field-row .ms-field-label-input, .ms-field-row .ms-field-value-input,
-  .ms-field-row .ms-field-label-select, .ms-field-row .ms-field-value-select { flex: 1; min-width: 0; }
+  /* Machine Setup edit sheet — each setting is one bordered row: icon, fixed label,
+     value (dropdown-of-presets or free text) flush right, remove button. The label
+     is chosen once via "+ Add detail" and isn't re-editable in place, so the row
+     always reads as "icon + name : value" rather than two competing dropdowns. */
+  .ms-settings-label {
+    font-size: 11px; font-weight: 800; color: var(--muted); text-transform: uppercase;
+    letter-spacing: .04em; margin: 18px 0 8px;
+  }
+  .ms-field-row {
+    display: flex; align-items: center; gap: 10px; margin-bottom: 8px;
+    padding: 10px 12px; background: var(--panel-2); border: 1px solid rgba(255,255,255,.08); border-radius: 12px;
+  }
+  .ms-field-icon { display: flex; align-items: center; justify-content: center; width: 20px; height: 20px; color: var(--muted); flex-shrink: 0; }
+  .ms-field-icon svg { width: 18px; height: 18px; }
+  .ms-field-label-text { flex: 1; min-width: 0; font-size: 14px; font-weight: 600; color: var(--text); line-height: 1.25; }
+  .ms-field-row .ms-field-value-input, .ms-field-row .ms-field-value-select {
+    flex: 0 1 auto; width: auto; max-width: 118px; min-height: auto;
+    background: none; border: none; padding: 0; color: var(--muted);
+    font-size: 14px; font-weight: 600; text-align: right;
+  }
+  .ms-field-row .ms-field-value-input::placeholder { color: var(--muted); opacity: .6; }
   .ms-field-remove-btn svg { width: 14px; height: 14px; }
   .ms-add-detail-wrap { position: relative; margin: 2px 0 8px; }
   .ms-detail-picker { display: none; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
   .ms-preset-btn {
+    display: inline-flex; align-items: center; gap: 7px; min-height: 44px;
     background: var(--panel-2); border: 1px solid var(--border-light); color: var(--text);
-    font-size: 12.5px; font-weight: 600; padding: 6px 11px; border-radius: 999px; cursor: pointer;
+    font-size: 13px; font-weight: 600; padding: 10px 16px; border-radius: 999px; cursor: pointer;
   }
   .ms-preset-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .ms-preset-icon { display: inline-flex; }
+  .ms-preset-icon svg { width: 13px; height: 13px; }
   .ms-preset-custom { color: var(--muted); }
+  .ms-custom-label-row { display: flex; gap: 8px; margin-top: 10px; }
+  .ms-custom-label-row input { flex: 1; min-width: 0; }
+  .ms-custom-label-row .btn { flex-shrink: 0; padding: 0 16px; min-height: 44px; }
+  .ms-exercise-caption { display: flex; align-items: center; gap: 6px; }
+  .ms-exercise-icon { display: inline-flex; color: var(--muted); }
+  .ms-exercise-icon svg { width: 15px; height: 15px; }
+  .field-icon-input { position: relative; }
+  .field-icon-input .field-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--muted); display: flex; pointer-events: none; }
+  .field-icon-input .field-icon svg { width: 16px; height: 16px; }
+  .field-icon-input input { padding-left: 38px; }
+  .ms-card-sub { font-size: 12px; color: var(--muted); margin-top: 1px; }
 
   /* Per-set table inside an expanded exercise card */
   .set-table-head {
@@ -1427,14 +1433,6 @@
 </head>
 <body>
 
-<header>
-  <div class="title-block">
-    <h1>🏋️ Workout Tracker</h1>
-    <p>Log sessions, track how you feel, and watch your trends over time.</p>
-  </div>
-  <span class="header-streak-badge" id="headerStreak" style="display:none;"></span>
-</header>
-
 <div id="toastContainer"></div>
 
 <main>
@@ -1809,11 +1807,24 @@
             <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
           </button>
         </div>
-        <p class="caption" id="machineSetupExerciseLabel"></p>
+        <p class="caption ms-exercise-caption" id="machineSetupExerciseLabel"></p>
         <div class="field">
-          <label>Machine / gym (optional)</label>
-          <input type="text" id="machineSetupName" placeholder="e.g. Technogym, Planet Fitness">
+          <label>Gym (optional)</label>
+          <div class="field-icon-input">
+            <span class="field-icon" id="machineSetupGymIcon"></span>
+            <input type="text" id="machineSetupGym" list="machineSetupGymList" placeholder="e.g. Technogym, Planet Fitness">
+          </div>
+          <datalist id="machineSetupGymList"></datalist>
         </div>
+        <div class="field">
+          <label>Equipment (optional)</label>
+          <div class="field-icon-input">
+            <span class="field-icon" id="machineSetupEquipmentIcon"></span>
+            <input type="text" id="machineSetupEquipment" list="machineSetupEquipmentList" placeholder="e.g. Life Fitness Chest Press, Cable Tower #2">
+          </div>
+          <datalist id="machineSetupEquipmentList"></datalist>
+        </div>
+        <div class="ms-settings-label">Setup Details</div>
         <div id="machineSetupFieldRows"></div>
         <div class="ms-add-detail-wrap">
           <button type="button" class="link-btn" id="machineSetupAddDetailBtn">
@@ -1821,10 +1832,14 @@
             Add detail
           </button>
           <div class="ms-detail-picker" id="machineSetupDetailPicker" style="display:none;"></div>
+          <div class="ms-custom-label-row" id="machineSetupCustomLabelRow" style="display:none;">
+            <input type="text" id="machineSetupCustomLabelInput" placeholder="Setting name">
+            <button type="button" class="btn" id="machineSetupCustomLabelAddBtn">Add</button>
+          </div>
         </div>
-        <div class="btn-row" style="margin-top:14px;">
-          <button class="btn" id="machineSetupSaveBtn" type="button">✓ Save Setup</button>
-          <button class="btn secondary" id="machineSetupRemoveBtn" type="button" style="display:none;">Remove Setup</button>
+        <div style="margin-top:14px;">
+          <button class="btn" id="machineSetupSaveBtn" type="button" style="width:100%;">✓ Save Machine Setup</button>
+          <button type="button" class="link-btn link-btn-danger ms-remove-link" id="machineSetupRemoveBtn" style="display:none;">Remove Setup</button>
         </div>
       </div>
     </div>
@@ -2005,18 +2020,30 @@
   // that type of equipment — a dumbbell bench doesn't have a "seat position" and a
   // machine doesn't have a "grip", so the "+ Add detail" picker only offers what's
   // plausible for the exercise's own equipment rather than one fixed field list.
-  const EQUIPMENT_FIELD_PRESETS = {
-    'Machine': ['Seat position', 'Back pad', 'Handle position', 'Cable height', 'Foot placement'],
-    'Smith Machine': ['Bar height', 'Seat position', 'Foot placement'],
-    'Cable': ['Cable height', 'Handle position', 'Foot placement'],
-    'Barbell': ['Bench angle', 'Grip', 'Foot placement'],
-    'Dumbbell': ['Bench angle', 'Grip'],
-    'Kettlebell': ['Grip'],
-    'Resistance Band': ['Anchor height', 'Band strength']
-  };
-  function machineSetupPresetLabels(equipment) {
-    const base = EQUIPMENT_FIELD_PRESETS[equipment] || ['Seat position', 'Bench angle', 'Grip'];
-    return base.concat(['General note']);
+  // The universal set of setup-detail types offered by "+ Add detail" — not
+  // equipment-conditional, every exercise can use any of these, plus a fully custom
+  // one typed by hand. Deliberately no icons here; icons are reserved for Gym,
+  // Equipment, and Custom (the three things that appear elsewhere in the sheet).
+  const SETUP_DETAIL_PRESETS = [
+    { label: 'Seat Position', icon: null },
+    { label: 'Back Pad', icon: null },
+    { label: 'Chest Pad', icon: null },
+    { label: 'Bench Angle', icon: null },
+    { label: 'Foot Placement', icon: null },
+    { label: 'Grip', icon: null },
+    { label: 'Handle Position', icon: null },
+    { label: 'Cable Height', icon: null },
+    { label: 'Pin Position', icon: null },
+    { label: 'Rack Height', icon: null },
+    { label: 'Attachment', icon: null }
+  ];
+  // Returns an icon key, or null for a known preset with no icon, or 'pencil' for a
+  // fully custom (not-in-the-list) label — so custom fields stay visually flagged as
+  // "user-created" even though most presets around them go icon-less.
+  function setupDetailIcon(label) {
+    const found = SETUP_DETAIL_PRESETS.find(p => p.label.toLowerCase() === (label || '').trim().toLowerCase());
+    if (found) return found.icon;
+    return 'pencil';
   }
   // Common values per field label, so most fields can be picked from a dropdown
   // instead of typed by hand. Keyed lowercase since custom-typed labels won't match
@@ -2024,12 +2051,16 @@
   // freeform custom labels) just stays a plain text input.
   const FIELD_VALUE_PRESETS = {
     'seat position': ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'],
-    'back pad': ['1', '2', '3', '4', '5', '6', '7', '8'],
+    'back pad': ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'],
+    'chest pad': ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'],
     'bench angle': ['0°', '15°', '30°', '45°', '60°', '90°'],
-    'grip': ['Narrow', 'Neutral', 'Wide', 'Underhand', 'Overhand'],
+    'grip': ['Narrow', 'Medium', 'Wide', 'Underhand', 'Overhand'],
     'cable height': ['Low', 'Mid', 'High'],
     'handle position': ['Low', 'Mid', 'High'],
-    'foot placement': ['Narrow', 'Standard', 'Wide'],
+    'foot placement': ['Narrow', 'Shoulder width', 'Wide'],
+    'pin position': ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
+    'rack height': ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
+    'attachment': ['Straight Bar', 'Rope', 'V-Bar', 'Single Handle', 'Ankle Strap', 'Lat Bar', 'D-Handle'],
     'bar height': ['Low', 'Mid', 'High'],
     'anchor height': ['Low', 'Mid', 'High'],
     'band strength': ['Light', 'Medium', 'Heavy', 'X-Heavy']
@@ -2089,7 +2120,18 @@
     x: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>',
     barChart: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>',
     trophy: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>',
-    clock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>'
+    clock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
+    seatPosition: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v7"/><path d="M5 12h14v5a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2z"/><path d="M8 19v2"/><path d="M16 19v2"/></svg>',
+    backPad: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2" width="12" height="20" rx="3"/></svg>',
+    chestPad: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="10" rx="4"/></svg>',
+    benchAngle: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20h18"/><path d="M3 20 15 4"/><path d="M15 4v16"/></svg>',
+    handGrip: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 11V6a2 2 0 0 0-2-2 2 2 0 0 0-2 2"/><path d="M14 10V4a2 2 0 0 0-2-2 2 2 0 0 0-2 2v2"/><path d="M10 10.5V6a2 2 0 0 0-2-2 2 2 0 0 0-2 2v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/></svg>',
+    handlePosition: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><circle cx="12" cy="18" r="3"/></svg>',
+    cableHeight: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20"/><path d="m8 6 4-4 4 4"/><path d="m8 18 4 4 4-4"/></svg>',
+    pinPosition: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s7-7.58 7-12.5A7 7 0 0 0 5 9.5C5 14.42 12 22 12 22Z"/><circle cx="12" cy="9.5" r="2.5"/></svg>',
+    rackHeight: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h16"/></svg>',
+    attachment: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 17H7A5 5 0 0 1 7 7h2"/><path d="M15 7h2a5 5 0 1 1 0 10h-2"/><line x1="8" y1="12" x2="16" y2="12"/></svg>',
+    building: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="1"/><path d="M9 22v-4h6v4"/><path d="M8 7h.01"/><path d="M12 7h.01"/><path d="M16 7h.01"/><path d="M8 11h.01"/><path d="M12 11h.01"/><path d="M16 11h.01"/><path d="M8 15h.01"/><path d="M12 15h.01"/><path d="M16 15h.01"/></svg>'
   };
   const EXERCISE_TYPE = {
     'Bench Press': 'Compound', 'Incline Bench Press': 'Compound', 'Decline Bench Press': 'Compound', 'Dumbbell Bench Press': 'Compound', 'Incline Dumbbell Press': 'Compound', 'Chest Fly': 'Isolation', 'Cable Crossover': 'Isolation', 'Push-Up': 'Compound', 'Chest Dip': 'Compound',
@@ -2239,6 +2281,15 @@
       if (s.activeSessionId === undefined) s.activeSessionId = null;
       if (!s.machineSetups) s.machineSetups = {};
     }
+    // Machine Setup used to have one combined "machine / gym" text field. It's now
+    // two separate fields (gym + equipment) so each can get its own autocomplete list.
+    // The old value reads more like a specific piece of equipment ("Technogym Chest
+    // Press") than a gym name, so it migrates to `equipment`, leaving `gym` blank.
+    Object.values(s.machineSetups).forEach(setup => {
+      if (setup.equipment === undefined) setup.equipment = setup.machine || '';
+      if (setup.gym === undefined) setup.gym = '';
+      delete setup.machine;
+    });
     s.routines.forEach(r => {
       r.exercises = (r.exercises || []).map(migrateExercise);
       // The template color palette was renamed to keep personalization colors distinct
@@ -2493,22 +2544,39 @@
   });
   document.getElementById('machineSetupAddDetailBtn').addEventListener('click', () => {
     const picker = document.getElementById('machineSetupDetailPicker');
+    document.getElementById('machineSetupCustomLabelRow').style.display = 'none';
     if (picker.style.display === 'flex') { picker.style.display = 'none'; return; }
     renderMachineSetupDetailPicker();
     picker.style.display = 'flex';
+  });
+  function addCustomMachineSetupDetail() {
+    const input = document.getElementById('machineSetupCustomLabelInput');
+    const label = input.value.trim();
+    if (!label) return;
+    machineSetupDraftFields.push({ label, value: '' });
+    document.getElementById('machineSetupCustomLabelRow').style.display = 'none';
+    renderMachineSetupDraftRows();
+    // Same "stays open for rapid adding" behavior as the preset chips.
+    renderMachineSetupDetailPicker();
+    document.getElementById('machineSetupDetailPicker').style.display = 'flex';
+  }
+  document.getElementById('machineSetupCustomLabelAddBtn').addEventListener('click', addCustomMachineSetupDetail);
+  document.getElementById('machineSetupCustomLabelInput').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') { e.preventDefault(); addCustomMachineSetupDetail(); }
   });
   document.getElementById('machineSetupSaveBtn').addEventListener('click', () => {
     const session = getActiveSession();
     const ex = session && session.exercises.find(x => x.id === machineSetupEditingExId);
     if (!ex) return;
-    const machine = document.getElementById('machineSetupName').value.trim();
+    const gym = document.getElementById('machineSetupGym').value.trim();
+    const equipment = document.getElementById('machineSetupEquipment').value.trim();
     const fields = machineSetupDraftFields
       .map(f => ({ label: f.label.trim(), value: f.value.trim() }))
       .filter(f => f.label && f.value);
-    if (!machine && !fields.length) {
+    if (!gym && !equipment && !fields.length) {
       delete state.machineSetups[ex.exercise];
     } else {
-      state.machineSetups[ex.exercise] = { machine, fields, updatedAt: Date.now() };
+      state.machineSetups[ex.exercise] = { gym, equipment, fields, updatedAt: Date.now() };
     }
     delete machineSetupPromptDismissed[ex.id];
     save();
@@ -2712,7 +2780,7 @@
   }
   function hasMachineSetup(exerciseName) {
     const setup = getMachineSetup(exerciseName);
-    return !!(setup && (setup.machine || (setup.fields && setup.fields.length)));
+    return !!(setup && (setup.equipment || setup.gym || (setup.fields && setup.fields.length)));
   }
   function sessionExerciseFromTemplateEx(ex) {
     const lastSets = lastLoggedSetsFor(ex.exercise);
@@ -3035,8 +3103,12 @@
     if (saved) {
       const expanded = !!machineSetupExpanded[ex.id];
       const fields = setup.fields || [];
+      // Equipment (the specific machine/piece) is the headline; gym is context, shown
+      // alongside it only when both are set.
+      const headline = setup.equipment || setup.gym || 'Saved';
+      const subline = (setup.equipment && setup.gym) ? setup.gym : '';
       if (!expanded) {
-        const previewFields = fields.slice(0, setup.machine ? 2 : 3);
+        const previewFields = fields.slice(0, (setup.equipment || setup.gym) ? 2 : 3);
         return `
         <div class="ms-row ms-row-saved ms-card" data-exid="${ex.id}">
           <div class="ms-card-top">
@@ -3044,7 +3116,10 @@
             <button type="button" class="link-btn ms-view-all-btn" data-exid="${ex.id}">View all ›</button>
           </div>
           <div class="ms-card-body">
-            <div class="ms-card-value">${escapeHtml(setup.machine || 'Saved')}</div>
+            <div>
+              <div class="ms-card-value">${escapeHtml(headline)}</div>
+              ${subline ? `<div class="ms-card-sub">${escapeHtml(subline)}</div>` : ''}
+            </div>
             <div class="ms-card-fields">
               ${previewFields.map(f => `<div class="ms-card-field"><span class="ms-card-field-label">${escapeHtml(f.label)}</span><span class="ms-card-field-value">${escapeHtml(f.value)}</span></div>`).join('')}
             </div>
@@ -3055,7 +3130,7 @@
       return `
       <div class="ms-row ms-row-expanded ms-card" data-exid="${ex.id}">
         ${exinfoHeader('dumbbell', 'Machine Setup')}
-        ${setup.machine ? `<div class="ms-machine-name">${escapeHtml(setup.machine)}</div>` : ''}
+        ${(setup.equipment || setup.gym) ? `<div class="ms-machine-name">${escapeHtml(headline)}${subline ? ' · ' + escapeHtml(subline) : ''}</div>` : ''}
         <div class="ms-detail-list">${lines}</div>
         <button type="button" class="link-btn ms-edit-btn" data-exid="${ex.id}">Edit setup</button>
       </div>`;
@@ -3247,53 +3322,47 @@
     if (!ex) return;
     machineSetupEditingExId = exId;
     const setup = getMachineSetup(ex.exercise);
-    // First time setting this exercise up: start from the equipment's usual fields
-    // (e.g. Bench Angle + Grip for a barbell) already in the list, empty and ready to
-    // fill in, rather than an empty sheet that makes every field feel hand-built.
-    // They're just a starting point — any row can still be removed or added to via
-    // the detail picker below.
+    // Starts empty for a new setup — just "+ Add detail" and the chip picker, no
+    // pre-filled rows to review/delete before you've chosen anything yourself.
     machineSetupDraftFields = (setup && setup.fields)
       ? setup.fields.map(f => ({ label: f.label, value: f.value }))
-      : (EQUIPMENT_FIELD_PRESETS[ex.equipment] || ['Seat position', 'Bench angle', 'Grip']).map(label => ({ label, value: '' }));
-    document.getElementById('machineSetupExerciseLabel').textContent =
-      ex.exercise + (ex.equipment ? ' · ' + ex.equipment : '');
-    document.getElementById('machineSetupName').value = (setup && setup.machine) || '';
+      : [];
+    document.getElementById('machineSetupGymIcon').innerHTML = ICON_SVGS.building;
+    document.getElementById('machineSetupEquipmentIcon').innerHTML = ICON_SVGS.dumbbell;
+    document.getElementById('machineSetupExerciseLabel').innerHTML =
+      `<span class="ms-exercise-icon">${ICON_SVGS.dumbbell}</span>${escapeHtml(ex.exercise)}${ex.equipment ? ' · ' + escapeHtml(ex.equipment) : ''}`;
+    document.getElementById('machineSetupGym').value = (setup && setup.gym) || '';
+    document.getElementById('machineSetupEquipment').value = (setup && setup.equipment) || '';
     document.getElementById('machineSetupRemoveBtn').style.display = setup ? 'inline-flex' : 'none';
     document.getElementById('machineSetupDetailPicker').style.display = 'none';
+    document.getElementById('machineSetupCustomLabelRow').style.display = 'none';
+    updateMachineSetupDatalists();
     renderMachineSetupDraftRows();
     document.getElementById('machineSetupOverlay').style.display = 'flex';
     document.body.style.overflow = 'hidden';
+  }
+  // Populates the Gym/Equipment autocomplete lists from every value saved across all
+  // exercises' setups, so typing "Planet" once suggests it again for the next exercise.
+  function updateMachineSetupDatalists() {
+    const setups = Object.values(state.machineSetups);
+    const gyms = [...new Set(setups.map(s => s.gym).filter(Boolean))].sort();
+    const equipment = [...new Set(setups.map(s => s.equipment).filter(Boolean))].sort();
+    document.getElementById('machineSetupGymList').innerHTML = gyms.map(g => `<option value="${escapeHtml(g)}">`).join('');
+    document.getElementById('machineSetupEquipmentList').innerHTML = equipment.map(e => `<option value="${escapeHtml(e)}">`).join('');
   }
   function closeMachineSetupSheet() {
     document.getElementById('machineSetupOverlay').style.display = 'none';
     document.body.style.overflow = '';
     machineSetupEditingExId = null;
   }
-  // A field renders as a dropdown of common values when its label has a preset list
-  // and the current value is either blank or already one of those presets — so typing
-  // an exact custom value (or picking "Custom…") still works, it just drops to a plain
-  // text input rather than fighting a dropdown that doesn't have that option.
+  // A setting's type (icon + label) is fixed once added via "+ Add detail" — only its
+  // value stays editable here, as a dropdown of common values when the label has a
+  // preset list and the current value is either blank or already one of those presets.
+  // Typing an exact custom value (or picking "Custom…") still works, it just drops to
+  // a plain text input rather than fighting a dropdown that doesn't have that option.
   function renderMachineSetupDraftRows() {
     const el = document.getElementById('machineSetupFieldRows');
-    const session = getActiveSession();
-    const ex = session && session.exercises.find(x => x.id === machineSetupEditingExId);
-    const allLabelPresets = machineSetupPresetLabels(ex ? ex.equipment : '');
     el.innerHTML = machineSetupDraftFields.map((f, i) => {
-      // Label options exclude whatever other rows are already using (no picking
-      // "Grip" twice), but always keep this row's own current label available.
-      const usedByOtherRows = machineSetupDraftFields
-        .filter((_, j) => j !== i)
-        .map(x => x.label.trim().toLowerCase());
-      const labelOptions = allLabelPresets.filter(l => !usedByOtherRows.includes(l.toLowerCase()));
-      const useLabelSelect = !f.label || labelOptions.some(l => l.toLowerCase() === f.label.trim().toLowerCase());
-      const labelControl = useLabelSelect
-        ? `<select class="ms-field-label-select">
-             <option value="">Choose…</option>
-             ${labelOptions.map(l => `<option value="${escapeHtml(l)}" ${f.label === l ? 'selected' : ''}>${escapeHtml(l)}</option>`).join('')}
-             <option value="__custom__">Custom…</option>
-           </select>`
-        : `<input type="text" class="ms-field-label-input" value="${escapeHtml(f.label)}" placeholder="Label">`;
-
       const presets = fieldValuePresets(f.label);
       const useValueSelect = presets && (!f.value || presets.includes(f.value));
       const valueControl = useValueSelect
@@ -3303,39 +3372,15 @@
              <option value="__custom__">Custom…</option>
            </select>`
         : `<input type="text" class="ms-field-value-input" value="${escapeHtml(f.value)}" placeholder="Value">`;
+      const icon = setupDetailIcon(f.label);
       return `
       <div class="ms-field-row" data-idx="${i}">
-        ${labelControl}
+        ${icon ? `<span class="ms-field-icon">${ICON_SVGS[icon]}</span>` : ''}
+        <span class="ms-field-label-text">${escapeHtml(f.label)}</span>
         ${valueControl}
         <button type="button" class="icon-btn ms-field-remove-btn" data-idx="${i}" title="Remove">${ICON_SVGS.x}</button>
       </div>`;
     }).join('');
-    el.querySelectorAll('.ms-field-label-input').forEach(inp => {
-      inp.addEventListener('input', () => {
-        machineSetupDraftFields[+inp.closest('.ms-field-row').dataset.idx].label = inp.value;
-      });
-    });
-    el.querySelectorAll('.ms-field-label-select').forEach(sel => {
-      sel.addEventListener('change', () => {
-        const idx = +sel.closest('.ms-field-row').dataset.idx;
-        if (sel.value === '__custom__') {
-          machineSetupDraftFields[idx].label = '';
-          const input = document.createElement('input');
-          input.type = 'text';
-          input.className = 'ms-field-label-input';
-          input.placeholder = 'Label';
-          input.addEventListener('input', () => { machineSetupDraftFields[idx].label = input.value; });
-          sel.replaceWith(input);
-          input.focus();
-        } else {
-          machineSetupDraftFields[idx].label = sel.value;
-          // The value control's preset set depends on the label, so a full re-render
-          // keeps it in sync (e.g. switching from Grip to Bench angle should offer
-          // angle presets, not grip ones).
-          renderMachineSetupDraftRows();
-        }
-      });
-    });
     el.querySelectorAll('.ms-field-value-input').forEach(inp => {
       inp.addEventListener('input', () => {
         machineSetupDraftFields[+inp.closest('.ms-field-row').dataset.idx].value = inp.value;
@@ -3367,28 +3412,33 @@
       });
     });
   }
+  // The "+ Add detail" picker: chips for the universal setting types not already in
+  // use, plus a "+ Custom Detail" chip that reveals a small inline text field (below)
+  // for a fully custom setting name instead of a native prompt() dialog. Tapping a
+  // chip inserts the row immediately and re-renders the picker minus that chip —
+  // deliberately doesn't close, so adding several settings is one continuous tapping
+  // motion instead of reopening "+ Add detail" after every single one.
   function renderMachineSetupDetailPicker() {
-    const session = getActiveSession();
-    const ex = session && session.exercises.find(x => x.id === machineSetupEditingExId);
     const used = machineSetupDraftFields.map(f => f.label.trim().toLowerCase());
-    const presets = machineSetupPresetLabels(ex ? ex.equipment : '').filter(l => !used.includes(l.toLowerCase()));
+    const available = SETUP_DETAIL_PRESETS.filter(p => !used.includes(p.label.toLowerCase()));
     const picker = document.getElementById('machineSetupDetailPicker');
-    picker.innerHTML = presets.map(l => `<button type="button" class="ms-preset-btn" data-label="${escapeHtml(l)}">${escapeHtml(l)}</button>`).join('')
-      + `<button type="button" class="ms-preset-btn ms-preset-custom" data-label="">Custom…</button>`;
-    picker.querySelectorAll('.ms-preset-btn').forEach(btn => {
+    picker.innerHTML = available.map(p =>
+      `<button type="button" class="ms-preset-btn" data-label="${escapeHtml(p.label)}">${p.icon ? `<span class="ms-preset-icon">${ICON_SVGS[p.icon]}</span>` : ''}${escapeHtml(p.label)}</button>`
+    ).join('') + `<button type="button" class="ms-preset-btn ms-preset-custom" id="machineSetupCustomBtn"><span class="ms-preset-icon">${ICON_SVGS.pencil}</span>+ Custom Detail</button>`;
+    picker.querySelectorAll('.ms-preset-btn:not(.ms-preset-custom)').forEach(btn => {
       btn.addEventListener('click', () => {
-        machineSetupDraftFields.push({ label: btn.dataset.label || '', value: '' });
-        picker.style.display = 'none';
+        machineSetupDraftFields.push({ label: btn.dataset.label, value: '' });
         renderMachineSetupDraftRows();
-        const rows = document.querySelectorAll('#machineSetupFieldRows .ms-field-row');
-        const last = rows[rows.length - 1];
-        if (last) {
-          const focusTarget = btn.dataset.label
-            ? last.querySelector('.ms-field-value-input')
-            : last.querySelector('.ms-field-label-input');
-          if (focusTarget) focusTarget.focus();
-        }
+        renderMachineSetupDetailPicker();
       });
+    });
+    document.getElementById('machineSetupCustomBtn').addEventListener('click', () => {
+      picker.style.display = 'none';
+      const row = document.getElementById('machineSetupCustomLabelRow');
+      const input = document.getElementById('machineSetupCustomLabelInput');
+      input.value = '';
+      row.style.display = 'flex';
+      input.focus();
     });
   }
 
