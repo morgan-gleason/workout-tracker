@@ -1472,7 +1472,6 @@
     max-width: 640px;
     max-height: 88vh;
     overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
     padding: 18px 20px calc(20px + env(safe-area-inset-bottom));
     box-shadow: var(--shadow-md);
   }
@@ -1481,12 +1480,15 @@
     align-items: center;
     justify-content: space-between;
     gap: 12px;
-    margin: -2px 0 14px;
+    margin: -2px -20px 14px;
+    padding: 2px 20px 12px;
     position: sticky;
     top: 0;
     background: var(--panel);
-    padding-top: 2px;
     z-index: 2;
+    will-change: transform;
+    transform: translateZ(0);
+    backface-visibility: hidden;
   }
   .modal-header h2 { margin: 0; }
   .modal-close-btn {
@@ -3886,7 +3888,25 @@
       const row = wrap.querySelector('.train-set-row');
       const weightInput = row.querySelector('.trainSetWeight');
       const repsInput = row.querySelector('.trainSetReps');
-      weightInput.addEventListener('change', () => { ex.sets[idx].weight = weightInput.value; save(); });
+      weightInput.addEventListener('change', () => {
+        ex.sets[idx].weight = weightInput.value;
+        // With no logged history for this exercise, sets start blank and typing the
+        // same weight into every row is tedious — use the first set's weight as a
+        // starting point for the rest, leaving any set the user already filled in
+        // alone. Once real history exists, sessionExerciseFromTemplateEx/
+        // sessionExerciseBlank prefill from it instead, so this only ever kicks in
+        // before that history exists.
+        if (idx === 0 && weightInput.value !== '' && !lastLoggedSetsFor(ex.exercise)) {
+          let filledAny = false;
+          ex.sets.forEach((s, i) => {
+            if (i === 0 || s.weight !== '') return;
+            s.weight = weightInput.value;
+            filledAny = true;
+          });
+          if (filledAny) { save(); renderTrainActive(); return; }
+        }
+        save();
+      });
       repsInput.addEventListener('change', () => { ex.sets[idx].reps = repsInput.value; save(); });
       row.querySelector('.train-set-complete-btn').addEventListener('click', () => {
         const set = ex.sets[idx];
@@ -4024,6 +4044,18 @@
   let templateSearchQuery = '';
   const routineExRows = document.getElementById('routineExRows');
   document.getElementById('routineCategory').innerHTML = TEMPLATE_CATEGORIES.map(c => `<option value="${c}">${c}</option>`).join('');
+
+  // Adding/removing exercise or set rows while the modal is scrolled leaves the
+  // sticky header showing a stale compositor bitmap of whatever used to be behind
+  // it (a browser paint-invalidation bug, not a real transparency/opacity issue).
+  // Nudging scrollTop by 1px and back forces a fresh repaint of the sticky layer.
+  new MutationObserver(() => {
+    const panel = document.querySelector('#routineEditorOverlay .modal-panel');
+    if (!panel || !panel.scrollTop) return;
+    const y = panel.scrollTop;
+    panel.scrollTop = y + 1;
+    panel.scrollTop = y;
+  }).observe(routineExRows, { childList: true, subtree: true });
 
   document.getElementById('templateSearch').addEventListener('input', (e) => {
     templateSearchQuery = e.target.value;
@@ -4372,6 +4404,9 @@
         renumberExerciseCards();
         refreshEditorStats();
         showToast(`${btn.dataset.name} added`, 'success');
+        exercisePickerQuery = '';
+        document.getElementById('exercisePickerSearch').value = '';
+        renderExercisePicker();
       });
     });
   }
