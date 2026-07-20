@@ -2595,6 +2595,15 @@
     btn.addEventListener('click', () => switchView(btn.dataset.view));
   });
   function switchView(view) {
+    // Leaving via the bottom nav (instead of the detail page's own back button)
+    // never closed a lingering Completed Workout detail page — it stayed
+    // display:block and would show stacked on top of the Train tab's normal
+    // content the next time you came back to it. A tab switch always exits it.
+    const completedDetailPage = document.getElementById('completedDetailPage');
+    if (completedDetailPage.style.display !== 'none') {
+      completedDetailPage.style.display = 'none';
+      document.body.classList.remove('completed-detail-active');
+    }
     navButtons.forEach(b => b.classList.toggle('active', b.dataset.view === view));
     document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
     document.getElementById('view-' + view).classList.add('active');
@@ -2698,6 +2707,7 @@
     const session = getActiveSession();
     const ex = session && session.exercises.find(x => x.id === machineSetupEditingExId);
     if (!ex) return;
+    if (document.activeElement) document.activeElement.blur();
     const gym = document.getElementById('machineSetupGym').value.trim();
     const equipment = document.getElementById('machineSetupEquipment').value.trim();
     const fields = machineSetupDraftFields
@@ -2712,15 +2722,18 @@
     save();
     closeMachineSetupSheet();
     renderTrainActive();
+    window.scrollTo(0, machineSetupScrollY);
     showToast('Machine setup saved');
   });
   document.getElementById('machineSetupRemoveBtn').addEventListener('click', () => {
     const session = getActiveSession();
     const ex = session && session.exercises.find(x => x.id === machineSetupEditingExId);
+    if (document.activeElement) document.activeElement.blur();
     if (ex) delete state.machineSetups[ex.exercise];
     save();
     closeMachineSetupSheet();
     renderTrainActive();
+    window.scrollTo(0, machineSetupScrollY);
     showToast('Machine setup removed');
   });
 
@@ -3326,12 +3339,23 @@
   function isExerciseComplete(ex) {
     return ex.sets.length > 0 && ex.sets.every(s => s.completed);
   }
-  // Which exercise is "current" — the first one that isn't fully done yet. Once every
-  // exercise is complete, the last one stays flagged current (nothing left to advance to).
+  // Which exercise is "current" — normally the first one that isn't fully done yet,
+  // but skipping an exercise (machine was taken, moved on to the next one) shouldn't
+  // leave it permanently flagged "current" once you've made progress past it. So:
+  // find the last exercise with any completed set, then the first incomplete one
+  // after that becomes current. Only falls back to the plain first-incomplete rule
+  // once nothing after that point is left — i.e. the skipped exercise really is the
+  // only thing remaining, so it's correct for it to be current again.
   function currentExerciseId(session) {
-    const firstIncomplete = session.exercises.find(ex => !isExerciseComplete(ex));
+    const exercises = session.exercises;
+    let lastTouchedIdx = -1;
+    exercises.forEach((ex, i) => { if (ex.sets.some(s => s.completed)) lastTouchedIdx = i; });
+    for (let i = lastTouchedIdx + 1; i < exercises.length; i++) {
+      if (!isExerciseComplete(exercises[i])) return exercises[i].id;
+    }
+    const firstIncomplete = exercises.find(ex => !isExerciseComplete(ex));
     if (firstIncomplete) return firstIncomplete.id;
-    return session.exercises.length ? session.exercises[session.exercises.length - 1].id : null;
+    return exercises.length ? exercises[exercises.length - 1].id : null;
   }
   // Manual open/closed overrides per exercise card, so a tap always wins over the
   // auto-focus default. Cleared whenever a session starts/ends so the next workout
@@ -3350,6 +3374,13 @@
   let machineSetupPromptDismissed = {};
   let machineSetupEditingExId = null;
   let machineSetupDraftFields = [];
+  // The page behind the sheet keeps its own scroll position while the sheet is open,
+  // but saving/removing closes the sheet, blurs whatever text field still has focus
+  // (dismissing the mobile keyboard) and rebuilds the whole exercise card list all at
+  // once — on a phone that combination reliably lands the browser scrolled to the
+  // bottom instead of back where the user actually was. Restoring it explicitly after
+  // the rebuild fixes that regardless of what the keyboard/layout timing does.
+  let machineSetupScrollY = 0;
   function isExerciseOpen(session, ex) {
     if (Object.prototype.hasOwnProperty.call(exOpenOverrides, ex.id)) return exOpenOverrides[ex.id];
     return ex.id === currentExerciseId(session);
@@ -3713,6 +3744,7 @@
     const session = getActiveSession();
     const ex = session && session.exercises.find(x => x.id === exId);
     if (!ex) return;
+    machineSetupScrollY = window.scrollY;
     machineSetupEditingExId = exId;
     const setup = getMachineSetup(ex.exercise);
     // Starts empty for a new setup — just "+ Add detail" and the chip picker, no
@@ -3888,36 +3920,31 @@
       const row = wrap.querySelector('.train-set-row');
       const weightInput = row.querySelector('.trainSetWeight');
       const repsInput = row.querySelector('.trainSetReps');
+      // With no logged history for this exercise, sets start blank and typing the same
+      // number into every row is tedious — use the first set's value as a starting point
+      // for the rest, leaving any set the user already filled in alone. Once real history
+      // exists, sessionExerciseFromTemplateEx/sessionExerciseBlank prefill from it instead,
+      // so this only ever kicks in before that history exists. Sibling inputs are updated
+      // directly (not via a full renderTrainActive() re-render) so it can't yank focus or
+      // destroy the input the user is mid-interaction with, e.g. tabbing from weight to reps.
+      function autofillFromFirstSet(field, value) {
+        if (idx !== 0 || value === '' || lastLoggedSetsFor(ex.exercise)) return;
+        el.querySelectorAll('.train-set-row-wrap').forEach(otherWrap => {
+          const otherIdx = parseInt(otherWrap.dataset.setidx);
+          if (otherIdx === 0 || ex.sets[otherIdx][field] !== '') return;
+          ex.sets[otherIdx][field] = value;
+          const otherInput = otherWrap.querySelector(field === 'weight' ? '.trainSetWeight' : '.trainSetReps');
+          if (otherInput) otherInput.value = value;
+        });
+      }
       weightInput.addEventListener('change', () => {
         ex.sets[idx].weight = weightInput.value;
-        // With no logged history for this exercise, sets start blank and typing the
-        // same weight into every row is tedious — use the first set's weight as a
-        // starting point for the rest, leaving any set the user already filled in
-        // alone. Once real history exists, sessionExerciseFromTemplateEx/
-        // sessionExerciseBlank prefill from it instead, so this only ever kicks in
-        // before that history exists.
-        if (idx === 0 && weightInput.value !== '' && !lastLoggedSetsFor(ex.exercise)) {
-          let filledAny = false;
-          ex.sets.forEach((s, i) => {
-            if (i === 0 || s.weight !== '') return;
-            s.weight = weightInput.value;
-            filledAny = true;
-          });
-          if (filledAny) { save(); renderTrainActive(); return; }
-        }
+        autofillFromFirstSet('weight', weightInput.value);
         save();
       });
       repsInput.addEventListener('change', () => {
         ex.sets[idx].reps = repsInput.value;
-        if (idx === 0 && repsInput.value !== '' && !lastLoggedSetsFor(ex.exercise)) {
-          let filledAny = false;
-          ex.sets.forEach((s, i) => {
-            if (i === 0 || s.reps !== '') return;
-            s.reps = repsInput.value;
-            filledAny = true;
-          });
-          if (filledAny) { save(); renderTrainActive(); return; }
-        }
+        autofillFromFirstSet('reps', repsInput.value);
         save();
       });
       row.querySelector('.train-set-complete-btn').addEventListener('click', () => {
@@ -3927,10 +3954,16 @@
           set.weight = parseFloat(weightInput.value) || 0;
           set.reps = parseInt(repsInput.value) || 0;
         }
-        // Let auto-focus re-derive this card's open state (collapse if now done,
-        // stay open if it's still the current exercise) rather than keeping
-        // whatever manual override was set before this toggle.
-        delete exOpenOverrides[ex.id];
+        // Once this exercise is fully done, let auto-focus re-derive its open state
+        // (collapses it and moves on). Otherwise keep it explicitly open — the user
+        // is actively working on it right now, even if an earlier skipped exercise
+        // is still technically "current" under the first-incomplete rule, which
+        // would otherwise auto-collapse this one back in favor of that one.
+        if (isExerciseComplete(ex)) {
+          delete exOpenOverrides[ex.id];
+        } else {
+          exOpenOverrides[ex.id] = true;
+        }
         save();
         renderTrainActive();
       });
