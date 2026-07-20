@@ -609,6 +609,7 @@
     border-left: 2px solid var(--pr); border-radius: 4px;
   }
   .cwd-set-line.is-pr .cwd-set-val { color: var(--pr); font-weight: 700; }
+  .cwd-set-pr-labels { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; flex-shrink: 0; }
   .cwd-set-pr-label {
     display: inline-flex; align-items: center; gap: 4px;
     color: var(--pr); font-size: 12px; font-weight: 700; white-space: nowrap;
@@ -947,12 +948,33 @@
   .ms-field-label-text { flex: 1; min-width: 0; font-size: 14px; font-weight: 600; color: var(--text); line-height: 1.25; }
   .ms-field-row .ms-field-value-input, .ms-field-row .ms-field-value-select {
     flex: 0 1 auto; width: auto; max-width: 118px; min-height: auto;
-    background: none; border: none; padding: 0; color: var(--muted);
+    background: none; border: none; padding: 0 14px 0 0; color: var(--muted);
     font-size: 14px; font-weight: 600; text-align: right;
   }
   .ms-field-row .ms-field-value-input::placeholder { color: var(--muted); opacity: .6; }
+  /* Native <select> rendering ignores text-align on several mobile browsers, so its
+     selected value ends up left-aligned while the text input beside it (e.g. a custom
+     numeric value) is properly right-aligned — visually misaligned even though both
+     use text-align:right. Stripping the native appearance and drawing our own chevron
+     makes text-align actually take effect, so both controls line up the same way. */
+  .ms-field-row .ms-field-value-select {
+    appearance: none; -webkit-appearance: none; -moz-appearance: none;
+    text-align-last: right;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238b93a3' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right center;
+    background-size: 12px 12px;
+  }
   .ms-field-remove-btn svg { width: 14px; height: 14px; }
-  .ms-add-detail-wrap { position: relative; margin: 2px 0 8px; }
+  .ms-add-detail-wrap { position: relative; margin: 0 0 8px; }
+  .ms-add-detail-btn {
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    width: 100%; padding: 10px 12px;
+    background: none; border: 1px dashed var(--border-light); border-radius: 12px;
+    color: var(--accent); font-size: 13px; font-weight: 700; cursor: pointer;
+  }
+  .ms-add-detail-btn:hover { border-color: var(--accent); background: rgba(109,140,255,.06); }
+  .ms-add-detail-btn svg { width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-width: 2.3; stroke-linecap: round; stroke-linejoin: round; }
   .ms-detail-picker { display: none; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
   .ms-preset-btn {
     display: inline-flex; align-items: center; gap: 7px; min-height: 44px;
@@ -1352,6 +1374,12 @@
   }
   .train-set-complete-btn svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
   .train-set-row.completed .train-set-complete-btn { background: var(--accent-2); border-color: var(--accent-2); color: white; }
+  /* The one set currently holding this exercise's PR, live during the workout —
+     purple like every other PR treatment in the app, replacing the usual green
+     "completed" tint just for this row. */
+  .train-set-row.is-pr { background: rgba(167,139,250,.1); border-left: 3px solid var(--pr); }
+  .train-set-row.is-pr .tsr-field .stepper-row input { color: var(--pr); }
+  .train-set-row.is-pr .train-set-complete-btn { background: var(--pr); border-color: var(--pr); color: white; }
   .train-remove-ex-btn {
     background: none; border: none; color: var(--muted); cursor: pointer;
     width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 8px; flex-shrink: 0;
@@ -1972,7 +2000,7 @@
         <div class="ms-settings-label">Setup Details</div>
         <div id="machineSetupFieldRows"></div>
         <div class="ms-add-detail-wrap">
-          <button type="button" class="link-btn" id="machineSetupAddDetailBtn">
+          <button type="button" class="ms-add-detail-btn" id="machineSetupAddDetailBtn">
             <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
             Add detail
           </button>
@@ -2875,6 +2903,38 @@
     if (days < 7) return `${days} days ago`;
     return fmtDate(iso);
   }
+  // Two distinct, independent PR types instead of one generic badge: a Weight PR is
+  // the heaviest weight ever lifted for this exercise (reps irrelevant); a Rep PR is
+  // the most reps ever done at one *specific* weight (a brand-new weight has no prior
+  // reps record to beat, so it can only earn a Weight PR, not also a Rep PR). Both
+  // beforeCreatedAt-scanning helpers below are shared by the live in-workout marker
+  // (called with no cutoff, since an in-progress session's own sets aren't in
+  // state.workouts yet) and the finished-workout detail page (called with that
+  // workout's own createdAt, so a badge reflects "was this a record at the time"
+  // rather than being retroactively invalidated by workouts logged since).
+  function priorBestWeightOnly(exerciseName, beforeCreatedAt) {
+    let best = null;
+    state.workouts.forEach(w => {
+      if (w.exercise !== exerciseName || (beforeCreatedAt !== undefined && w.createdAt >= beforeCreatedAt)) return;
+      w.sets.forEach(s => {
+        if (s.type === 'warmup' || !s.weight) return;
+        if (best === null || s.weight > best) best = s.weight;
+      });
+    });
+    return best;
+  }
+  function priorBestRepsAtWeight(exerciseName, weight, beforeCreatedAt) {
+    let best = null;
+    state.workouts.forEach(w => {
+      if (w.exercise !== exerciseName || (beforeCreatedAt !== undefined && w.createdAt >= beforeCreatedAt)) return;
+      w.sets.forEach(s => {
+        if (s.type === 'warmup' || !s.weight || s.weight !== weight) return;
+        const reps = s.reps || 0;
+        if (best === null || reps > best) best = reps;
+      });
+    });
+    return best;
+  }
   // Baseline PR: highest working-set weight ever logged for this exercise, from past
   // finished workouts only (state.workouts) — deliberately excludes today's in-progress
   // session, so this number always means "best before today's workout began."
@@ -2899,6 +2959,41 @@
       if (!best || w > best.weight) best = { weight: w, reps: parseInt(s.reps) || 0 };
     });
     return best;
+  }
+  // Which set (if any) currently holds this exercise's Weight PR mid-workout — only
+  // one set at a time. A later set only takes over if it's strictly heavier than
+  // both the pre-workout baseline and whichever set currently holds it; a later set
+  // at the same weight doesn't move it (that's the Rep PR's job, not this one's).
+  function liveWeightPRSetIdx(ex) {
+    const baseline = priorBestWeightOnly(ex.exercise);
+    let idx = -1;
+    ex.sets.forEach((s, i) => {
+      if (!s.completed || s.type === 'warmup') return;
+      const weight = parseFloat(s.weight) || 0;
+      if (!weight) return;
+      if (baseline !== null && weight <= baseline) return;
+      if (idx === -1 || weight > (parseFloat(ex.sets[idx].weight) || 0)) idx = i;
+    });
+    return idx === -1 ? null : idx;
+  }
+  // Which set (if any, per distinct weight) currently holds this exercise's Rep PR
+  // mid-workout — a Map of weight -> set index, since different weights each earn
+  // their own independent Rep PR in the same workout (e.g. a new best at 135 and a
+  // separate new best at 145 can both be active at once). Only weights with a real
+  // prior rep record can qualify; a later tie at the same weight doesn't move it.
+  function liveRepPRSetIndices(ex) {
+    const holders = new Map();
+    ex.sets.forEach((s, i) => {
+      if (!s.completed || s.type === 'warmup') return;
+      const weight = parseFloat(s.weight) || 0;
+      const reps = parseInt(s.reps) || 0;
+      if (!weight || !reps) return;
+      const baseline = priorBestRepsAtWeight(ex.exercise, weight);
+      if (baseline === null || reps <= baseline) return;
+      const holderIdx = holders.get(weight);
+      if (holderIdx === undefined || reps > (parseInt(ex.sets[holderIdx].reps) || 0)) holders.set(weight, i);
+    });
+    return holders;
   }
   // Compares today's completed sets against the historical baseline without persisting
   // anything — the baseline itself only updates once the workout is finished and its
@@ -3092,36 +3187,38 @@
     entries.forEach(e => e.sets.forEach(s => { total += (s.weight || 0) * (s.reps || 0); }));
     return total;
   }
-  // A set counts toward the PR badge if its weight beat every set ever logged for
-  // that exercise strictly before this workout happened — "was this a PR at the
-  // time", not "is it still the record right now" (which could change as newer
-  // workouts get logged, without this one's badge needing to retroactively change).
-  function priorBestWeight(exerciseName, beforeCreatedAt) {
-    let best = null;
-    state.workouts.forEach(w => {
-      if (w.exercise !== exerciseName || w.createdAt >= beforeCreatedAt) return;
-      w.sets.forEach(s => {
-        if (s.type === 'warmup' || !s.weight) return;
-        if (!best || s.weight > best) best = s.weight;
-      });
-    });
-    return best;
-  }
-  // Single source of truth for "did this exercise PR, and which specific set" — used
-  // both to count PRs and to mark the exact set line in the detail page.
-  function exercisePRInfo(entry) {
-    const prior = priorBestWeight(entry.exercise, entry.createdAt);
-    let bestIdx = -1, bestWeight = 0;
+  // Post-hoc equivalents of liveWeightPRSetIdx/liveRepPRSetIndices, evaluated as of
+  // the moment this workout finished (baseline cut off at entry.createdAt) rather
+  // than live against right now — same two independent PR types, same rules.
+  function exerciseWeightPRInfo(entry) {
+    const baseline = priorBestWeightOnly(entry.exercise, entry.createdAt);
+    let idx = -1;
     entry.sets.forEach((s, i) => {
       if (s.type === 'warmup' || !s.weight) return;
-      if (s.weight > bestWeight) { bestWeight = s.weight; bestIdx = i; }
+      if (baseline !== null && s.weight <= baseline) return;
+      if (idx === -1 || s.weight > entry.sets[idx].weight) idx = i;
     });
-    if (bestIdx === -1) return null;
-    if (prior === null || bestWeight > prior) return { setIdx: bestIdx, weight: bestWeight };
-    return null;
+    return idx === -1 ? null : idx;
+  }
+  function exerciseRepPRIndices(entry) {
+    const holders = new Map();
+    entry.sets.forEach((s, i) => {
+      if (s.type === 'warmup' || !s.weight || !s.reps) return;
+      const baseline = priorBestRepsAtWeight(entry.exercise, s.weight, entry.createdAt);
+      if (baseline === null || s.reps <= baseline) return;
+      const holderIdx = holders.get(s.weight);
+      if (holderIdx === undefined || s.reps > entry.sets[holderIdx].reps) holders.set(s.weight, i);
+    });
+    return holders;
+  }
+  // Whether this exercise earned a PR at all (either type) — the collapsed exercise
+  // card and workout-level count deliberately don't distinguish type or count
+  // multiple badges, only the expanded set list does.
+  function exerciseHasPR(entry) {
+    return exerciseWeightPRInfo(entry) !== null || exerciseRepPRIndices(entry).size > 0;
   }
   function sessionPRCount(entries) {
-    return entries.filter(e => exercisePRInfo(e)).length;
+    return entries.filter(e => exerciseHasPR(e)).length;
   }
   function relativeWorkoutDate(dateStr) {
     const days = Math.round((new Date(todayStr() + 'T00:00:00') - new Date(dateStr + 'T00:00:00')) / 86400000);
@@ -3235,7 +3332,7 @@
       <span class="cwd-summary-item">${ICON_SVGS.trendingUp} ${Math.round(volume).toLocaleString()} lbs</span>
     `;
 
-    const prNames = entries.filter(e => exercisePRInfo(e)).map(e => e.exercise);
+    const prNames = entries.filter(e => exerciseHasPR(e)).map(e => e.exercise);
     const prCardEl = document.getElementById('completedDetailPRCard');
     if (prNames.length) {
       prCardEl.innerHTML = `
@@ -3261,10 +3358,12 @@
     const el = document.getElementById('completedDetailExercises');
     el.innerHTML = completedDetailEntries.map((e, i) => {
       const volume = e.sets.reduce((sum, s) => sum + (s.weight || 0) * (s.reps || 0), 0);
-      const prInfo = exercisePRInfo(e);
+      const weightPRIdx = exerciseWeightPRInfo(e);
+      const repPRSetIndices = new Set(exerciseRepPRIndices(e).values());
+      const hasPR = weightPRIdx !== null || repPRSetIndices.size > 0;
       const isOpen = !!completedDetailCollapsed[i];
       return `
-      <div class="routine-ex-card cwd-ex-card ${isOpen ? 'open' : ''} ${prInfo ? 'has-pr' : ''}" data-idx="${i}">
+      <div class="routine-ex-card cwd-ex-card ${isOpen ? 'open' : ''} ${hasPR ? 'has-pr' : ''}" data-idx="${i}">
         <div class="ex-card-header cwd-ex-header">
           <div class="cwd-ex-header-main">
             <div class="cwd-ex-row1">
@@ -3273,22 +3372,27 @@
             </div>
             <div class="cwd-ex-row2">
               <span class="cwd-ex-sets">${e.sets.length} set${e.sets.length === 1 ? '' : 's'}</span>
-              ${prInfo ? `<span class="cwd-pr-pill">${ICON_SVGS.trophy} PR</span>` : ''}
+              ${hasPR ? `<span class="cwd-pr-pill">${ICON_SVGS.trophy} PR</span>` : ''}
             </div>
           </div>
           <svg class="ex-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
         </div>
         <div class="cwd-ex-body" style="display:${isOpen ? 'block' : 'none'};">
           ${e.sets.map((s, si) => {
-            const isPR = prInfo && prInfo.setIdx === si;
+            const isWeightPR = si === weightPRIdx;
+            const isRepPR = repPRSetIndices.has(si);
             return `
-            <div class="cwd-set-line ${isPR ? 'is-pr' : ''}">
+            <div class="cwd-set-line ${(isWeightPR || isRepPR) ? 'is-pr' : ''}">
               <span class="cwd-set-val">
                 <span class="cwd-set-weight">${s.weight || 0} lbs</span>
                 <span class="cwd-set-times">×</span>
                 <span class="cwd-set-reps">${s.reps || 0}</span>
               </span>
-              ${isPR ? `<span class="cwd-set-pr-label">${ICON_SVGS.trophy} PR</span>` : ''}
+              ${(isWeightPR || isRepPR) ? `
+              <span class="cwd-set-pr-labels">
+                ${isWeightPR ? `<span class="cwd-set-pr-label">${ICON_SVGS.trophy} Weight PR</span>` : ''}
+                ${isRepPR ? `<span class="cwd-set-pr-label">${ICON_SVGS.star} Rep PR</span>` : ''}
+              </span>` : ''}
             </div>`;
           }).join('')}
         </div>
@@ -3873,6 +3977,8 @@
     // The first not-yet-completed set is "current" — the one we want to visually pull
     // focus toward, same idea as the current-exercise focus but one level down.
     const currentSetIdx = ex.sets.findIndex(s => !s.completed);
+    const liveWeightPRIdx = liveWeightPRSetIdx(ex);
+    const liveRepPRIndices = new Set(liveRepPRSetIndices(ex).values());
     const head = `
       <div class="train-set-rows-head">
         <span class="tsrh-num">Set</span>
@@ -3885,10 +3991,13 @@
       const isSpecial = !isWarmup && s.type !== 'working';
       const badgeText = isWarmup ? 'W' : String(i + 1);
       const repsPlaceholder = s.targetReps ? escapeHtml(s.targetReps) : '0';
+      const isWeightPR = i === liveWeightPRIdx;
+      const isRepPR = liveRepPRIndices.has(i);
+      const isLivePR = isWeightPR || isRepPR;
       return `
       <div class="train-set-row-wrap" data-exid="${ex.id}" data-setidx="${i}">
         <button type="button" class="tsr-swipe-delete" title="Remove set">Delete</button>
-        <div class="train-set-row ${s.completed ? 'completed' : ''} ${i === currentSetIdx ? 'current' : ''}">
+        <div class="train-set-row ${s.completed ? 'completed' : ''} ${i === currentSetIdx ? 'current' : ''} ${isLivePR ? 'is-pr' : ''}">
           <div class="tsr-num ${isWarmup ? 'warmup' : ''}">
             ${badgeText}
             ${isSpecial ? `<span class="tsr-type-tag">${escapeHtml(typeLabel(s.type))}</span>` : ''}
@@ -3907,8 +4016,8 @@
               <button type="button" class="stepper-btn" data-delta="1">+</button>
             </div>
           </div>
-          <button type="button" class="train-set-complete-btn" title="${s.completed ? 'Reopen set' : 'Mark complete'}">
-            ${s.completed ? ICON_SVGS.check : ''}
+          <button type="button" class="train-set-complete-btn" title="${s.completed ? (isWeightPR ? 'Weight PR — reopen set' : isRepPR ? 'Rep PR — reopen set' : 'Reopen set') : 'Mark complete'}">
+            ${s.completed ? (isWeightPR ? ICON_SVGS.trophy : isRepPR ? ICON_SVGS.star : ICON_SVGS.check) : ''}
           </button>
           <button type="button" class="tsr-delete-btn" title="Remove set">${ICON_SVGS.x}</button>
         </div>
