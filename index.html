@@ -2128,11 +2128,11 @@
   const TEMPLATE_CATEGORIES = ['Push', 'Pull', 'Legs', 'Upper', 'Lower', 'Full Body', 'Custom'];
 
   const EXERCISE_CATALOG = {
-    'Chest': ['Bench Press', 'Incline Bench Press', 'Decline Bench Press', 'Dumbbell Bench Press', 'Incline Dumbbell Press', 'Chest Fly', 'Cable Crossover', 'Push-Up', 'Chest Dip'],
-    'Back': ['Deadlift', 'Pull-Up', 'Chin-Up', 'Lat Pulldown', 'Seated Cable Row', 'Bent-Over Row', 'T-Bar Row', 'Single-Arm Dumbbell Row', 'Face Pull'],
+    'Chest': ['Bench Press', 'Incline Bench Press', 'Decline Bench Press', 'Dumbbell Bench Press', 'Incline Dumbbell Press', 'Chest Fly', 'Cable Crossover', 'Push-Up', 'Chest Dip', 'Chest Press'],
+    'Back': ['Deadlift', 'Pull-Up', 'Chin-Up', 'Lat Pulldown', 'Seated Cable Row', 'Bent-Over Row', 'T-Bar Row', 'Single-Arm Dumbbell Row', 'Face Pull', 'Back Extensions'],
     'Shoulders': ['Overhead Press', 'Dumbbell Shoulder Press', 'Arnold Press', 'Lateral Raise', 'Front Raise', 'Rear Delt Fly', 'Upright Row', 'Shrug'],
-    'Legs': ['Back Squat', 'Front Squat', 'Leg Press', 'Walking Lunge', 'Bulgarian Split Squat', 'Romanian Deadlift', 'Leg Curl', 'Leg Extension', 'Calf Raise', 'Hip Thrust'],
-    'Arms': ['Barbell Curl', 'Dumbbell Curl', 'Hammer Curl', 'Preacher Curl', 'Tricep Pushdown', 'Skull Crusher', 'Overhead Tricep Extension', 'Close-Grip Bench Press'],
+    'Legs': ['Back Squat', 'Front Squat', 'Leg Press', 'Walking Lunge', 'Bulgarian Split Squat', 'Romanian Deadlift', 'Leg Curl', 'Leg Extension', 'Calf Raise', 'Hip Thrust', 'Side-Lying Hip Abduction'],
+    'Arms': ['Barbell Curl', 'Dumbbell Curl', 'Hammer Curl', 'Preacher Curl', 'Tricep Pushdown', 'Skull Crusher', 'Overhead Tricep Extension', 'Close-Grip Bench Press', 'Single Arm Tricep Pushdown'],
     'Core': ['Plank', 'Hanging Leg Raise', 'Cable Crunch', 'Russian Twist', 'Ab Wheel Rollout', 'Sit-Up']
   };
   const EXERCISE_TO_GROUP = {};
@@ -2259,11 +2259,11 @@
     chevronLeft: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>'
   };
   const EXERCISE_TYPE = {
-    'Bench Press': 'Compound', 'Incline Bench Press': 'Compound', 'Decline Bench Press': 'Compound', 'Dumbbell Bench Press': 'Compound', 'Incline Dumbbell Press': 'Compound', 'Chest Fly': 'Isolation', 'Cable Crossover': 'Isolation', 'Push-Up': 'Compound', 'Chest Dip': 'Compound',
-    'Deadlift': 'Compound', 'Pull-Up': 'Compound', 'Chin-Up': 'Compound', 'Lat Pulldown': 'Compound', 'Seated Cable Row': 'Compound', 'Bent-Over Row': 'Compound', 'T-Bar Row': 'Compound', 'Single-Arm Dumbbell Row': 'Compound', 'Face Pull': 'Isolation',
+    'Bench Press': 'Compound', 'Incline Bench Press': 'Compound', 'Decline Bench Press': 'Compound', 'Dumbbell Bench Press': 'Compound', 'Incline Dumbbell Press': 'Compound', 'Chest Fly': 'Isolation', 'Cable Crossover': 'Isolation', 'Push-Up': 'Compound', 'Chest Dip': 'Compound', 'Chest Press': 'Compound',
+    'Deadlift': 'Compound', 'Pull-Up': 'Compound', 'Chin-Up': 'Compound', 'Lat Pulldown': 'Compound', 'Seated Cable Row': 'Compound', 'Bent-Over Row': 'Compound', 'T-Bar Row': 'Compound', 'Single-Arm Dumbbell Row': 'Compound', 'Face Pull': 'Isolation', 'Back Extensions': 'Isolation',
     'Overhead Press': 'Compound', 'Dumbbell Shoulder Press': 'Compound', 'Arnold Press': 'Compound', 'Lateral Raise': 'Isolation', 'Front Raise': 'Isolation', 'Rear Delt Fly': 'Isolation', 'Upright Row': 'Compound', 'Shrug': 'Isolation',
-    'Back Squat': 'Compound', 'Front Squat': 'Compound', 'Leg Press': 'Compound', 'Walking Lunge': 'Compound', 'Bulgarian Split Squat': 'Compound', 'Romanian Deadlift': 'Compound', 'Leg Curl': 'Isolation', 'Leg Extension': 'Isolation', 'Calf Raise': 'Isolation', 'Hip Thrust': 'Compound',
-    'Barbell Curl': 'Isolation', 'Dumbbell Curl': 'Isolation', 'Hammer Curl': 'Isolation', 'Preacher Curl': 'Isolation', 'Tricep Pushdown': 'Isolation', 'Skull Crusher': 'Isolation', 'Overhead Tricep Extension': 'Isolation', 'Close-Grip Bench Press': 'Compound',
+    'Back Squat': 'Compound', 'Front Squat': 'Compound', 'Leg Press': 'Compound', 'Walking Lunge': 'Compound', 'Bulgarian Split Squat': 'Compound', 'Romanian Deadlift': 'Compound', 'Leg Curl': 'Isolation', 'Leg Extension': 'Isolation', 'Calf Raise': 'Isolation', 'Hip Thrust': 'Compound', 'Side-Lying Hip Abduction': 'Isolation',
+    'Barbell Curl': 'Isolation', 'Dumbbell Curl': 'Isolation', 'Hammer Curl': 'Isolation', 'Preacher Curl': 'Isolation', 'Tricep Pushdown': 'Isolation', 'Skull Crusher': 'Isolation', 'Overhead Tricep Extension': 'Isolation', 'Close-Grip Bench Press': 'Compound', 'Single Arm Tricep Pushdown': 'Isolation',
     'Plank': 'Isolation', 'Hanging Leg Raise': 'Isolation', 'Cable Crunch': 'Isolation', 'Russian Twist': 'Isolation', 'Ab Wheel Rollout': 'Compound', 'Sit-Up': 'Isolation'
   };
   // Template personalization colors. Kept deliberately distinct from the app's semantic
@@ -3907,7 +3907,19 @@
         }
         save();
       });
-      repsInput.addEventListener('change', () => { ex.sets[idx].reps = repsInput.value; save(); });
+      repsInput.addEventListener('change', () => {
+        ex.sets[idx].reps = repsInput.value;
+        if (idx === 0 && repsInput.value !== '' && !lastLoggedSetsFor(ex.exercise)) {
+          let filledAny = false;
+          ex.sets.forEach((s, i) => {
+            if (i === 0 || s.reps !== '') return;
+            s.reps = repsInput.value;
+            filledAny = true;
+          });
+          if (filledAny) { save(); renderTrainActive(); return; }
+        }
+        save();
+      });
       row.querySelector('.train-set-complete-btn').addEventListener('click', () => {
         const set = ex.sets[idx];
         set.completed = !set.completed;
