@@ -18,6 +18,7 @@
     --accent-2: #34d399;
     --warn: #fbbf5c;
     --danger: #ff6b7a;
+    --pr: #a78bfa;
     --radius: 16px;
     --radius-sm: 10px;
     --shadow-sm: 0 1px 3px rgba(0,0,0,.35);
@@ -522,6 +523,97 @@
   .promo-text .t { font-weight: 700; font-size: 14.5px; margin-bottom: 2px; }
   .promo-text .s { color: var(--muted); font-size: 12px; line-height: 1.4; }
   .promo-chevron { color: var(--muted); font-size: 20px; flex-shrink: 0; }
+
+  /* Completed Workouts list */
+  .cw-group-label {
+    font-size: 11px; font-weight: 800; color: var(--muted); text-transform: uppercase;
+    letter-spacing: .04em; margin: 20px 2px 8px;
+  }
+  .cw-group-label:first-child { margin-top: 4px; }
+  .cw-card {
+    background: var(--panel-2); border: 1px solid rgba(255,255,255,.08); border-radius: var(--radius);
+    padding: 14px 15px; margin-bottom: 10px; cursor: pointer;
+  }
+  .cw-card:active { background: rgba(255,255,255,.03); }
+  .cw-card-top { display: flex; align-items: flex-start; gap: 14px; }
+  .cw-card-main { flex: 1; min-width: 0; }
+  .cw-card-name { font-weight: 700; font-size: 16px; margin-bottom: 2px; }
+  .cw-card-date { color: var(--muted); font-size: 12.5px; margin-bottom: 6px; }
+  .cw-card-stats { color: var(--muted); font-size: 13px; line-height: 1.5; }
+  .cw-card-preview { color: var(--muted); font-size: 12.5px; margin-top: 6px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .cw-pr-badge {
+    display: inline-flex; align-items: center; gap: 5px; margin-top: 10px;
+    background: rgba(167,139,250,.14); color: var(--pr);
+    font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 999px;
+  }
+
+  /* Completed Workout detail — a full page takeover within Train, not a modal. Hides
+     the normal page-header/subnav the same way an active session does. */
+  body.completed-detail-active #view-log > .page-header,
+  body.completed-detail-active #view-log #trainStart > .subnav { display: none; }
+  .cwd-back-btn {
+    display: inline-flex; align-items: center; gap: 4px; background: none; border: none;
+    color: var(--accent); font-weight: 700; font-size: 14px; cursor: pointer; padding: 6px 0; margin-bottom: 6px;
+  }
+  .cwd-back-btn svg { width: 18px; height: 18px; }
+  .cwd-summary-row {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 6px;
+    margin: 10px 0 20px; font-size: 13px; color: var(--muted); opacity: .85;
+  }
+  .cwd-summary-item { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
+  .cwd-summary-item svg { width: 13px; height: 13px; opacity: .75; }
+  .cwd-summary-sep { color: var(--border); font-size: 11px; }
+  .cwd-summary-divider { margin: 20px 0 0; }
+  .cwd-pr-card {
+    display: flex; align-items: flex-start; gap: 12px;
+    background: rgba(167,139,250,.1); border: 1px solid rgba(167,139,250,.25); border-radius: 12px;
+    padding: 12px 14px; margin-bottom: 16px;
+  }
+  .cwd-pr-icon {
+    width: 40px; height: 40px; flex-shrink: 0; border-radius: 50%;
+    background: var(--pr); color: white; display: flex; align-items: center; justify-content: center;
+  }
+  .cwd-pr-icon svg { width: 19px; height: 19px; }
+  .cwd-pr-title { font-weight: 700; font-size: 14.5px; margin-bottom: 4px; }
+  .cwd-pr-sub { color: var(--muted); font-size: 12.5px; line-height: 1.4; }
+  .cwd-pr-name { color: var(--text); font-size: 13px; line-height: 1.6; }
+  .cwd-section-label {
+    font-size: 11px; font-weight: 800; color: var(--muted); text-transform: uppercase;
+    letter-spacing: .04em; margin: 4px 2px 10px;
+  }
+  .cwd-ex-card {
+    background: var(--panel-2); border: 1px solid rgba(255,255,255,.08); border-radius: 12px;
+    padding: 16px 14px 10px; margin-bottom: 8px;
+  }
+  .cwd-ex-header { padding: 0; align-items: center; }
+  .cwd-ex-header-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+  .cwd-ex-row1, .cwd-ex-row2 { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .cwd-ex-name { font-weight: 700; font-size: 14.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .cwd-ex-card.has-pr .cwd-ex-name { color: var(--pr); }
+  .cwd-ex-volume { color: var(--muted); font-size: 13px; white-space: nowrap; }
+  .cwd-ex-sets { color: var(--muted); font-size: 12.5px; }
+  .cwd-pr-pill {
+    display: inline-flex; align-items: center; gap: 3px;
+    background: rgba(167,139,250,.16); color: var(--pr); font-size: 11px; font-weight: 800;
+    padding: 3px 8px; border-radius: 999px; flex-shrink: 0;
+  }
+  .cwd-pr-pill svg { width: 11px; height: 11px; }
+  .cwd-ex-body { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 6px; }
+  .cwd-set-line { display: flex; align-items: center; justify-content: space-between; gap: 10px; font-size: 14px; }
+  .cwd-set-val { display: flex; align-items: baseline; gap: 6px; color: var(--text); font-variant-numeric: tabular-nums; }
+  .cwd-set-weight { min-width: 58px; text-align: right; }
+  .cwd-set-times { color: var(--muted); }
+  .cwd-set-line.is-pr .cwd-set-times { color: var(--pr); }
+  .cwd-set-line.is-pr {
+    background: rgba(167,139,250,.08); margin: 0 -8px; padding: 4px 8px;
+    border-left: 2px solid var(--pr); border-radius: 4px;
+  }
+  .cwd-set-line.is-pr .cwd-set-val { color: var(--pr); font-weight: 700; }
+  .cwd-set-pr-label {
+    display: inline-flex; align-items: center; gap: 4px;
+    color: var(--pr); font-size: 12px; font-weight: 700; white-space: nowrap;
+  }
+  .cwd-set-pr-label svg { width: 13px; height: 13px; }
 
   /* Template cards */
   .template-card-v2 {
@@ -1182,6 +1274,22 @@
     border-bottom: 1px solid var(--border);
   }
   .train-set-row-wrap:last-child { border-bottom: none; }
+  /* Mouse/trackpad devices don't get the touch swipe gesture (see attachSwipeToDelete),
+     so they get a small always-visible delete icon instead (same idea as the "×" remove
+     buttons already used in Machine Setup) — hidden by default so it doesn't clutter
+     the mobile row, shown only for devices with a precise, hover-capable pointer.
+     Deliberately NOT hover-to-reveal: hovering the row is unavoidable while using the
+     steppers/checkmark, so a hover trigger would fight normal use of the row. */
+  .tsr-delete-btn { display: none; }
+  @media (hover: hover) and (pointer: fine) {
+    .tsr-delete-btn {
+      display: flex; align-items: center; justify-content: center;
+      width: 22px; height: 22px; flex-shrink: 0;
+      border: none; background: none; color: var(--muted); cursor: pointer; border-radius: 6px;
+    }
+    .tsr-delete-btn:hover { color: var(--danger); background: rgba(255,107,122,.1); }
+    .tsr-delete-btn svg { width: 14px; height: 14px; }
+  }
   .tsr-swipe-delete {
     position: absolute;
     top: 0; right: 0; bottom: 0;
@@ -1652,6 +1760,18 @@
 
     <!-- TRAIN: START (no active session) -->
     <div id="trainStart">
+    <div class="subnav">
+      <button class="subnav-btn active" data-sub="train-start" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="6 3 20 12 6 21 6 3"/></svg>
+        <span>Start</span>
+      </button>
+      <button class="subnav-btn" data-sub="train-completed" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></svg>
+        <span>Completed</span>
+      </button>
+    </div>
+
+    <div class="sub-view active" id="sub-train-start">
       <div class="card" id="trainTodayCard" style="display:none;">
         <h2>Today's Workout</h2>
         <div class="template-card-head" style="margin-bottom:14px;">
@@ -1693,6 +1813,11 @@
           Log a Past Workout
         </button>
       </div>
+    </div>
+
+    <div class="sub-view" id="sub-train-completed">
+      <div id="completedWorkoutList"></div>
+    </div>
     </div>
 
     <!-- TRAIN: ACTIVE SESSION -->
@@ -1745,6 +1870,24 @@
           <button class="btn secondary" id="finishBackBtn" type="button">Back to Workout</button>
         </div>
       </div>
+    </div>
+
+    <!-- COMPLETED WORKOUT DETAIL (read-only summary of a past finished session) —
+         a full page takeover within Train, not a modal: its own back button and
+         header replace the normal page-header/subnav while it's open. -->
+    <div id="completedDetailPage" style="display:none;">
+      <button type="button" class="cwd-back-btn" id="completedDetailBackBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+        <span>Completed</span>
+      </button>
+      <h1 class="page-title" id="completedDetailName"></h1>
+      <p class="page-subtitle" id="completedDetailMeta"></p>
+      <div class="cwd-summary-row" id="completedDetailStats"></div>
+      <div class="cwd-summary-divider" id="completedDetailDivider"></div>
+      <div id="completedDetailPRCard"></div>
+      <div class="cwd-section-label">Exercises</div>
+      <div id="completedDetailExercises"></div>
+      <button class="btn" id="completedDetailRepeatBtn" type="button" style="width:100%; margin-top:16px;">▶ Repeat Workout</button>
     </div>
 
     <!-- QUICK LOG MODAL (manual single-exercise / backfill entry, no session needed) -->
@@ -1849,7 +1992,7 @@
   <div class="view" id="view-feel">
     <div class="page-header">
       <div>
-        <h1 class="page-title">How I Feel</h1>
+        <h1 class="page-title">Recovery</h1>
         <p class="page-subtitle">Capture how your body's responding, right after training or the morning after.</p>
       </div>
     </div>
@@ -1885,24 +2028,6 @@
     </div>
   </div>
 
-  <!-- HISTORY -->
-  <div class="view" id="view-history">
-    <div class="page-header">
-      <div>
-        <h1 class="page-title">History</h1>
-        <p class="page-subtitle">Browse everything you've logged.</p>
-      </div>
-    </div>
-
-    <div class="card">
-      <h2>Workout History</h2>
-      <div class="field">
-        <label>Filter by exercise</label>
-        <select id="historyFilter"><option value="">All exercises</option></select>
-      </div>
-      <div id="historyList"><div class="empty">No workouts logged yet.</div></div>
-    </div>
-  </div>
 
   <!-- TRENDS -->
   <div class="view" id="view-trends">
@@ -1976,11 +2101,7 @@
     </button>
     <button data-view="feel" type="button">
       <svg viewBox="0 0 24 24"><path d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"/></svg>
-      <span>Feel</span>
-    </button>
-    <button data-view="history" type="button">
-      <svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></svg>
-      <span>History</span>
+      <span>Recovery</span>
     </button>
     <button data-view="trends" type="button">
       <svg viewBox="0 0 24 24"><path d="M16 7h6v6"/><path d="m22 7-8.5 8.5-5-5L2 17"/></svg>
@@ -2131,7 +2252,9 @@
     pinPosition: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s7-7.58 7-12.5A7 7 0 0 0 5 9.5C5 14.42 12 22 12 22Z"/><circle cx="12" cy="9.5" r="2.5"/></svg>',
     rackHeight: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h16"/></svg>',
     attachment: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 17H7A5 5 0 0 1 7 7h2"/><path d="M15 7h2a5 5 0 1 1 0 10h-2"/><line x1="8" y1="12" x2="16" y2="12"/></svg>',
-    building: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="1"/><path d="M9 22v-4h6v4"/><path d="M8 7h.01"/><path d="M12 7h.01"/><path d="M16 7h.01"/><path d="M8 11h.01"/><path d="M12 11h.01"/><path d="M16 11h.01"/><path d="M8 15h.01"/><path d="M12 15h.01"/><path d="M16 15h.01"/></svg>'
+    building: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="1"/><path d="M9 22v-4h6v4"/><path d="M8 7h.01"/><path d="M12 7h.01"/><path d="M16 7h.01"/><path d="M8 11h.01"/><path d="M12 11h.01"/><path d="M16 11h.01"/><path d="M8 15h.01"/><path d="M12 15h.01"/><path d="M16 15h.01"/></svg>',
+    trendingUp: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 7h6v6"/><path d="m22 7-8.5 8.5-5-5L2 17"/></svg>',
+    chevronLeft: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>'
   };
   const EXERCISE_TYPE = {
     'Bench Press': 'Compound', 'Incline Bench Press': 'Compound', 'Decline Bench Press': 'Compound', 'Dumbbell Bench Press': 'Compound', 'Incline Dumbbell Press': 'Compound', 'Chest Fly': 'Isolation', 'Cable Crossover': 'Isolation', 'Push-Up': 'Compound', 'Chest Dip': 'Compound',
@@ -2475,7 +2598,6 @@
     document.getElementById('view-' + view).classList.add('active');
     window.scrollTo(0, 0);
     if (view === 'trends') renderTrends();
-    if (view === 'history') renderHistory();
     if (view === 'feel') renderFeelHistory();
     if (view === 'plan') { renderRoutineList(); renderThisWeek(); renderSchedule(); renderCalendar(); renderStreaks(); }
     if (view === 'log') { renderTrainView(); }
@@ -2486,17 +2608,23 @@
   }
   function goToView(view) { switchView(view); }
 
-  // ---------- PLAN SUB-NAV ----------
+  // ---------- SUB-NAV (Plan: Templates/Planning/Streaks, Train: Start/Completed) ----------
+  // Scoped to the enclosing .view so two independent subnav groups on different tabs
+  // don't clobber each other's active state (a global query here would deactivate
+  // Plan's subnav the moment you touched Train's, and vice versa).
   document.querySelectorAll('.subnav-btn').forEach(btn => {
     btn.addEventListener('click', () => {
-      document.querySelectorAll('.subnav-btn').forEach(b => b.classList.remove('active'));
+      const scope = btn.closest('.view');
+      scope.querySelectorAll('.subnav-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
-      document.querySelectorAll('.sub-view').forEach(v => v.classList.remove('active'));
-      document.getElementById('sub-' + btn.dataset.sub).classList.add('active');
-      document.getElementById('planHeaderAddBtn').style.display = btn.dataset.sub === 'templates' ? 'flex' : 'none';
+      scope.querySelectorAll('.sub-view').forEach(v => v.classList.remove('active'));
+      scope.querySelector('#sub-' + btn.dataset.sub).classList.add('active');
+      const addBtn = document.getElementById('planHeaderAddBtn');
+      if (addBtn) addBtn.style.display = btn.dataset.sub === 'templates' ? 'flex' : 'none';
       if (btn.dataset.sub === 'templates') renderRoutineList();
       if (btn.dataset.sub === 'planning') { renderThisWeek(); renderSchedule(); renderCalendar(); }
       if (btn.dataset.sub === 'streaks') renderStreaks();
+      if (btn.dataset.sub === 'train-completed') renderCompletedWorkouts();
     });
   });
   document.getElementById('planHeaderAddBtn').style.display = 'flex';
@@ -2891,6 +3019,7 @@
     }
 
     renderTrainTemplateList();
+    renderCompletedWorkouts();
   }
 
   function renderTrainTemplateList() {
@@ -2929,6 +3058,262 @@
     });
   }
   document.getElementById('trainTemplateSearch').addEventListener('input', renderTrainTemplateList);
+
+  // ---------- TRAIN: COMPLETED WORKOUTS ----------
+  // A finished session already carries everything this needs — name, date,
+  // start/finish timestamps, its own exercise list. The completed-only, flattened
+  // per-exercise sets live in state.workouts (filtered by sessionId), which Finish
+  // already writes — so this feature needed no new storage, just new reads of it.
+  function completedSessionsSorted() {
+    return state.sessions
+      .filter(s => s.finishedAt)
+      .sort((a, b) => b.finishedAt - a.finishedAt);
+  }
+  function sessionWorkoutEntries(session) {
+    return state.workouts.filter(w => w.sessionId === session.id);
+  }
+  function sessionVolume(entries) {
+    let total = 0;
+    entries.forEach(e => e.sets.forEach(s => { total += (s.weight || 0) * (s.reps || 0); }));
+    return total;
+  }
+  // A set counts toward the PR badge if its weight beat every set ever logged for
+  // that exercise strictly before this workout happened — "was this a PR at the
+  // time", not "is it still the record right now" (which could change as newer
+  // workouts get logged, without this one's badge needing to retroactively change).
+  function priorBestWeight(exerciseName, beforeCreatedAt) {
+    let best = null;
+    state.workouts.forEach(w => {
+      if (w.exercise !== exerciseName || w.createdAt >= beforeCreatedAt) return;
+      w.sets.forEach(s => {
+        if (s.type === 'warmup' || !s.weight) return;
+        if (!best || s.weight > best) best = s.weight;
+      });
+    });
+    return best;
+  }
+  // Single source of truth for "did this exercise PR, and which specific set" — used
+  // both to count PRs and to mark the exact set line in the detail page.
+  function exercisePRInfo(entry) {
+    const prior = priorBestWeight(entry.exercise, entry.createdAt);
+    let bestIdx = -1, bestWeight = 0;
+    entry.sets.forEach((s, i) => {
+      if (s.type === 'warmup' || !s.weight) return;
+      if (s.weight > bestWeight) { bestWeight = s.weight; bestIdx = i; }
+    });
+    if (bestIdx === -1) return null;
+    if (prior === null || bestWeight > prior) return { setIdx: bestIdx, weight: bestWeight };
+    return null;
+  }
+  function sessionPRCount(entries) {
+    return entries.filter(e => exercisePRInfo(e)).length;
+  }
+  function relativeWorkoutDate(dateStr) {
+    const days = Math.round((new Date(todayStr() + 'T00:00:00') - new Date(dateStr + 'T00:00:00')) / 86400000);
+    if (days === 0) return 'Today';
+    if (days === 1) return 'Yesterday';
+    if (days > 1 && days < 7) return new Date(dateStr + 'T00:00:00').toLocaleDateString(undefined, { weekday: 'long' });
+    return new Date(dateStr + 'T00:00:00').toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+  }
+  function formatWorkoutDuration(ms) {
+    const totalMin = Math.max(1, Math.round(ms / 60000));
+    const h = Math.floor(totalMin / 60);
+    const m = totalMin % 60;
+    return h > 0 ? `${h}h ${m}m` : `${totalMin} min`;
+  }
+  function startOfWeek(date) {
+    const d = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    d.setDate(d.getDate() - d.getDay());
+    return d;
+  }
+  function groupCompletedSessions(sessions) {
+    const today = new Date(todayStr() + 'T00:00:00');
+    const thisWeekStart = startOfWeek(today);
+    const lastWeekStart = new Date(thisWeekStart);
+    lastWeekStart.setDate(lastWeekStart.getDate() - 7);
+    const groups = { 'This Week': [], 'Last Week': [], 'Earlier': [] };
+    sessions.forEach(s => {
+      const d = new Date(s.date + 'T00:00:00');
+      if (d >= thisWeekStart) groups['This Week'].push(s);
+      else if (d >= lastWeekStart) groups['Last Week'].push(s);
+      else groups['Earlier'].push(s);
+    });
+    return groups;
+  }
+  function renderCompletedWorkouts() {
+    const list = document.getElementById('completedWorkoutList');
+    const sessions = completedSessionsSorted();
+    if (sessions.length === 0) {
+      list.innerHTML = `
+        <div class="empty">
+          <span class="empty-icon">📋</span>
+          No completed workouts yet.<br>Complete your first workout to build your history.
+          <div style="margin-top:14px;">
+            <button type="button" class="btn" id="completedEmptyStartBtn">▶ Start Workout</button>
+          </div>
+        </div>`;
+      const btn = document.getElementById('completedEmptyStartBtn');
+      if (btn) btn.addEventListener('click', () => {
+        const startTab = document.querySelector('.subnav-btn[data-sub="train-start"]');
+        if (startTab) startTab.click();
+      });
+      return;
+    }
+    const groups = groupCompletedSessions(sessions);
+    list.innerHTML = Object.entries(groups)
+      .filter(([, items]) => items.length)
+      .map(([label, items]) => `
+        <div class="cw-group-label">${label}</div>
+        ${items.map(renderCompletedWorkoutCard).join('')}
+      `).join('');
+    list.querySelectorAll('.cw-card').forEach(card => {
+      card.addEventListener('click', () => openCompletedWorkoutDetail(card.dataset.id));
+    });
+  }
+  function renderCompletedWorkoutCard(session) {
+    const entries = sessionWorkoutEntries(session);
+    const volume = sessionVolume(entries);
+    const prCount = sessionPRCount(entries);
+    const duration = formatWorkoutDuration((session.finishedAt || session.startedAt) - session.startedAt);
+    const names = entries.map(e => e.exercise);
+    const preview = names.slice(0, 3).join(' • ') + (names.length > 3 ? ` • +${names.length - 3} more` : '');
+    const template = session.templateId ? state.routines.find(r => r.id === session.templateId) : null;
+    const iconInfo = template ? routineIconBg(template) : { bg: COLOR_SWATCHES.slate, svg: ICON_SVGS.dumbbell };
+    return `
+    <div class="cw-card" data-id="${session.id}">
+      <div class="cw-card-top">
+        <div class="promo-icon" style="background:${iconInfo.bg};">${iconInfo.svg}</div>
+        <div class="cw-card-main">
+          <div class="cw-card-name">${escapeHtml(session.name)}</div>
+          <div class="cw-card-date">${relativeWorkoutDate(session.date)}</div>
+          <div class="cw-card-stats">${duration} · ${entries.length} exercise${entries.length === 1 ? '' : 's'}</div>
+          <div class="cw-card-stats">${Math.round(volume).toLocaleString()} lbs volume</div>
+          ${preview ? `<div class="cw-card-preview">${escapeHtml(preview)}</div>` : ''}
+        </div>
+        <span class="promo-chevron">›</span>
+      </div>
+      ${prCount > 0 ? `<div class="cw-pr-badge">🏆 ${prCount} PR${prCount === 1 ? '' : 's'}</div>` : ''}
+    </div>`;
+  }
+  // Which exercise cards are collapsed on the detail page, keyed by exercise index.
+  // Reset every time a new workout's detail is opened so it doesn't carry over stale
+  // state from whichever workout was viewed last.
+  let completedDetailCollapsed = {};
+  let completedDetailEntries = [];
+  function openCompletedWorkoutDetail(sessionId) {
+    const session = state.sessions.find(s => s.id === sessionId);
+    if (!session) return;
+    const entries = sessionWorkoutEntries(session);
+    completedDetailEntries = entries;
+    completedDetailCollapsed = {};
+    const duration = formatWorkoutDuration((session.finishedAt || session.startedAt) - session.startedAt);
+    const volume = sessionVolume(entries);
+
+    document.getElementById('completedDetailName').textContent = session.name;
+    document.getElementById('completedDetailMeta').textContent = `${relativeWorkoutDate(session.date)} · ${fmtDate(session.date)}`;
+
+    document.getElementById('completedDetailStats').innerHTML = `
+      <span class="cwd-summary-item">${ICON_SVGS.clock} ${duration}</span>
+      <span class="cwd-summary-sep">·</span>
+      <span class="cwd-summary-item">${ICON_SVGS.dumbbell} ${entries.length} exercise${entries.length === 1 ? '' : 's'}</span>
+      <span class="cwd-summary-sep">·</span>
+      <span class="cwd-summary-item">${ICON_SVGS.trendingUp} ${Math.round(volume).toLocaleString()} lbs</span>
+    `;
+
+    const prNames = entries.filter(e => exercisePRInfo(e)).map(e => e.exercise);
+    const prCardEl = document.getElementById('completedDetailPRCard');
+    if (prNames.length) {
+      prCardEl.innerHTML = `
+        <div class="cwd-pr-card">
+          <div class="cwd-pr-icon">${ICON_SVGS.trophy}</div>
+          <div class="cwd-pr-text">
+            <div class="cwd-pr-title">${prNames.length} Personal Record${prNames.length === 1 ? '' : 's'}</div>
+            ${prNames.map(n => `<div class="cwd-pr-name">${escapeHtml(n)}</div>`).join('')}
+          </div>
+        </div>`;
+    } else {
+      prCardEl.innerHTML = '';
+    }
+
+    renderCompletedDetailExercises();
+    document.getElementById('completedDetailRepeatBtn').dataset.sessionId = session.id;
+    document.getElementById('trainStart').style.display = 'none';
+    document.getElementById('completedDetailPage').style.display = 'block';
+    document.body.classList.add('completed-detail-active');
+    window.scrollTo(0, 0);
+  }
+  function renderCompletedDetailExercises() {
+    const el = document.getElementById('completedDetailExercises');
+    el.innerHTML = completedDetailEntries.map((e, i) => {
+      const volume = e.sets.reduce((sum, s) => sum + (s.weight || 0) * (s.reps || 0), 0);
+      const prInfo = exercisePRInfo(e);
+      const isOpen = !!completedDetailCollapsed[i];
+      return `
+      <div class="routine-ex-card cwd-ex-card ${isOpen ? 'open' : ''} ${prInfo ? 'has-pr' : ''}" data-idx="${i}">
+        <div class="ex-card-header cwd-ex-header">
+          <div class="cwd-ex-header-main">
+            <div class="cwd-ex-row1">
+              <span class="cwd-ex-name">${escapeHtml(e.exercise)}</span>
+              <span class="cwd-ex-volume">${Math.round(volume).toLocaleString()} lbs</span>
+            </div>
+            <div class="cwd-ex-row2">
+              <span class="cwd-ex-sets">${e.sets.length} set${e.sets.length === 1 ? '' : 's'}</span>
+              ${prInfo ? `<span class="cwd-pr-pill">${ICON_SVGS.trophy} PR</span>` : ''}
+            </div>
+          </div>
+          <svg class="ex-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="cwd-ex-body" style="display:${isOpen ? 'block' : 'none'};">
+          ${e.sets.map((s, si) => {
+            const isPR = prInfo && prInfo.setIdx === si;
+            return `
+            <div class="cwd-set-line ${isPR ? 'is-pr' : ''}">
+              <span class="cwd-set-val">
+                <span class="cwd-set-weight">${s.weight || 0} lbs</span>
+                <span class="cwd-set-times">×</span>
+                <span class="cwd-set-reps">${s.reps || 0}</span>
+              </span>
+              ${isPR ? `<span class="cwd-set-pr-label">${ICON_SVGS.trophy} PR</span>` : ''}
+            </div>`;
+          }).join('')}
+        </div>
+      </div>`;
+    }).join('');
+    el.querySelectorAll('.cwd-ex-header').forEach(header => {
+      header.addEventListener('click', () => {
+        const idx = header.closest('.cwd-ex-card').dataset.idx;
+        completedDetailCollapsed[idx] = !completedDetailCollapsed[idx];
+        renderCompletedDetailExercises();
+      });
+    });
+  }
+  function closeCompletedWorkoutDetail() {
+    document.getElementById('completedDetailPage').style.display = 'none';
+    document.body.classList.remove('completed-detail-active');
+    renderTrainView();
+  }
+  document.getElementById('completedDetailBackBtn').addEventListener('click', closeCompletedWorkoutDetail);
+  document.getElementById('completedDetailRepeatBtn').addEventListener('click', () => {
+    repeatWorkoutFromSession(document.getElementById('completedDetailRepeatBtn').dataset.sessionId);
+  });
+  // "Repeat" rebuilds a fresh, unfinished session from a past one's own logged
+  // numbers (not just "whatever was most recently logged", which existing prefill
+  // already does and would only coincidentally match the workout being repeated).
+  function repeatWorkoutFromSession(sessionId) {
+    if (state.activeSessionId) {
+      showToast('Finish or cancel your current workout first', 'error');
+      return;
+    }
+    const past = state.sessions.find(s => s.id === sessionId);
+    if (!past) return;
+    const entries = sessionWorkoutEntries(past);
+    const exercises = entries.map(e => ({
+      id: uid(), exercise: e.exercise, equipment: e.machine || '',
+      sets: e.sets.map(s => ({ type: s.type || 'working', targetReps: '', weight: s.weight, reps: s.reps, rpe: null, completed: false }))
+    }));
+    closeCompletedWorkoutDetail();
+    startSession(past.name, 'repeat', past.templateId || null, exercises);
+  }
 
   function sessionSetsCompletedCount(session) {
     let total = 0, done = 0;
@@ -3259,6 +3644,12 @@
       row.style.transform = `translateX(${x}px)`;
     }
     function onDown(e) {
+      // Only touch actually swipes. A mouse click has nowhere near zero pixel drift
+      // between down and up — that's normal, not a gesture — but this state machine
+      // used to treat any of it as the start of a drag, capture the pointer, and then
+      // swallow the click that should have reached the stepper/checkmark button
+      // underneath. Desktop gets a CSS hover-reveal delete button instead (below).
+      if (e.pointerType !== 'touch') return;
       dragging = true; decided = false; horizontal = false;
       startX = e.clientX; startY = e.clientY;
       baseX = open ? OPEN_X : 0;
@@ -3485,6 +3876,7 @@
           <button type="button" class="train-set-complete-btn" title="${s.completed ? 'Reopen set' : 'Mark complete'}">
             ${s.completed ? ICON_SVGS.check : ''}
           </button>
+          <button type="button" class="tsr-delete-btn" title="Remove set">${ICON_SVGS.x}</button>
         </div>
       </div>`;
     }).join('');
@@ -3510,12 +3902,14 @@
         save();
         renderTrainActive();
       });
-      attachSwipeToDelete(wrap, () => {
+      const deleteSet = () => {
         ex.sets.splice(idx, 1);
         delete exOpenOverrides[ex.id];
         save();
         renderTrainActive();
-      });
+      };
+      attachSwipeToDelete(wrap, deleteSet);
+      row.querySelector('.tsr-delete-btn').addEventListener('click', (e) => { e.stopPropagation(); deleteSet(); });
     });
   }
 
@@ -4627,45 +5021,6 @@
   }
 
   // ---------- HISTORY ----------
-  function renderHistory() {
-    const filterSel = document.getElementById('historyFilter');
-    const exercises = [...new Set(state.workouts.map(w => w.exercise))].sort();
-    const current = filterSel.value;
-    filterSel.innerHTML = '<option value="">All exercises</option>' + exercises.map(e => `<option value="${escapeHtml(e)}">${escapeHtml(e)}</option>`).join('');
-    filterSel.value = current;
-
-    const list = document.getElementById('historyList');
-    let items = [...state.workouts].sort((a, b) => b.date.localeCompare(a.date) || b.createdAt - a.createdAt);
-    if (filterSel.value) items = items.filter(w => w.exercise === filterSel.value);
-
-    if (items.length === 0) {
-      list.innerHTML = '<div class="empty"><span class="empty-icon">📋</span>No workouts logged yet.</div>';
-      return;
-    }
-    list.innerHTML = items.map(w => {
-      const setStr = w.sets.map(s => `${s.weight}${w.unit}×${s.reps}${s.type && s.type !== 'working' ? ' (' + typeLabel(s.type) + ')' : ''}${s.rpe ? ' @RPE' + s.rpe : ''}`).join(', ');
-      return `
-        <div class="session-item">
-          <div class="top">
-            <span class="name">${escapeHtml(w.exercise)}</span>
-            <span class="date">${fmtDate(w.date)}</span>
-          </div>
-          <div class="meta">${w.routine ? `<span class="pill b">${escapeHtml(w.routine)}</span> ` : ''}${w.machine ? escapeHtml(w.machine) + ' · ' : ''}${setStr}</div>
-          ${w.notes ? `<div style="font-size:13px;color:var(--muted);">${escapeHtml(w.notes)}</div>` : ''}
-          <button class="del" data-id="${w.id}">Delete</button>
-        </div>`;
-    }).join('');
-    list.querySelectorAll('.del').forEach(btn => {
-      btn.addEventListener('click', () => {
-        state.workouts = state.workouts.filter(w => w.id !== btn.dataset.id);
-        save();
-        renderHistory();
-        renderHeaderStreak();
-      });
-    });
-  }
-  document.getElementById('historyFilter').addEventListener('change', renderHistory);
-
   // ---------- TRENDS ----------
   let weightChart, volumeChart, feelChart;
 
@@ -4788,7 +5143,6 @@
         state.activeSessionId = imported.activeSessionId !== undefined ? imported.activeSessionId : null;
         save();
         updateDatalists();
-        renderHistory();
         renderFeelHistory();
         renderRoutineList();
         renderThisWeek();
@@ -4820,7 +5174,6 @@
       stopTrainTimer();
       save();
       updateDatalists();
-      renderHistory();
       renderFeelHistory();
       renderRoutineList();
       renderThisWeek();
@@ -4835,7 +5188,6 @@
 
   // ---------- INIT ----------
   updateDatalists();
-  renderHistory();
   renderFeelHistory();
   renderRoutineList();
   renderThisWeek();
