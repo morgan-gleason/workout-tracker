@@ -2979,19 +2979,29 @@
   // Which set (if any, per distinct weight) currently holds this exercise's Rep PR
   // mid-workout — a Map of weight -> set index, since different weights each earn
   // their own independent Rep PR in the same workout (e.g. a new best at 135 and a
-  // separate new best at 145 can both be active at once). Only weights with a real
-  // prior rep record can qualify; a later tie at the same weight doesn't move it.
+  // separate new best at 145 can both be active at once). The record to beat at a
+  // given weight starts from real prior history if there is any, but also updates
+  // as the workout goes — so at a weight with no history at all (a brand-new
+  // exercise, say), the first set there sets the initial bar with no badge of its
+  // own, and a later set at that same weight that beats it earns the Rep PR. A tie
+  // never moves the badge.
   function liveRepPRSetIndices(ex) {
     const holders = new Map();
+    const runningBestReps = new Map(); // weight -> best reps seen so far (real history or -1 if none yet)
     ex.sets.forEach((s, i) => {
       if (!s.completed || s.type === 'warmup') return;
       const weight = parseFloat(s.weight) || 0;
       const reps = parseInt(s.reps) || 0;
       if (!weight || !reps) return;
-      const baseline = priorBestRepsAtWeight(ex.exercise, weight);
-      if (baseline === null || reps <= baseline) return;
-      const holderIdx = holders.get(weight);
-      if (holderIdx === undefined || reps > (parseInt(ex.sets[holderIdx].reps) || 0)) holders.set(weight, i);
+      if (!runningBestReps.has(weight)) {
+        const baseline = priorBestRepsAtWeight(ex.exercise, weight);
+        runningBestReps.set(weight, baseline === null ? -1 : baseline);
+      }
+      const currentBest = runningBestReps.get(weight);
+      if (reps > currentBest) {
+        if (currentBest !== -1) holders.set(weight, i);
+        runningBestReps.set(weight, reps);
+      }
     });
     return holders;
   }
@@ -3202,12 +3212,18 @@
   }
   function exerciseRepPRIndices(entry) {
     const holders = new Map();
+    const runningBestReps = new Map();
     entry.sets.forEach((s, i) => {
       if (s.type === 'warmup' || !s.weight || !s.reps) return;
-      const baseline = priorBestRepsAtWeight(entry.exercise, s.weight, entry.createdAt);
-      if (baseline === null || s.reps <= baseline) return;
-      const holderIdx = holders.get(s.weight);
-      if (holderIdx === undefined || s.reps > entry.sets[holderIdx].reps) holders.set(s.weight, i);
+      if (!runningBestReps.has(s.weight)) {
+        const baseline = priorBestRepsAtWeight(entry.exercise, s.weight, entry.createdAt);
+        runningBestReps.set(s.weight, baseline === null ? -1 : baseline);
+      }
+      const currentBest = runningBestReps.get(s.weight);
+      if (s.reps > currentBest) {
+        if (currentBest !== -1) holders.set(s.weight, i);
+        runningBestReps.set(s.weight, s.reps);
+      }
     });
     return holders;
   }
