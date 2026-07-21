@@ -13,6 +13,7 @@
     --border: #262c38;
     --border-light: #333b4a;
     --text: #f1f3f7;
+    --text-2: #c5cbd6;
     --muted: #8b93a3;
     --accent: #6d8cff;
     --accent-2: #34d399;
@@ -217,7 +218,7 @@
   main {
     max-width: 880px;
     margin: 0 auto;
-    padding: 18px 16px calc(96px + env(safe-area-inset-bottom));
+    padding: 18px 12px calc(96px + env(safe-area-inset-bottom));
   }
   @media (min-width: 640px) and (max-width: 767px) {
     main { padding-left: 24px; padding-right: 24px; }
@@ -532,20 +533,28 @@
   .cw-group-label:first-child { margin-top: 4px; }
   .cw-card {
     background: var(--panel-2); border: 1px solid rgba(255,255,255,.08); border-radius: var(--radius);
-    padding: 14px 15px; margin-bottom: 10px; cursor: pointer;
+    padding: 8px 15px 10px; margin-bottom: 10px; cursor: pointer;
   }
   .cw-card:active { background: rgba(255,255,255,.03); }
-  .cw-card-top { display: flex; align-items: flex-start; gap: 14px; }
-  .cw-card-main { flex: 1; min-width: 0; }
-  .cw-card-name { font-weight: 700; font-size: 16px; margin-bottom: 2px; }
-  .cw-card-date { color: var(--muted); font-size: 12.5px; margin-bottom: 6px; }
-  .cw-card-stats { color: var(--muted); font-size: 13px; line-height: 1.5; }
-  .cw-card-preview { color: var(--muted); font-size: 12.5px; margin-top: 6px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .cw-card-top { display: flex; align-items: flex-start; gap: 12px; }
+  .cw-card-main { flex: 1; min-width: 0; margin-right: 6px; }
+  .cw-card .promo-icon { width: 40px; height: 40px; border-radius: 11px; }
+  .cw-card .promo-icon svg { width: 18px; height: 18px; }
+  .cw-card-name-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .cw-card-name { font-weight: 700; font-size: 16px; color: var(--text); }
+  .cw-card-date { color: var(--muted); font-size: 12.5px; margin: 1px 0 4px; }
+  .cw-card-stats { display: flex; flex-wrap: wrap; align-items: center; row-gap: 1px; column-gap: 3px; color: var(--text-2); font-size: 12.5px; line-height: 1.4; }
+  .cw-stat-item { display: inline-flex; align-items: center; gap: 3px; white-space: nowrap; }
+  .cw-stat-item svg { width: 11px; height: 11px; flex-shrink: 0; }
+  .cw-stat-sep { color: var(--text-2); font-size: 11px; }
+  .cw-card-preview { color: var(--text-2); font-size: 12px; margin-top: 4px; line-height: 1.4; }
+  .cw-card-more { color: var(--accent); font-weight: 700; }
   .cw-pr-badge {
-    display: inline-flex; align-items: center; gap: 5px; margin-top: 10px;
+    display: inline-flex; align-items: center; gap: 4px; flex-shrink: 0;
     background: rgba(167,139,250,.14); color: var(--pr);
-    font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 999px;
+    font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 999px;
   }
+  .cw-pr-badge svg { width: 12px; height: 12px; }
 
   /* Completed Workout detail — a full page takeover within Train, not a modal. Hides
      the normal page-header/subnav the same way an active session does. */
@@ -1784,7 +1793,6 @@
     <div class="page-header">
       <div>
         <h1 class="page-title">Train</h1>
-        <p class="page-subtitle">Start, track, and finish your workouts.</p>
       </div>
     </div>
 
@@ -1792,11 +1800,9 @@
     <div id="trainStart">
     <div class="subnav">
       <button class="subnav-btn active" data-sub="train-start" type="button">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="6 3 20 12 6 21 6 3"/></svg>
         <span>Start</span>
       </button>
       <button class="subnav-btn" data-sub="train-completed" type="button">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></svg>
         <span>Completed</span>
       </button>
     </div>
@@ -3304,7 +3310,9 @@
     const prCount = sessionPRCount(entries);
     const duration = formatWorkoutDuration((session.finishedAt || session.startedAt) - session.startedAt);
     const names = entries.map(e => e.exercise);
-    const preview = names.slice(0, 3).join(' • ') + (names.length > 3 ? ` • +${names.length - 3} more` : '');
+    const moreCount = names.length - 3;
+    const preview = names.slice(0, 3).map(escapeHtml).join(' • ') +
+      (moreCount > 0 ? ` • <span class="cw-card-more">+${moreCount} more</span>` : '');
     const template = session.templateId ? state.routines.find(r => r.id === session.templateId) : null;
     const iconInfo = template ? routineIconBg(template) : { bg: COLOR_SWATCHES.slate, svg: ICON_SVGS.dumbbell };
     return `
@@ -3312,15 +3320,22 @@
       <div class="cw-card-top">
         <div class="promo-icon" style="background:${iconInfo.bg};">${iconInfo.svg}</div>
         <div class="cw-card-main">
-          <div class="cw-card-name">${escapeHtml(session.name)}</div>
+          <div class="cw-card-name-row">
+            <span class="cw-card-name">${escapeHtml(session.name)}</span>
+            ${prCount > 0 ? `<span class="cw-pr-badge">${ICON_SVGS.trophy} ${prCount} PR${prCount === 1 ? '' : 's'}</span>` : ''}
+          </div>
           <div class="cw-card-date">${relativeWorkoutDate(session.date)}</div>
-          <div class="cw-card-stats">${duration} · ${entries.length} exercise${entries.length === 1 ? '' : 's'}</div>
-          <div class="cw-card-stats">${Math.round(volume).toLocaleString()} lbs volume</div>
-          ${preview ? `<div class="cw-card-preview">${escapeHtml(preview)}</div>` : ''}
+          <div class="cw-card-stats">
+            <span class="cw-stat-item">${ICON_SVGS.clock} ${duration}</span>
+            <span class="cw-stat-sep">·</span>
+            <span class="cw-stat-item">${ICON_SVGS.dumbbell} ${entries.length} exercise${entries.length === 1 ? '' : 's'}</span>
+            <span class="cw-stat-sep">·</span>
+            <span class="cw-stat-item">${ICON_SVGS.trendingUp} ${Math.round(volume).toLocaleString()} lbs</span>
+          </div>
+          ${preview ? `<div class="cw-card-preview">${preview}</div>` : ''}
         </div>
         <span class="promo-chevron">›</span>
       </div>
-      ${prCount > 0 ? `<div class="cw-pr-badge">🏆 ${prCount} PR${prCount === 1 ? '' : 's'}</div>` : ''}
     </div>`;
   }
   // Which exercise cards are collapsed on the detail page, keyed by exercise index.
