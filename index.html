@@ -19,7 +19,8 @@
     --accent-2: #34d399;
     --warn: #fbbf5c;
     --danger: #ff6b7a;
-    --pr: #a78bfa;
+    /* --pr: achievement only — PR badges, trophy icons, the Best card. */
+    --pr: #F0C14B;
     --radius: 16px;
     --radius-sm: 10px;
     --shadow-sm: 0 1px 3px rgba(0,0,0,.35);
@@ -27,14 +28,15 @@
     --sidebar-w: 236px;
 
     /* Typography scale — every text element should map to one of these roles
-       rather than introducing a new hardcoded font-size. --fs-stat is the one
-       addition beyond the core scale: big glanceable numbers (streak count,
-       workout summary totals) read as data to scan, not text to read, so they
-       sit in their own tier between Section Title and Page Title. A few
-       elements are deliberately NOT tokenized: decorative icon/chevron/emoji
-       glyphs, the global form-input floor (16px, avoids iOS auto-zoom-on-focus),
-       and the active-session weight/rep stepper input (17px) — the single most-
-       read number in the app mid-workout, kept a notch above Card Title on purpose. */
+       rather than introducing a new hardcoded font-size. --fs-stat is a big
+       glanceable number (streak count, workout summary totals) that reads as
+       data to scan, not text to read, sitting between Section Title and Page
+       Title. --fs-display is one size up still — reserved for the current
+       set's weight/rep numbers during an active workout, the single most-read
+       values in the whole app, large enough to read at a glance one-handed. A
+       few elements are deliberately NOT tokenized: decorative icon/chevron
+       glyphs and the global form-input floor (16px, avoids iOS auto-zoom). */
+    --fs-display: 36px;
     --fs-page-title: 28px;
     --fs-stat: 23px;
     --fs-section-title: 20px;
@@ -553,7 +555,7 @@
   .cw-card-more { color: var(--accent); font-weight: 700; }
   .cw-pr-badge {
     display: inline-flex; align-items: center; gap: 4px; flex-shrink: 0;
-    background: rgba(167,139,250,.14); color: var(--pr);
+    background: rgba(240,193,75,.14); color: var(--pr);
     font-size: var(--fs-caption); font-weight: 700; padding: 3px 8px; border-radius: 999px;
   }
   .cw-pr-badge svg { width: 12px; height: 12px; }
@@ -584,7 +586,7 @@
   .cwd-summary-divider { margin: 20px 0 0; }
   .cwd-pr-card {
     display: flex; align-items: flex-start; gap: 12px;
-    background: rgba(167,139,250,.1); border: 1px solid rgba(167,139,250,.25); border-radius: 12px;
+    background: var(--panel-2); border-radius: 12px;
     padding: 12px 14px; margin-bottom: 16px;
   }
   .cwd-pr-icon {
@@ -607,12 +609,11 @@
   .cwd-ex-header-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
   .cwd-ex-row1, .cwd-ex-row2 { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
   .cwd-ex-name { font-weight: 700; font-size: var(--fs-card-title); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .cwd-ex-card.has-pr .cwd-ex-name { color: var(--pr); }
   .cwd-ex-volume { color: var(--muted); font-size: var(--fs-secondary); white-space: nowrap; }
   .cwd-ex-sets { color: var(--muted); font-size: var(--fs-caption); }
   .cwd-pr-pill {
     display: inline-flex; align-items: center; gap: 3px;
-    background: rgba(167,139,250,.16); color: var(--pr); font-size: var(--fs-caption); font-weight: 800;
+    background: rgba(240,193,75,.16); color: var(--pr); font-size: var(--fs-caption); font-weight: 800;
     padding: 3px 8px; border-radius: 999px; flex-shrink: 0;
   }
   .cwd-pr-pill svg { width: 11px; height: 11px; }
@@ -623,7 +624,7 @@
   .cwd-set-times { color: var(--muted); }
   .cwd-set-line.is-pr .cwd-set-times { color: var(--pr); }
   .cwd-set-line.is-pr {
-    background: rgba(167,139,250,.08); margin: 0 -8px; padding: 4px 8px;
+    background: rgba(240,193,75,.08); margin: 0 -8px; padding: 4px 8px;
     border-left: 2px solid var(--pr); border-radius: 4px;
   }
   .cwd-set-line.is-pr .cwd-set-val { color: var(--pr); font-weight: 700; }
@@ -662,6 +663,7 @@
   .workout-row-accent { width: 3px; align-self: stretch; border-radius: 2px; flex-shrink: 0; }
   .workout-row-main { flex: 1; min-width: 0; }
   .workout-row-name { font-weight: 800; font-size: var(--fs-card-title); color: var(--text); margin-bottom: 4px; }
+  .workout-row-muscles { font-size: var(--fs-secondary); color: var(--text-2); font-weight: 700; margin-bottom: 3px; }
   .workout-row-desc { font-size: var(--fs-secondary); color: var(--text-2); opacity: .85; margin-bottom: 3px; }
   .workout-row-meta { font-size: var(--fs-caption); color: var(--muted); }
   .workout-row-chevron { color: var(--muted); font-size: 20px; flex-shrink: 0; }
@@ -711,9 +713,10 @@
     padding: 5px 10px; border-radius: 20px; margin-bottom: 10px;
   }
   .train-today-pill-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
-  .train-today-name { font-size: var(--fs-section-title); font-weight: 800; color: var(--text); margin-bottom: 4px; }
-  .train-today-desc { font-size: var(--fs-secondary); color: var(--text-2); opacity: .85; margin-bottom: 14px; }
-  .train-today-metrics { display: flex; align-items: center; margin-bottom: 16px; }
+  .train-today-name { font-size: var(--fs-section-title); font-weight: 800; color: var(--text); margin-bottom: 10px; }
+  .train-today-muscles { font-size: var(--fs-secondary); color: var(--text-2); font-weight: 700; margin-bottom: 14px; }
+  .train-today-desc { font-size: var(--fs-secondary); color: var(--text-2); opacity: .85; margin-bottom: 20px; }
+  .train-today-metrics { display: flex; align-items: center; margin-bottom: 22px; }
   .train-today-metric { flex: 1; display: flex; align-items: center; gap: 8px; min-width: 0; }
   .train-today-metric-icon {
     width: 34px; height: 34px; border-radius: 9px; flex-shrink: 0;
@@ -778,6 +781,9 @@
   }
   .wb-back-btn svg { width: 22px; height: 22px; }
   .wb-header-right { display: flex; align-items: center; gap: 4px; }
+  /* Balances the back button's width so a centered .ed-header-title is actually
+     centered on screens with no right-side action button. */
+  .wb-header-spacer { width: 36px; flex-shrink: 0; }
   .wb-save-btn {
     background: none; border: none; color: var(--accent);
     font-size: var(--fs-secondary); font-weight: 700; cursor: pointer; padding: 8px 4px;
@@ -1009,13 +1015,13 @@
     display: grid; gap: 8px; padding: 0 4px 8px;
     font-size: var(--fs-caption); font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: .04em;
   }
-  .ed-set-table-head-warmup { grid-template-columns: 32px 1fr 1fr 24px; }
-  .ed-set-table-head-working { grid-template-columns: 32px 1fr 1fr 24px; }
+  .ed-set-table-head-warmup { grid-template-columns: 32px 1fr 24px; }
+  .ed-set-table-head-working { grid-template-columns: 32px 1fr 24px; }
   .ed-set-row {
     display: grid; gap: 8px; align-items: center; padding: 6px 4px;
   }
-  .ed-set-row.ed-set-row-warmup { grid-template-columns: 32px 1fr 1fr 24px; }
-  .ed-set-row.ed-set-row-working { grid-template-columns: 32px 1fr 1fr 24px; }
+  .ed-set-row.ed-set-row-warmup { grid-template-columns: 32px 1fr 24px; }
+  .ed-set-row.ed-set-row-working { grid-template-columns: 32px 1fr 24px; }
   .ed-set-num { font-size: var(--fs-body); font-weight: 700; color: var(--muted); text-align: center; }
   .ed-set-row input {
     min-height: 40px; padding: 8px 10px; background: var(--panel-3, rgba(255,255,255,.04));
@@ -1122,13 +1128,15 @@
     text-align: left;
     background: none;
     border: none;
-    color: var(--danger);
+    color: var(--text);
     padding: 11px 14px;
     font-size: var(--fs-secondary);
     font-weight: 600;
     cursor: pointer;
   }
-  .template-menu-dropdown button:hover { background: rgba(255,107,122,.1); }
+  .template-menu-dropdown button:hover { background: rgba(255,255,255,.05); }
+  .template-menu-dropdown button.danger { color: var(--danger); }
+  .template-menu-dropdown button.danger:hover { background: rgba(255,107,122,.1); }
 
   /* Icon / color pickers */
   .icon-picker-row, .color-picker-row { display: flex; flex-wrap: wrap; gap: 8px; }
@@ -1269,6 +1277,17 @@
     display: flex; align-items: center; justify-content: center;
     flex-shrink: 0;
   }
+  /* Plain variant for editing screens (Workout Builder, Edit Workout) — the exercise
+     name is what you're scanning for there, not the position, so the number stays
+     as quiet, unfilled text instead of the bold accent-filled circle used on the
+     Train exercise cards, where "which set am I on" is the actual point of the badge. */
+  .ex-number-badge.ex-number-plain {
+    width: auto; height: auto; min-width: 18px;
+    border-radius: 0; background: none;
+    color: var(--muted);
+    font-size: var(--fs-secondary);
+    font-weight: 700;
+  }
   .ex-card-title-wrap { flex: 1; min-width: 0; }
   .ex-card-title { font-weight: 700; font-size: var(--fs-card-title); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .ex-card-subtitle { color: var(--muted); font-size: var(--fs-caption); margin-top: 1px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -1277,42 +1296,55 @@
   .routine-ex-card.open .ex-chevron { transform: rotate(180deg); }
 
   /* Train: current-exercise focus states */
-  /* Current-exercise focus uses a soft accent glow (shadow ring) rather than a hard
-     border, consistent with the rest of the app's borderless, elevation-based cards. */
-  .train-ex-card.ex-current { background: var(--panel-2); box-shadow: 0 0 0 1.5px var(--accent), 0 6px 20px rgba(109,140,255,.12); }
-  .train-ex-card.ex-completed { opacity: .6; }
+  /* Current-exercise focus is a darker card surface plus a slim accent bar on the
+     left edge only — not a full outline/glow ring — so the active state reads as
+     a quiet highlight rather than the whole card looking "selected". */
+  .train-ex-card.ex-current { background: var(--panel); position: relative; }
+  /* Ends above the Log Set button (fixed offset = card bottom padding + button
+     height/margin) rather than running the full card height, so the accent reads
+     as highlighting the workout content, not decorating the whole card. */
+  .train-ex-card.ex-current::after {
+    content: ''; position: absolute; top: 10px; bottom: 78px; left: 0;
+    width: 3px; border-radius: 2px; background: var(--accent);
+  }
+  /* Completed exercises stay fully readable (no dimming) whether collapsed or
+     reopened for review — only the checkmark badge marks them as done. A reopened
+     completed card gets the same darker expanded-card surface as the active one,
+     but no accent bar — that's reserved for the exercise actually in progress. */
+  .train-ex-card.ex-completed.open { background: var(--panel); }
   .train-ex-card.ex-completed .ex-number-badge { background: var(--accent-2); }
   .train-ex-card.ex-completed .ex-number-badge svg { width: 14px; height: 14px; }
   .train-ex-card.ex-upcoming { opacity: .85; }
   .ex-card-body { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); }
 
-  /* Machine Setup — must never read as a form to fill out before lifting. Saved state
-     reads as a card matching the context-card family above it (same border/radius
-     language); unsaved state stays a single quiet line, not an empty card. */
-  .ms-row { margin-bottom: 12px; }
-  .ms-card {
-    background: var(--panel-2); border: 1px solid rgba(255,255,255,.08); border-radius: 12px;
-    padding: 11px 12px; cursor: pointer;
+  /* Machine Setup — must never read as a form to fill out before lifting, and must
+     never compete with the workout for attention. Saved state is a plain inline row
+     (no icon, no card box, no button chrome) framed by hairline dividers like any
+     other list row in the app — metadata to glance at, not a CTA. Unsaved state
+     stays a single quiet line, not an empty card. */
+  .ms-row { margin: 4px 0 14px; }
+  .ms-simple-row {
+    display: flex; align-items: center; gap: 10px; width: 100%; text-align: left;
+    background: none; border: none; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+    padding: 12px 0; cursor: pointer;
   }
-  .ms-card-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-  .ms-card-top .exinfo-header { margin-bottom: 0; }
-  .ms-view-all-btn { font-size: var(--fs-secondary); padding: 0; flex-shrink: 0; }
-  .ms-card-body { display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; margin-top: 7px; }
-  .ms-card-value { font-size: var(--fs-body); font-weight: 700; color: var(--text); }
-  .ms-card-fields { display: flex; gap: 18px; }
-  .ms-card-field { display: flex; flex-direction: column; gap: 1px; }
-  .ms-card-field-label { font-size: var(--fs-caption); color: var(--muted); }
-  .ms-card-field-value { font-size: var(--fs-secondary); font-weight: 600; }
-  .ms-row-expanded { flex-direction: column; align-items: flex-start; }
-  .ms-row-expanded > .ms-edit-btn { align-self: flex-start; margin-top: 6px; }
+  .ms-simple-row-static { cursor: default; }
+  .ms-simple-main { flex: 1; min-width: 0; }
+  .ms-simple-label {
+    font-size: var(--fs-caption); font-weight: 800; color: var(--muted); text-transform: uppercase;
+    letter-spacing: .04em; margin-bottom: 4px;
+  }
+  .ms-simple-name { font-size: var(--fs-body); font-weight: 700; color: var(--text); margin-bottom: 2px; }
+  .ms-simple-detail { font-size: var(--fs-secondary); color: var(--muted); }
+  .ms-simple-chevron { color: var(--muted); flex-shrink: 0; display: flex; }
+  .ms-simple-chevron svg { width: 18px; height: 18px; }
   .ms-label { font-size: var(--fs-caption); font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
-  .ms-machine-name { font-size: var(--fs-secondary); font-weight: 700; margin: 6px 0 6px; }
-  .ms-detail-list { display: flex; flex-direction: column; gap: 4px; width: 100%; margin: 6px 0 4px; }
-  .ms-detail-line { display: flex; justify-content: space-between; gap: 10px; font-size: var(--fs-secondary); }
-  .ms-detail-line span:first-child { color: var(--muted); }
-  .ms-detail-line span:last-child { font-weight: 600; text-align: right; }
-  .ms-row-empty { margin-bottom: 12px; }
-  .ms-row-empty .link-btn { padding-left: 0; }
+  .ms-mini-row {
+    display: flex; align-items: center; justify-content: space-between; width: 100%;
+    background: none; border: none; padding: 4px 0; margin-bottom: 8px; cursor: pointer;
+  }
+  .ms-mini-label { font-size: var(--fs-caption); font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+  .ms-mini-add { font-size: var(--fs-caption); font-weight: 700; color: var(--accent); }
   .ms-row-empty-first { margin-bottom: 12px; padding: 10px 10px 8px; background: var(--panel-2); border-radius: 10px; }
   .ms-row-empty-first .ms-label { text-transform: none; font-size: var(--fs-secondary); font-weight: 700; color: var(--text); letter-spacing: normal; }
   .ms-hint { font-size: var(--fs-caption); color: var(--muted); margin: 3px 0 4px; }
@@ -1323,43 +1355,37 @@
   .ms-prompt-text { font-size: var(--fs-secondary); font-weight: 600; min-width: 0; }
   .ms-prompt-actions { display: flex; gap: 2px; flex-shrink: 0; }
 
-  /* Exercise info cards: Today's Plan / Last Workout / Personal Best — one row that
-     scrolls horizontally rather than shrinking to fit three columns on a narrow phone.
-     Fixed card width gives each one room to breathe; a bit of the next card peeks in
-     at the edge as a scroll affordance. Borders are a low-opacity white overlay (not
-     a solid color) so they read as a subtle surface edge rather than a hard outline. */
-  .exinfo-grid {
-    display: flex; gap: 8px; margin-bottom: 12px;
-    overflow-x: auto; scroll-snap-type: x proximity; -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
+  /* Exercise info section: Plan / Last / Best — one compact row, three columns
+     divided by hairlines rather than three separate bordered cards. The exercise
+     card itself is the only container; this is just a strip within it. */
+  .exinfo-row {
+    display: flex; align-items: stretch; margin: 0 0 14px;
+    padding: 10px 0 12px; border-bottom: 1px solid rgba(255,255,255,.06);
   }
-  .exinfo-grid::-webkit-scrollbar { display: none; }
-  .exinfo-card {
-    flex: 0 0 158px; scroll-snap-align: start;
-    background: var(--panel-2); border: 1px solid rgba(255,255,255,.08); border-radius: 12px; padding: 12px 11px; min-width: 0;
+  .exinfo-col {
+    flex: 1; min-width: 0; padding: 0 12px;
+    background: none; border: none; text-align: left; font: inherit; color: inherit;
   }
-  .exinfo-header { display: flex; align-items: flex-start; gap: 5px; margin-bottom: 6px; color: var(--muted); }
+  .exinfo-col:first-child { padding-left: 0; }
+  .exinfo-col:last-child { padding-right: 0; }
+  .exinfo-col + .exinfo-col { border-left: 1px solid rgba(255,255,255,.06); }
+  .exinfo-col-clickable { cursor: pointer; }
+  .exinfo-header { display: flex; align-items: center; gap: 5px; margin-bottom: 5px; color: var(--muted); }
   .exinfo-header-accent { color: var(--accent); }
-  .exinfo-header-gold { color: var(--warn); }
-  .exinfo-icon { display: inline-flex; margin-top: 1px; }
-  .exinfo-icon svg { width: 14px; height: 14px; }
+  .exinfo-header-gold { color: var(--pr); }
+  .exinfo-icon { display: inline-flex; }
+  .exinfo-icon svg { width: 13px; height: 13px; }
   .exinfo-label { font-size: var(--fs-caption); font-weight: 800; text-transform: uppercase; letter-spacing: .02em; line-height: 1.25; color: inherit; }
+  .exinfo-chevron { display: inline-flex; color: var(--muted); margin-left: -1px; }
+  .exinfo-chevron svg { width: 13px; height: 13px; }
   .exinfo-value { font-size: var(--fs-card-title); font-weight: 700; color: var(--text); line-height: 1.25; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .exinfo-sub { font-size: var(--fs-caption); color: var(--muted); margin-top: 2px; line-height: 1.3; }
-  .exinfo-card-empty .exinfo-empty-text { font-size: var(--fs-caption); color: var(--muted); margin-bottom: 4px; }
-  .exinfo-card-empty .link-btn, .exinfo-card .link-btn { padding-left: 0; font-size: var(--fs-caption); }
+  .exinfo-sub { font-size: var(--fs-caption); color: var(--muted); margin-top: 2px; line-height: 1.3; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .exinfo-empty-text { font-size: var(--fs-caption); color: var(--muted); }
   .exinfo-pill {
     display: inline-block; font-size: var(--fs-caption); font-weight: 700; padding: 3px 8px;
     border-radius: 999px; margin-top: 6px;
   }
-  .exinfo-pill-accent { background: rgba(109,140,255,.12); color: var(--accent); }
-  .exinfo-pill-success { background: rgba(52,211,153,.14); color: var(--accent-2); }
-  .exinfo-chip {
-    display: inline-block; font-size: var(--fs-caption); font-weight: 600; color: var(--muted);
-    background: rgba(255,255,255,.06); padding: 3px 7px; border-radius: 999px; margin-top: 6px;
-  }
-  .exinfo-progress-track { height: 3px; background: rgba(255,255,255,.08); border-radius: 2px; margin-top: 7px; overflow: hidden; }
-  .exinfo-progress-fill { height: 100%; background: var(--accent); border-radius: 2px; }
+  .exinfo-pill-gold { background: rgba(240,193,75,.16); color: var(--pr); }
 
   /* Machine Setup edit sheet — each setting is one bordered row: icon, fixed label,
      value (dropdown-of-presets or free text) flush right, remove button. The label
@@ -1370,18 +1396,24 @@
     letter-spacing: .04em; margin: 18px 0 8px;
   }
   .ms-field-row {
-    display: flex; align-items: center; gap: 10px; margin-bottom: 8px;
-    padding: 10px 12px; background: var(--panel-2); border: 1px solid rgba(255,255,255,.08); border-radius: 12px;
+    display: flex; align-items: center; gap: 12px; margin-bottom: 10px;
+    padding: 13px 14px; background: var(--panel-2); border: 1px solid rgba(255,255,255,.08); border-radius: var(--radius-sm);
   }
   .ms-field-icon { display: flex; align-items: center; justify-content: center; width: 20px; height: 20px; color: var(--muted); flex-shrink: 0; }
   .ms-field-icon svg { width: 18px; height: 18px; }
-  .ms-field-label-text { flex: 1; min-width: 0; font-size: var(--fs-secondary); font-weight: 600; color: var(--text); line-height: 1.25; }
+  .ms-field-label-text { flex: 1; min-width: 0; font-size: var(--fs-body); font-weight: 600; color: var(--text); line-height: 1.25; }
   .ms-field-row .ms-field-value-input, .ms-field-row .ms-field-value-select {
     flex: 0 1 auto; width: auto; max-width: 118px; min-height: auto;
     background: none; border: none; padding: 0 14px 0 0; color: var(--muted);
     font-size: var(--fs-secondary); font-weight: 600; text-align: right;
   }
   .ms-field-row .ms-field-value-input::placeholder { color: var(--muted); opacity: .6; }
+  /* Gym/Equipment reuse the exact same row as Setup Details (icon + fixed label +
+     right-aligned value) instead of the old labeled-box-with-icon form fields, so
+     the whole sheet reads as one consistent settings list — but their values can be
+     much longer strings ("Life Fitness Chest Press"), so they get the full width
+     instead of Setup Details' compact 118px cap. */
+  .ms-field-value-input.ms-field-value-wide { max-width: none; flex: 1; }
   /* Native <select> rendering ignores text-align on several mobile browsers, so its
      selected value ends up left-aligned while the text input beside it (e.g. a custom
      numeric value) is properly right-aligned — visually misaligned even though both
@@ -1396,16 +1428,16 @@
     background-size: 12px 12px;
   }
   .ms-field-remove-btn svg { width: 14px; height: 14px; }
-  .ms-add-detail-wrap { position: relative; margin: 0 0 8px; }
-  .ms-add-detail-btn {
-    display: flex; align-items: center; justify-content: center; gap: 6px;
-    width: 100%; padding: 10px 12px;
-    background: none; border: 1px dashed var(--border-light); border-radius: 12px;
+  /* A plain text link, not a dashed empty-box CTA — matches "+ Add Exercise" /
+     "+ Add Set" elsewhere, so adding a detail reads as a lightweight action within
+     the list rather than another bordered form control. */
+  .ms-add-detail-link {
+    display: flex; align-items: center; gap: 6px;
+    background: none; border: none; margin: 2px 0 8px; padding: 8px 2px;
     color: var(--accent); font-size: var(--fs-secondary); font-weight: 700; cursor: pointer;
   }
-  .ms-add-detail-btn:hover { border-color: var(--accent); background: rgba(109,140,255,.06); }
-  .ms-add-detail-btn svg { width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-width: 2.3; stroke-linecap: round; stroke-linejoin: round; }
-  .ms-detail-picker { display: none; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+  .ms-add-detail-link svg { width: 15px; height: 15px; }
+  .ms-detail-picker { display: none; flex-wrap: wrap; gap: 6px; margin: 0 0 10px; }
   .ms-preset-btn {
     display: inline-flex; align-items: center; gap: 7px; min-height: 44px;
     background: var(--panel-2); border: 1px solid var(--border-light); color: var(--text);
@@ -1421,11 +1453,6 @@
   .ms-exercise-caption { display: flex; align-items: center; gap: 6px; }
   .ms-exercise-icon { display: inline-flex; color: var(--muted); }
   .ms-exercise-icon svg { width: 15px; height: 15px; }
-  .field-icon-input { position: relative; }
-  .field-icon-input .field-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--muted); display: flex; pointer-events: none; }
-  .field-icon-input .field-icon svg { width: 16px; height: 16px; }
-  .field-icon-input input { padding-left: 38px; }
-  .ms-card-sub { font-size: var(--fs-caption); color: var(--muted); margin-top: 1px; }
 
   /* Per-set table inside an expanded exercise card */
   .set-table-head {
@@ -1643,29 +1670,23 @@
   }
   .train-header-top { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
   .train-header-top h2 { margin: 0; font-size: var(--fs-section-title); font-weight: 800; letter-spacing: -.01em; }
+  .train-header-actions { display: flex; align-items: center; gap: 14px; flex-shrink: 0; }
   .train-cancel-link {
     background: none; border: none; color: var(--muted);
     font-size: var(--fs-caption); font-weight: 600; cursor: pointer; padding: 4px 2px; flex-shrink: 0;
   }
   .train-cancel-link:hover { color: var(--danger); }
   .train-header-stats { margin: 3px 0 0; color: var(--muted); font-size: var(--fs-secondary); }
-  #trainActive { padding-bottom: 84px; }
-  .train-finish-bar {
-    position: fixed;
-    left: 0; right: 0;
-    bottom: calc(64px + env(safe-area-inset-bottom));
-    padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
-    background: linear-gradient(to top, var(--bg) 60%, rgba(11,13,18,0));
-    z-index: 90;
-  }
-  .train-finish-bar .btn { width: 100%; max-width: 880px; margin: 0 auto; display: block; }
-  @media (min-width: 768px) {
-    .train-finish-bar { left: var(--sidebar-w); bottom: 0; padding: 14px 32px 20px; background: linear-gradient(to top, var(--bg) 70%, rgba(11,13,18,0)); }
-  }
 
   /* Workout Details — the Workout Builder's read-only mode, so its own page-header
      replaces the Train tab's masthead the same way the session-active bar does. */
   body.workout-details-active #view-log > .page-header { display: none; }
+  /* Edit Workout / Edit Sets / Workout Complete — focused full-page takeovers within
+     an active session, same treatment as Add Exercise: nav and page-header hidden. */
+  body.train-edit-active nav,
+  body.train-edit-active .footer-note,
+  body.workout-complete-active nav,
+  body.workout-complete-active .footer-note { display: none; }
   #trainWorkoutDetails { padding-bottom: 150px; }
   .train-details-bar {
     position: fixed;
@@ -1699,123 +1720,165 @@
   .wd-insight-label { font-size: var(--fs-caption); color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .wd-insight-value { font-size: var(--fs-body); font-weight: 800; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-  /* Train: active workout set rows — a compact scan-able table (Set / Weight / Reps /
-     done), not a stack of little forms. The next incomplete set gets
-     a soft highlight so the workout still feels guided one set at a time even though
-     every set in the exercise stays visible. */
-  .train-set-rows-head {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 0 4px 6px;
-    font-size: var(--fs-caption);
-    font-weight: 800;
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: .05em;
+  /* Train: active workout, V2 — a scrolling accordion of exercise cards (completed /
+     current / upcoming) instead of a compact all-visible table. Only the current
+     exercise carries logging controls; completed and upcoming exercises are
+     collapsed rows that expand read-only. See renderTrainActive(). */
+  .train-ex-header-meta { font-size: var(--fs-secondary); color: var(--muted); margin-top: 1px; }
+  .train-edit-link {
+    background: none; border: none; color: var(--accent);
+    font-weight: 700; font-size: var(--fs-secondary); cursor: pointer; padding: 4px 2px;
   }
-  .train-set-rows-head .tsrh-num { width: 30px; flex-shrink: 0; }
-  .train-set-rows-head .tsrh-field { flex: 1; min-width: 0; text-align: center; }
-  .train-set-rows-head .tsrh-spacer { width: 50px; flex-shrink: 0; }
-  /* Swipe-to-delete: the row itself slides via transform, revealing a red delete
-     button that sits behind it. The row needs an opaque background so it fully
-     covers that button until swiped. */
-  .train-set-row-wrap {
+  /* Sits in-flow after the last exercise card, not pinned to the bottom of the
+     screen — reachable by scrolling, never overlapping the current exercise's own
+     Log Set/Finish Workout button the way a fixed bar did. Outlined rather than
+     filled so it doesn't compete with that in-flow CTA as a second primary action;
+     this is only the early-exit escape hatch (the natural way to finish is still
+     the last exercise's own button once everything's actually done). */
+  .train-finish-below-btn {
+    display: block; width: 100%; margin: 18px 0 4px;
+    background: none; border: 1px solid var(--border-light); border-radius: var(--radius-sm);
+    color: var(--accent); font-weight: 700; font-size: var(--fs-body); padding: 13px; cursor: pointer;
+  }
+
+  /* Completed-set read-only rows — shown both under a live in-progress exercise
+     ("Completed Sets (3)") and inside a reopened, already-finished exercise. Reuses
+     the Completed Workout Detail's set-value formatting (.cwd-set-val etc.) so past
+     performance always reads identically wherever it's shown. No delete/edit affordance
+     by design — once logged, a set is history here, not an editable field. */
+  .train-completed-sets-label {
+    font-size: var(--fs-caption); font-weight: 800; color: var(--muted); text-transform: uppercase;
+    letter-spacing: .04em; margin: 18px 0 8px;
+  }
+  .train-completed-set-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 2px; border-bottom: 1px solid var(--border);
+  }
+  .train-completed-set-row:last-child { border-bottom: none; }
+  /* The bar sits in the card's own left padding gutter (negative offset) rather
+     than adding padding-left to the row itself, so the checkmark stays aligned
+     with every other row instead of getting bumped right on the PR row only. */
+  .train-completed-set-row.is-pr {
     position: relative;
-    overflow: hidden;
-    border-bottom: 1px solid var(--border);
   }
-  .train-set-row-wrap:last-child { border-bottom: none; }
-  /* Mouse/trackpad devices don't get the touch swipe gesture (see attachSwipeToDelete),
-     so they get a small always-visible delete icon instead (same idea as the "×" remove
-     buttons already used in Machine Setup) — hidden by default so it doesn't clutter
-     the mobile row, shown only for devices with a precise, hover-capable pointer.
-     Deliberately NOT hover-to-reveal: hovering the row is unavoidable while using the
-     steppers/checkmark, so a hover trigger would fight normal use of the row. */
-  .tsr-delete-btn { display: none; }
-  @media (hover: hover) and (pointer: fine) {
-    .tsr-delete-btn {
-      display: flex; align-items: center; justify-content: center;
-      width: 22px; height: 22px; flex-shrink: 0;
-      border: none; background: none; color: var(--muted); cursor: pointer; border-radius: 6px;
-    }
-    .tsr-delete-btn:hover { color: var(--danger); background: rgba(255,107,122,.1); }
-    .tsr-delete-btn svg { width: 14px; height: 14px; }
+  .train-completed-set-row.is-pr::before {
+    content: ''; position: absolute; left: -10px; top: 7px; bottom: 7px;
+    width: 3px; border-radius: 2px; background: var(--pr);
   }
-  .tsr-swipe-delete {
-    position: absolute;
-    top: 0; right: 0; bottom: 0;
-    width: 76px;
-    border: none;
-    background: var(--danger);
-    color: white;
-    font-size: var(--fs-caption);
-    font-weight: 700;
-    cursor: pointer;
-  }
-  .train-set-row {
-    position: relative;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 8px 4px;
-    background: var(--panel-2);
-    touch-action: pan-y;
-    transition: background .15s ease;
-  }
-  .train-set-row.current { background: #222a3d; }
-  .train-set-row.completed { background: #1d2c33; }
-  .tsr-num {
-    width: 30px; flex-shrink: 0;
-    font-size: var(--fs-body); font-weight: 800; color: var(--text); text-align: center;
-    display: flex; flex-direction: column; align-items: center; line-height: 1.15;
-  }
-  .tsr-num.warmup { color: var(--warn); }
-  .tsr-type-tag { font-size: var(--fs-caption); font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .02em; margin-top: 1px; }
-  .tsr-field { flex: 1; min-width: 0; }
-  /* Number reads first, then the +/- pair sits grouped together right after it —
-     rather than flanking the number on both sides — so the row scans as one value
-     with a control attached, not three separate elements sharing the space. */
-  .tsr-field .stepper-row { justify-content: flex-end; align-items: center; gap: 3px; }
-  .tsr-field .stepper-row input {
-    background: none; border: none; padding: 0; min-height: auto;
-    font-size: 17px; font-weight: 800; text-align: right; color: var(--text);
-    flex: 1; min-width: 0;
-  }
-  .tsr-field .stepper-btn {
-    width: 20px; height: 20px;
-    border-radius: 50%;
-    background: var(--panel-2);
-    border: 1px solid var(--border);
-    font-size: 13px;
-    flex-shrink: 0;
-  }
-  .train-set-row.completed .tsr-field .stepper-row input { color: var(--accent-2); }
-  .train-set-row.completed .tsr-field .stepper-btn { opacity: .4; pointer-events: none; }
-  .train-set-complete-btn {
-    width: 30px; height: 30px;
-    border-radius: 50%;
-    flex-shrink: 0;
-    border: 2px solid var(--border-light);
-    background: none;
-    color: var(--muted);
+  .tcs-check {
+    width: 22px; height: 22px; border-radius: 50%; flex-shrink: 0;
+    background: rgba(52,211,153,.16); color: var(--accent-2);
     display: flex; align-items: center; justify-content: center;
+  }
+  .tcs-check svg { width: 12px; height: 12px; stroke-width: 3; }
+  .tcs-label { flex: 1; min-width: 0; font-size: var(--fs-body); color: var(--text); font-weight: 600; }
+  .tcs-pr-value { display: flex; align-items: center; gap: 1px; }
+  .tcs-pr-icon { display: inline-flex; color: var(--pr); flex-shrink: 0; }
+  .tcs-pr-icon svg { width: 15px; height: 15px; }
+
+  /* Current Set — large, one-set-at-a-time controls. Deliberately not a table: two
+     stacked fields, each a big number flanked by big circular steppers, then one
+     full-width Log button. This is the single most-used control in the app, sized
+     accordingly. */
+  .cur-set-label {
+    font-size: var(--fs-caption); font-weight: 700; color: var(--muted); text-align: center;
+    text-transform: uppercase; letter-spacing: .04em;
+    margin: 16px 0 14px;
+  }
+  .cur-set-field { margin-bottom: 18px; }
+  .cur-set-field-label {
+    font-size: var(--fs-caption); font-weight: 800; color: var(--muted); text-transform: uppercase;
+    letter-spacing: .04em; text-align: center; margin-bottom: 8px;
+  }
+  .cur-set-stepper {
+    display: flex; align-items: center; justify-content: center; gap: 14px;
+    background: rgba(255,255,255,.04); border-radius: var(--radius-sm); padding: 8px;
+  }
+  .cur-stepper-btn {
+    width: 48px; height: 48px; border-radius: 50%; flex-shrink: 0;
+    border: none; background: rgba(0,0,0,.18); color: var(--text);
+    font-size: 22px; font-weight: 700; display: flex; align-items: center; justify-content: center;
     cursor: pointer;
   }
-  .train-set-complete-btn svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
-  .train-set-row.completed .train-set-complete-btn { background: var(--accent-2); border-color: var(--accent-2); color: white; }
-  /* The one set currently holding this exercise's PR, live during the workout —
-     purple like every other PR treatment in the app, replacing the usual green
-     "completed" tint just for this row. */
-  .train-set-row.is-pr { background: rgba(167,139,250,.1); border-left: 3px solid var(--pr); }
-  .train-set-row.is-pr .tsr-field .stepper-row input { color: var(--pr); }
-  .train-set-row.is-pr .train-set-complete-btn { background: var(--pr); border-color: var(--pr); color: white; }
-  .train-remove-ex-btn {
-    background: none; border: none; color: var(--muted); cursor: pointer;
-    width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 8px; flex-shrink: 0;
+  .cur-stepper-btn:active { background: rgba(0,0,0,.3); }
+  .cur-set-input {
+    flex: 1; min-width: 0; max-width: 140px; background: none; border: none; padding: 0; min-height: auto;
+    font-size: var(--fs-display); font-weight: 800; color: var(--text); text-align: center;
   }
-  .train-remove-ex-btn:hover { color: var(--danger); background: rgba(255,107,122,.1); }
-  .train-remove-ex-btn svg { width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .cur-set-input::placeholder { color: var(--muted); opacity: 1; }
+  .cur-set-log-btn { width: 100%; min-height: 48px; font-size: var(--fs-body); margin-top: 4px; }
+
+  /* Completed exercise's footer action — replaces the live set controls once every
+     set is logged. The exercise itself stays expanded and reviewable (see
+     renderTrainActive()); this is just the one control that changes. */
+  .ex-complete-next-btn { width: 100%; margin-top: 14px; }
+
+  /* Last Workout "View Details" — a bottom sheet scoped to just this exercise's most
+     recent sets, reusing the same completed-set row look as everywhere else rather
+     than the full Completed Workout Detail page (this is a quick reminder mid-workout,
+     not a destination to browse). */
+  .lwd-meta { font-size: var(--fs-secondary); color: var(--muted); margin: -8px 0 14px; }
+  .lwd-notes { font-size: var(--fs-secondary); color: var(--text-2); line-height: 1.4; margin: 0 0 14px; }
+
+  /* Edit Sets — one flat row per set: type toggle, editable rep target, remove. A
+     completed set locks (no toggle, no input, no remove) since only uncompleted
+     sets are editable from here. Cardless by design: a hairline divider between
+     rows, not a boxed card per row, matching the rest of the app's list surfaces
+     (Machine Setup's summary row, the completed-sets list) rather than a form. */
+  .tes-set-row {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 2px; border-bottom: 1px solid var(--border);
+  }
+  .tes-set-row:last-child { border-bottom: none; }
+  .tes-set-label { flex: 0 0 auto; min-width: 76px; font-size: var(--fs-body); font-weight: 700; color: var(--text); }
+  .tes-type-toggle {
+    flex: 0 0 auto; min-width: 76px; display: inline-flex; align-items: center; gap: 3px;
+    background: none; border: none; padding: 0; cursor: pointer;
+    font-size: var(--fs-body); font-weight: 700; color: var(--text);
+  }
+  .tes-type-toggle svg { width: 14px; height: 14px; color: var(--muted); flex-shrink: 0; }
+  .tes-target-reps { flex: 1; min-width: 0; text-align: right; }
+  /* Plain glyphs, not boxed icon-buttons — matches the row's own cardless look. */
+  .tes-remove-btn, .tes-duplicate-btn { width: auto; height: auto; background: none; border: none; border-radius: 0; padding: 4px; }
+  .tes-set-row-locked { opacity: .55; }
+  .tes-set-value { flex: 1; min-width: 0; text-align: right; font-size: var(--fs-secondary); color: var(--muted); }
+
+  /* Workout Complete — a celebratory recap shown once, right after saving, before
+     returning to Train. Calm and spacious rather than a form: icon, headline stats,
+     a divider, the exercise checklist, one Done button. */
+  .wc-page { padding-top: 8px; }
+  .wc-icon-wrap { position: relative; display: flex; justify-content: center; align-items: center; height: 108px; margin-bottom: 8px; }
+  .wc-icon-circle {
+    width: 84px; height: 84px; border-radius: 50%;
+    background: rgba(109,140,255,.14); color: var(--accent);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .wc-icon-circle svg { width: 38px; height: 38px; stroke-width: 1.6; }
+  .wc-confetti-dot { position: absolute; border-radius: 50%; }
+  .wc-title { font-size: var(--fs-page-title); font-weight: 800; color: var(--text); text-align: center; margin-bottom: 22px; }
+  .wc-stats { margin-bottom: 4px; }
+  .wc-stat-row { display: flex; align-items: center; gap: 12px; padding: 9px 0; }
+  .wc-stat-icon {
+    width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0;
+    background: var(--panel-2); color: var(--accent);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .wc-stat-icon svg { width: 17px; height: 17px; }
+  .wc-stat-icon.gold { color: var(--pr); }
+  .wc-stat-value { font-size: var(--fs-card-title); font-weight: 800; color: var(--text); }
+  .wc-stat-label { font-size: var(--fs-secondary); color: var(--muted); margin-top: 1px; }
+  .wc-divider { border: none; border-top: 1px solid var(--border); margin: 18px 0; }
+  .wc-ex-list { margin-bottom: 26px; }
+  .wc-ex-row { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--border); }
+  .wc-ex-row:last-child { border-bottom: none; }
+  .wc-ex-check {
+    width: 22px; height: 22px; border-radius: 50%; flex-shrink: 0;
+    background: rgba(52,211,153,.16); color: var(--accent-2);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .wc-ex-check svg { width: 12px; height: 12px; stroke-width: 3; }
+  .wc-ex-name { font-size: var(--fs-body); color: var(--text); font-weight: 600; }
+  .wc-done-btn { width: 100%; }
 
   /* Day-assign bottom sheet */
   .day-sheet-option {
@@ -1972,6 +2035,33 @@
     .modal-panel { border-radius: 20px; max-height: 85vh; }
   }
 
+  /* Confirm Dialog — a small centered card (not a bottom sheet) for the three
+     "are you sure" moments in an active workout. Deliberately its own layout
+     rather than .modal-panel, since those choices are made by reading a couple
+     of lines, not scrolling a sheet. */
+  .confirm-overlay { align-items: center; padding: 24px; }
+  .confirm-panel {
+    background: var(--panel); border: 1px solid var(--border); border-radius: 20px;
+    width: 100%; max-width: 360px; padding: 28px 24px 20px; text-align: center;
+    box-shadow: var(--shadow-md);
+  }
+  .confirm-icon {
+    width: 56px; height: 56px; border-radius: 50%; margin: 0 auto 16px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .confirm-icon svg { width: 26px; height: 26px; stroke-width: 2.4; }
+  .confirm-icon-danger { background: rgba(255,107,122,.14); color: var(--danger); }
+  .confirm-icon-warn { background: rgba(217,119,6,.14); color: var(--warn); }
+  .confirm-icon-success { background: rgba(52,211,153,.14); color: var(--accent-2); }
+  .confirm-title { font-size: var(--fs-card-title); font-weight: 800; color: var(--text); margin-bottom: 8px; }
+  .confirm-desc { font-size: var(--fs-secondary); color: var(--muted); line-height: 1.4; margin-bottom: 20px; }
+  .confirm-primary-btn { width: 100%; }
+  .confirm-secondary-btn {
+    display: block; width: 100%; background: none; border: none; margin-top: 4px;
+    color: var(--muted); font-size: var(--fs-body); font-weight: 700; padding: 12px; cursor: pointer;
+  }
+  .confirm-secondary-btn:hover { color: var(--text); }
+
   /* Toasts */
   #toastContainer {
     position: fixed;
@@ -2058,7 +2148,7 @@
           </span>
           <span class="wb-title-measurer" id="wbTitleMeasurer"></span>
         </div>
-        <input type="text" class="wb-desc-input" id="routineDescription" placeholder="Add a description…">
+        <input type="text" class="wb-desc-input" id="routineDescription" placeholder="Add notes…">
 
         <div style="display:none;">
           <select id="routineCategory"></select>
@@ -2082,29 +2172,6 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
           Add Exercise
         </button>
-      </div>
-
-      <!-- ADD EXERCISE — its own full-screen takeover, responsible only for
-           selecting exercises (multi-select), not configuring them. -->
-      <div id="addExercisePage" style="display:none;">
-        <div class="ae-header">
-          <button type="button" class="ae-close-btn" id="aeCloseBtn" title="Close">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-          </button>
-          <div class="ae-header-title" id="aeHeaderTitle">Add Exercise</div>
-          <div class="ae-header-spacer"></div>
-        </div>
-        <div class="ae-search-row">
-          <span class="ae-search-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          </span>
-          <input type="text" class="ae-search-input" id="aeSearchInput" placeholder="Search by name...">
-        </div>
-        <div class="ae-chips" id="aeChips"></div>
-        <div class="ae-list" id="aeList"></div>
-        <div class="ae-sticky-wrap">
-          <button type="button" class="ae-sticky-btn" id="aeStickyBtn" style="display:none;"></button>
-        </div>
       </div>
 
       <!-- EXERCISE DETAIL — its own full-screen takeover, responsible only for
@@ -2150,7 +2217,7 @@
             <span class="ed-group-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
           </div>
           <div class="ed-group-body" id="edWarmupBody">
-            <div class="ed-set-table-head ed-set-table-head-warmup"><span>SET</span><span>TARGET REPS</span><span>TARGET WEIGHT</span><span></span></div>
+            <div class="ed-set-table-head ed-set-table-head-warmup"><span>SET</span><span>TARGET REPS</span><span></span></div>
             <div class="ed-set-rows" id="edWarmupRows"></div>
             <button type="button" class="ed-add-set-btn" id="edAddWarmupBtn">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
@@ -2168,7 +2235,7 @@
             <span class="ed-group-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
           </div>
           <div class="ed-group-body" id="edWorkingBody">
-            <div class="ed-set-table-head ed-set-table-head-working"><span>SET</span><span>TARGET REPS</span><span>TARGET WEIGHT</span><span></span></div>
+            <div class="ed-set-table-head ed-set-table-head-working"><span>SET</span><span>TARGET REPS</span><span></span></div>
             <div class="ed-set-rows" id="edWorkingRows"></div>
             <button type="button" class="ed-add-set-btn" id="edAddWorkingBtn">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
@@ -2313,6 +2380,33 @@
 
   </div>
 
+  <!-- ADD EXERCISE — its own full-screen takeover, responsible only for
+       selecting exercises (multi-select), not configuring them. Lives at the
+       top level (not inside #view-plan or #view-log) since it's shared by
+       both the Workout Builder (Plan tab) and Edit Workout (Train tab) — if it
+       lived inside either .view, the other tab being active would hide it via
+       the .view { display:none } rule regardless of its own inline display. -->
+  <div id="addExercisePage" style="display:none;">
+    <div class="ae-header">
+      <button type="button" class="ae-close-btn" id="aeCloseBtn" title="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <div class="ae-header-title" id="aeHeaderTitle">Add Exercise</div>
+      <div class="ae-header-spacer"></div>
+    </div>
+    <div class="ae-search-row">
+      <span class="ae-search-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </span>
+      <input type="text" class="ae-search-input" id="aeSearchInput" placeholder="Search by name...">
+    </div>
+    <div class="ae-chips" id="aeChips"></div>
+    <div class="ae-list" id="aeList"></div>
+    <div class="ae-sticky-wrap">
+      <button type="button" class="ae-sticky-btn" id="aeStickyBtn" style="display:none;"></button>
+    </div>
+  </div>
+
   <!-- LOG WORKOUT -->
   <div class="view active" id="view-log">
     <div class="page-header">
@@ -2370,30 +2464,110 @@
       <div class="train-header-bar">
         <div class="train-header-top">
           <h2 id="trainActiveName">Workout</h2>
-          <button class="train-cancel-link" id="trainCancelBtn" type="button">Cancel</button>
+          <div class="train-header-actions">
+            <button class="train-edit-link" id="trainEditWorkoutBtn" type="button">Edit</button>
+            <button class="train-cancel-link" id="trainCancelBtn" type="button">Cancel</button>
+          </div>
         </div>
         <p class="train-header-stats" id="trainActiveMeta">0:00 elapsed</p>
       </div>
 
-      <div class="exercises-header">
-        <label>Exercises</label>
-        <button type="button" class="link-btn" id="trainAddExerciseBtn">
-          <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          Add Exercise
-        </button>
-      </div>
-      <div class="exercise-combobox" id="trainAddExerciseRow" style="display:none; margin-bottom:14px;">
-        <input type="text" id="trainAddExerciseInput" placeholder="Search or type an exercise" autocomplete="off">
-        <div class="exercise-combobox-list" id="trainAddExerciseList" style="display:none;"></div>
-      </div>
       <div id="trainExerciseCards"></div>
       <div class="empty" id="trainNoExercisesHint" style="display:none;">
-        <span class="empty-icon">🏋️</span>No exercises yet — tap "Add Exercise" to get started.
+        <span class="empty-icon">🏋️</span>No exercises yet — tap "Edit" to add one.
+      </div>
+      <button type="button" class="train-finish-below-btn" id="trainFinishBelowBtn" style="display:none;">Finish Workout</button>
+    </div>
+
+    <!-- TRAIN: EDIT WORKOUT — reuses the Workout Builder's chrome (header/back button,
+         exercise list, drag-to-reorder, overflow menu, Add Exercise) but every change
+         applies straight to the active session's own exercise list, never the saved
+         routine. No Save step: edits are immediate, same as the old inline
+         Add/Remove Exercise actions this replaces. -->
+    <div id="trainEditWorkout" style="display:none;">
+      <div class="wb-header">
+        <button type="button" class="wb-back-btn" id="tewBackBtn" title="Back">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+        </button>
+      </div>
+      <div class="wb-title-row"><div class="wb-title-input">Edit Workout</div></div>
+      <div class="wb-desc-input" style="margin-bottom:18px;">Changes here only affect today's workout.</div>
+      <div class="wb-section-label">Exercises</div>
+      <div id="tewExerciseList" class="wb-exercise-list"></div>
+      <div class="wb-empty" id="tewEmptyHint" style="display:none;">
+        <div class="wb-empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 6.5 17.5 17.5"/><path d="M17.5 6.5 6.5 17.5"/></svg></div>
+        <div class="wb-empty-title">No exercises yet.</div>
+        <div class="wb-empty-sub">Add an exercise to build today's workout.</div>
+      </div>
+      <button type="button" class="wb-add-exercise-btn" id="tewAddExerciseBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Add Exercise
+      </button>
+    </div>
+
+    <!-- TRAIN: EDIT SETS — a trimmed view of one exercise's planned sets: view, add,
+         remove (uncompleted only), edit rep target. No training style, target weight,
+         warm-up config, rest time, or history — that's all Workout Builder territory. -->
+    <div id="trainEditSets" style="display:none;">
+      <div class="wb-header">
+        <button type="button" class="wb-back-btn" id="tesBackBtn" title="Back">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+        </button>
+        <div class="ed-header-title">Edit Sets</div>
+        <div class="wb-header-spacer"></div>
+      </div>
+      <div class="ed-exercise-name" id="tesExerciseName">Exercise</div>
+      <div class="wb-section-label">Set</div>
+      <div id="tesSetRows"></div>
+      <button type="button" class="link-btn" id="tesAddSetBtn" style="margin-top:4px;">
+        <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Add Set
+      </button>
+    </div>
+
+    <!-- TRAIN: WORKOUT COMPLETE — shown once, immediately after saving, before
+         returning to the Train start screen. -->
+    <div id="trainWorkoutComplete" style="display:none;">
+      <div class="wc-page">
+        <div class="wc-icon-wrap" id="wcIconWrap">
+          <div class="wc-icon-circle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6.5 6.5l2 2M15.5 15.5l2 2M17.5 6.5l-2 2M6.5 17.5l2-2"/><circle cx="12" cy="12" r="3"/></svg></div>
+        </div>
+        <div class="wc-title">Workout Complete</div>
+        <div class="wc-stats" id="wcStats"></div>
+        <hr class="wc-divider">
+        <div class="wc-ex-list" id="wcExList"></div>
+        <button type="button" class="btn wc-done-btn" id="wcDoneBtn">Done</button>
       </div>
     </div>
 
-    <div class="train-finish-bar" id="trainFinishBar" style="display:none;">
-      <button class="btn" id="trainFinishBtn" type="button">✓ Finish Workout</button>
+    <!-- CONFIRM DIALOG — one reusable centered dialog for every "are you sure"
+         moment in an active workout (cancel, finish early, finish). Content/icon/
+         button labels and actions are all set dynamically by showConfirmDialog(),
+         never three separate hardcoded overlays. -->
+    <div class="modal-overlay confirm-overlay" id="confirmOverlay" style="display:none;">
+      <div class="confirm-panel">
+        <div class="confirm-icon" id="confirmIcon"></div>
+        <div class="confirm-title" id="confirmTitle"></div>
+        <div class="confirm-desc" id="confirmDesc"></div>
+        <button type="button" class="btn confirm-primary-btn" id="confirmPrimaryBtn"></button>
+        <button type="button" class="confirm-secondary-btn" id="confirmSecondaryBtn"></button>
+      </div>
+    </div>
+
+    <!-- LAST WORKOUT DETAILS — a quick-reminder bottom sheet scoped to one exercise's
+         most recent sets, opened by tapping the Last context column. -->
+    <div class="modal-overlay" id="lastWorkoutDetailsOverlay" style="display:none;">
+      <div class="modal-panel">
+        <div class="modal-header">
+          <h2 id="lwdExerciseName">Last Workout</h2>
+          <button class="modal-close-btn" id="lwdCloseBtn" type="button" title="Close">
+            <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+        <div class="lwd-meta" id="lwdMeta"></div>
+        <div class="lwd-notes" id="lwdNotes" style="display:none;"></div>
+        <div id="lwdSetList"></div>
+      </div>
     </div>
 
     <!-- TRAIN: WORKOUT DETAILS — the Workout Builder's layout in read-only mode.
@@ -2408,6 +2582,7 @@
       <div class="wb-title-row">
         <div class="wb-title-input" id="wdTitle"></div>
       </div>
+      <div class="workout-row-muscles" id="wdMuscleGroups" style="display:none; margin-bottom:8px;"></div>
       <div class="wb-desc-input" id="wdDescription" style="display:none;"></div>
 
       <div class="wb-summary-row" id="wdStats"></div>
@@ -2438,27 +2613,6 @@
         <div id="todaysWorkoutSheetList"></div>
         <button class="btn" id="todaysWorkoutSaveBtn" type="button" style="width:100%; margin-top:14px;">Save</button>
         <button type="button" class="link-btn" id="todaysWorkoutCancelBtn" style="margin:10px auto 0; display:block;">Cancel</button>
-      </div>
-    </div>
-
-    <!-- FINISH SUMMARY MODAL -->
-    <div class="modal-overlay" id="finishOverlay" style="display:none;">
-      <div class="modal-panel">
-        <div class="modal-header">
-          <h2>Workout Summary</h2>
-          <button class="modal-close-btn" id="finishCloseBtn" type="button" title="Close">
-            <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-          </button>
-        </div>
-        <div class="stat-row" id="finishStats"></div>
-        <div class="field" style="margin-top:14px;">
-          <label>Workout Notes</label>
-          <textarea id="finishNotes" placeholder="How did it go? Optional"></textarea>
-        </div>
-        <div class="btn-row">
-          <button class="btn" id="finishSaveBtn" type="button">✓ Save &amp; Finish</button>
-          <button class="btn secondary" id="finishBackBtn" type="button">Back to Workout</button>
-        </div>
       </div>
     </div>
 
@@ -2658,37 +2812,34 @@
       </button>
     </div>
     <p class="caption ms-exercise-caption" id="machineSetupExerciseLabel"></p>
-    <div class="field">
-      <label>Gym (optional)</label>
-      <div class="field-icon-input">
-        <span class="field-icon" id="machineSetupGymIcon"></span>
-        <input type="text" id="machineSetupGym" list="machineSetupGymList" placeholder="e.g. Technogym, Planet Fitness">
-      </div>
+
+    <div class="ms-field-row">
+      <span class="ms-field-icon" id="machineSetupGymIcon"></span>
+      <span class="ms-field-label-text">Gym</span>
+      <input type="text" id="machineSetupGym" list="machineSetupGymList" class="ms-field-value-input ms-field-value-wide" placeholder="Optional">
       <datalist id="machineSetupGymList"></datalist>
     </div>
-    <div class="field">
-      <label>Equipment (optional)</label>
-      <div class="field-icon-input">
-        <span class="field-icon" id="machineSetupEquipmentIcon"></span>
-        <input type="text" id="machineSetupEquipment" list="machineSetupEquipmentList" placeholder="e.g. Life Fitness Chest Press, Cable Tower #2">
-      </div>
+    <div class="ms-field-row">
+      <span class="ms-field-icon" id="machineSetupEquipmentIcon"></span>
+      <span class="ms-field-label-text">Equipment</span>
+      <input type="text" id="machineSetupEquipment" list="machineSetupEquipmentList" class="ms-field-value-input ms-field-value-wide" placeholder="Optional">
       <datalist id="machineSetupEquipmentList"></datalist>
     </div>
+
     <div class="ms-settings-label">Setup Details</div>
     <div id="machineSetupFieldRows"></div>
-    <div class="ms-add-detail-wrap">
-      <button type="button" class="ms-add-detail-btn" id="machineSetupAddDetailBtn">
-        <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        Add detail
-      </button>
-      <div class="ms-detail-picker" id="machineSetupDetailPicker" style="display:none;"></div>
-      <div class="ms-custom-label-row" id="machineSetupCustomLabelRow" style="display:none;">
-        <input type="text" id="machineSetupCustomLabelInput" placeholder="Setting name">
-        <button type="button" class="btn" id="machineSetupCustomLabelAddBtn">Add</button>
-      </div>
+    <button type="button" class="ms-add-detail-link" id="machineSetupAddDetailBtn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Add detail
+    </button>
+    <div class="ms-detail-picker" id="machineSetupDetailPicker" style="display:none;"></div>
+    <div class="ms-custom-label-row" id="machineSetupCustomLabelRow" style="display:none;">
+      <input type="text" id="machineSetupCustomLabelInput" placeholder="Setting name">
+      <button type="button" class="btn" id="machineSetupCustomLabelAddBtn">Add</button>
     </div>
-    <div style="margin-top:14px;">
-      <button class="btn" id="machineSetupSaveBtn" type="button" style="width:100%;">✓ Save Machine Setup</button>
+
+    <div style="margin-top:18px;">
+      <button class="btn" id="machineSetupSaveBtn" type="button" style="width:100%;">Save Machine Setup</button>
       <button type="button" class="link-btn link-btn-danger ms-remove-link" id="machineSetupRemoveBtn" style="display:none;">Remove Setup</button>
     </div>
   </div>
@@ -2739,16 +2890,72 @@
   const DAY_ABBR = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   const TEMPLATE_CATEGORIES = ['Push', 'Pull', 'Legs', 'Upper', 'Lower', 'Full Body', 'Custom'];
 
+  // Each exercise has exactly one primary muscle group — the array it lives in
+  // below — which drives filtering (Add Exercise chips), categorization, and every
+  // "Barbell • Chest" style label. Compound movements also get secondary muscle
+  // groups (EXERCISE_SECONDARY_MUSCLES, just below) folded into a workout's
+  // auto-generated muscle-group summary but nowhere else, so the core model
+  // (one group per exercise) stays simple everywhere it's actually load-bearing.
   const EXERCISE_CATALOG = {
     'Chest': ['Bench Press', 'Incline Bench Press', 'Decline Bench Press', 'Dumbbell Bench Press', 'Incline Dumbbell Press', 'Chest Fly', 'Cable Crossover', 'Push-Up', 'Chest Dip', 'Chest Press'],
-    'Back': ['Deadlift', 'Pull-Up', 'Chin-Up', 'Lat Pulldown', 'Seated Cable Row', 'Bent-Over Row', 'T-Bar Row', 'Single-Arm Dumbbell Row', 'Face Pull', 'Back Extensions'],
-    'Shoulders': ['Overhead Press', 'Dumbbell Shoulder Press', 'Arnold Press', 'Lateral Raise', 'Front Raise', 'Rear Delt Fly', 'Upright Row', 'Shrug'],
-    'Legs': ['Back Squat', 'Front Squat', 'Leg Press', 'Walking Lunge', 'Bulgarian Split Squat', 'Romanian Deadlift', 'Leg Curl', 'Leg Extension', 'Calf Raise', 'Hip Thrust', 'Side-Lying Hip Abduction'],
-    'Arms': ['Barbell Curl', 'Dumbbell Curl', 'Hammer Curl', 'Preacher Curl', 'Tricep Pushdown', 'Skull Crusher', 'Overhead Tricep Extension', 'Close-Grip Bench Press', 'Single Arm Tricep Pushdown'],
+    'Upper Back': ['Pull-Up', 'Chin-Up', 'Lat Pulldown', 'Seated Cable Row', 'Bent-Over Row', 'T-Bar Row', 'Single-Arm Dumbbell Row'],
+    'Lower Back': ['Deadlift', 'Back Extensions'],
+    'Shoulders': ['Overhead Press', 'Dumbbell Shoulder Press', 'Arnold Press', 'Lateral Raise', 'Front Raise', 'Rear Delt Fly', 'Upright Row', 'Shrug', 'Face Pull'],
+    'Biceps': ['Barbell Curl', 'Dumbbell Curl', 'Hammer Curl', 'Preacher Curl'],
+    'Triceps': ['Tricep Pushdown', 'Skull Crusher', 'Overhead Tricep Extension', 'Close-Grip Bench Press', 'Single Arm Tricep Pushdown'],
+    'Forearms': ['Wrist Curl', 'Reverse Wrist Curl'],
+    'Quadriceps': ['Back Squat', 'Front Squat', 'Leg Press', 'Walking Lunge', 'Bulgarian Split Squat', 'Leg Extension'],
+    'Hamstrings': ['Romanian Deadlift', 'Leg Curl'],
+    'Glutes': ['Hip Thrust', 'Side-Lying Hip Abduction'],
+    'Calves': ['Calf Raise'],
     'Core': ['Plank', 'Hanging Leg Raise', 'Cable Crunch', 'Russian Twist', 'Ab Wheel Rollout', 'Sit-Up']
   };
   const EXERCISE_TO_GROUP = {};
   Object.entries(EXERCISE_CATALOG).forEach(([group, list]) => list.forEach(ex => { EXERCISE_TO_GROUP[ex] = group; }));
+  // Secondary muscle groups per exercise — only ever read by routineMuscleGroups()
+  // to round out a workout's auto-generated summary (e.g. Deadlift's primary is
+  // Lower Back, but a workout containing only Deadlift should still read as
+  // covering Hamstrings and Glutes too). Exercises with none simply aren't listed.
+  const EXERCISE_SECONDARY_MUSCLES = {
+    'Bench Press': ['Triceps', 'Shoulders'],
+    'Incline Bench Press': ['Shoulders', 'Triceps'],
+    'Decline Bench Press': ['Triceps'],
+    'Dumbbell Bench Press': ['Triceps', 'Shoulders'],
+    'Incline Dumbbell Press': ['Shoulders', 'Triceps'],
+    'Chest Fly': ['Shoulders'],
+    'Push-Up': ['Triceps', 'Shoulders', 'Core'],
+    'Chest Dip': ['Triceps', 'Shoulders'],
+    'Chest Press': ['Triceps', 'Shoulders'],
+    'Pull-Up': ['Biceps', 'Forearms'],
+    'Chin-Up': ['Biceps', 'Forearms'],
+    'Lat Pulldown': ['Biceps'],
+    'Seated Cable Row': ['Biceps'],
+    'Bent-Over Row': ['Biceps', 'Lower Back'],
+    'T-Bar Row': ['Biceps'],
+    'Single-Arm Dumbbell Row': ['Biceps'],
+    'Deadlift': ['Hamstrings', 'Glutes', 'Upper Back'],
+    'Back Extensions': ['Glutes', 'Hamstrings'],
+    'Overhead Press': ['Triceps'],
+    'Dumbbell Shoulder Press': ['Triceps'],
+    'Arnold Press': ['Triceps'],
+    'Rear Delt Fly': ['Upper Back'],
+    'Upright Row': ['Upper Back'],
+    'Shrug': ['Upper Back'],
+    'Face Pull': ['Upper Back'],
+    'Barbell Curl': ['Forearms'],
+    'Dumbbell Curl': ['Forearms'],
+    'Hammer Curl': ['Forearms'],
+    'Close-Grip Bench Press': ['Chest', 'Shoulders'],
+    'Back Squat': ['Glutes', 'Core'],
+    'Front Squat': ['Glutes', 'Core'],
+    'Leg Press': ['Glutes'],
+    'Walking Lunge': ['Glutes', 'Hamstrings'],
+    'Bulgarian Split Squat': ['Glutes', 'Hamstrings'],
+    'Romanian Deadlift': ['Glutes', 'Lower Back'],
+    'Hip Thrust': ['Hamstrings'],
+    'Hanging Leg Raise': ['Forearms'],
+    'Ab Wheel Rollout': ['Shoulders']
+  };
 
   const EQUIPMENT_OPTIONS = ['Barbell', 'Dumbbell', 'Machine', 'Smith Machine', 'Cable', 'Bodyweight', 'Kettlebell', 'Resistance Band', 'Other'];
   // Suggested Machine Setup detail labels, tailored to what's actually adjustable on
@@ -2839,8 +3046,8 @@
     const s = TRAINING_STYLES[styleKey];
     if (!s) return [];
     const sets = [];
-    for (let i = 0; i < s.warmupSets; i++) sets.push({ type: 'warmup', reps: s.warmupReps, weight: '' });
-    for (let i = 0; i < s.workingSets; i++) sets.push({ type: 'working', reps: s.reps, weight: '' });
+    for (let i = 0; i < s.warmupSets; i++) sets.push({ type: 'warmup', reps: s.warmupReps });
+    for (let i = 0; i < s.workingSets; i++) sets.push({ type: 'working', reps: s.reps });
     return sets;
   }
 
@@ -2873,6 +3080,8 @@
     moon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"/></svg>',
     edit: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></svg>',
     x: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>',
+    trash: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>',
+    flag: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><path d="M4 22v-7"/></svg>',
     barChart: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>',
     trophy: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>',
     clock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
@@ -2891,7 +3100,9 @@
     trendingUp: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 7h6v6"/><path d="m22 7-8.5 8.5-5-5L2 17"/></svg>',
     chevronLeft: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>',
     chevronRight: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>',
-    dragHandle: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg>'
+    dragHandle: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg>',
+    sparkle: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6.5 6.5l2 2M15.5 15.5l2 2M17.5 6.5l-2 2M6.5 17.5l2-2"/><circle cx="12" cy="12" r="3"/></svg>',
+    clipboardCheck: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M9 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-3"/><path d="m9 14 2 2 4-4"/></svg>'
   };
   const EXERCISE_TYPE = {
     'Bench Press': 'Compound', 'Incline Bench Press': 'Compound', 'Decline Bench Press': 'Compound', 'Dumbbell Bench Press': 'Compound', 'Incline Dumbbell Press': 'Compound', 'Chest Fly': 'Isolation', 'Cable Crossover': 'Isolation', 'Push-Up': 'Compound', 'Chest Dip': 'Compound', 'Chest Press': 'Compound',
@@ -2899,7 +3110,8 @@
     'Overhead Press': 'Compound', 'Dumbbell Shoulder Press': 'Compound', 'Arnold Press': 'Compound', 'Lateral Raise': 'Isolation', 'Front Raise': 'Isolation', 'Rear Delt Fly': 'Isolation', 'Upright Row': 'Compound', 'Shrug': 'Isolation',
     'Back Squat': 'Compound', 'Front Squat': 'Compound', 'Leg Press': 'Compound', 'Walking Lunge': 'Compound', 'Bulgarian Split Squat': 'Compound', 'Romanian Deadlift': 'Compound', 'Leg Curl': 'Isolation', 'Leg Extension': 'Isolation', 'Calf Raise': 'Isolation', 'Hip Thrust': 'Compound', 'Side-Lying Hip Abduction': 'Isolation',
     'Barbell Curl': 'Isolation', 'Dumbbell Curl': 'Isolation', 'Hammer Curl': 'Isolation', 'Preacher Curl': 'Isolation', 'Tricep Pushdown': 'Isolation', 'Skull Crusher': 'Isolation', 'Overhead Tricep Extension': 'Isolation', 'Close-Grip Bench Press': 'Compound', 'Single Arm Tricep Pushdown': 'Isolation',
-    'Plank': 'Isolation', 'Hanging Leg Raise': 'Isolation', 'Cable Crunch': 'Isolation', 'Russian Twist': 'Isolation', 'Ab Wheel Rollout': 'Compound', 'Sit-Up': 'Isolation'
+    'Plank': 'Isolation', 'Hanging Leg Raise': 'Isolation', 'Cable Crunch': 'Isolation', 'Russian Twist': 'Isolation', 'Ab Wheel Rollout': 'Compound', 'Sit-Up': 'Isolation',
+    'Wrist Curl': 'Isolation', 'Reverse Wrist Curl': 'Isolation'
   };
   // Template personalization colors. Kept deliberately distinct from the app's semantic
   // state colors (--accent blue = active/primary, --accent-2 green = completed, --warn
@@ -2949,16 +3161,50 @@
     const { exerciseCount, setCount, mins } = routineStats(exercises);
     return `${exerciseCount} exercise${exerciseCount === 1 ? '' : 's'} • ${setCount} set${setCount === 1 ? '' : 's'} • ~${mins} min`;
   }
+  // Auto-detected from the workout's own exercises via EXERCISE_TO_GROUP — never
+  // typed by the user. Ordered to match EXERCISE_CATALOG's own group order, not
+  // whatever order the exercises happen to be in, so the same workout always
+  // reads the same way regardless of how it's arranged.
+  // Display order for the muscle-group *summary* specifically — collapses Upper
+  // Back/Lower Back into one "Back" bucket (EXERCISE_CATALOG itself keeps them
+  // separate, since that split still matters for filtering in Add Exercise).
+  const MUSCLE_SUMMARY_ORDER = ['Chest', 'Back', 'Shoulders', 'Biceps', 'Triceps', 'Forearms', 'Quadriceps', 'Hamstrings', 'Glutes', 'Calves', 'Core'];
+  // Capped at the workout's 3 most-worked groups, so the summary stays a quick
+  // read instead of listing everything a workout touches. Every mention counts
+  // equally toward a group's tally — an exercise's primary group and each of its
+  // secondary groups all add one — then the top 3 by tally are shown, in
+  // MUSCLE_SUMMARY_ORDER (not tally-rank order), with ties broken by that same
+  // canonical order.
+  function routineMuscleGroups(exercises) {
+    const counts = {};
+    const bump = (g) => {
+      if (!g) return;
+      const key = (g === 'Upper Back' || g === 'Lower Back') ? 'Back' : g;
+      counts[key] = (counts[key] || 0) + 1;
+    };
+    (exercises || []).forEach(ex => {
+      bump(EXERCISE_TO_GROUP[ex.exercise]);
+      (EXERCISE_SECONDARY_MUSCLES[ex.exercise] || []).forEach(bump);
+    });
+    const ranked = Object.keys(counts).sort((a, b) => {
+      if (counts[b] !== counts[a]) return counts[b] - counts[a];
+      return MUSCLE_SUMMARY_ORDER.indexOf(a) - MUSCLE_SUMMARY_ORDER.indexOf(b);
+    });
+    const top3 = new Set(ranked.slice(0, 3));
+    return MUSCLE_SUMMARY_ORDER.filter(g => top3.has(g));
+  }
   // The one workout-row markup, reused verbatim by the Plan tab's workout list and
   // the Train tab's Workout Library — same accent bar/name/description/meta/chevron
   // structure everywhere; only the click behavior differs per caller.
   function workoutRowHtml(r) {
     const { bg } = routineIconBg(r);
+    const muscleGroups = routineMuscleGroups(r.exercises);
     return `
       <div class="workout-row" data-id="${r.id}">
         <div class="workout-row-accent" style="background:${bg}"></div>
         <div class="workout-row-main">
           <div class="workout-row-name">${escapeHtml(r.name)}</div>
+          ${muscleGroups.length ? `<div class="workout-row-muscles">${muscleGroups.join(' • ')}</div>` : ''}
           ${r.description ? `<div class="workout-row-desc">${escapeHtml(r.description)}</div>` : ''}
           <div class="workout-row-meta">${routineMetaLine(r.exercises)}</div>
         </div>
@@ -3268,6 +3514,23 @@
     if (workoutBuilderPage.style.display !== 'none' || exerciseDetailPage.style.display !== 'none') closeRoutineEditor();
     const workoutDetailsPage = document.getElementById('trainWorkoutDetails');
     if (workoutDetailsPage.style.display !== 'none') closeWorkoutDetails();
+    // Edit Workout/Edit Sets and Workout Complete hide the bottom nav while open, so
+    // this shouldn't normally be reachable mid-flow — but a defensive reset here
+    // costs nothing and matches every other full-page takeover in this file.
+    if (document.getElementById('trainEditWorkout').style.display !== 'none'
+        || document.getElementById('trainEditSets').style.display !== 'none') {
+      document.getElementById('trainEditSets').style.display = 'none';
+      document.getElementById('trainEditWorkout').style.display = 'none';
+      document.body.classList.remove('train-edit-active');
+    }
+    if (document.getElementById('trainWorkoutComplete').style.display !== 'none') {
+      document.getElementById('trainWorkoutComplete').style.display = 'none';
+      document.body.classList.remove('workout-complete-active');
+    }
+    if (document.getElementById('lastWorkoutDetailsOverlay').style.display !== 'none') {
+      document.getElementById('lastWorkoutDetailsOverlay').style.display = 'none';
+      document.body.style.overflow = '';
+    }
     navButtons.forEach(b => b.classList.toggle('active', b.dataset.view === view));
     document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
     document.getElementById('view-' + view).classList.add('active');
@@ -3408,9 +3671,9 @@
       <div>
         <label>Weight</label>
         <div class="stepper-row">
-          <button type="button" class="stepper-btn" data-delta="-2.5">−</button>
+          <button type="button" class="stepper-btn" data-delta="-5">−</button>
           <input type="number" step="0.5" class="setWeight" value="${weight ?? ''}" placeholder="0">
-          <button type="button" class="stepper-btn" data-delta="2.5">+</button>
+          <button type="button" class="stepper-btn" data-delta="5">+</button>
         </div>
       </div>
       <div>
@@ -3539,122 +3802,84 @@
     if (days < 7) return `${days} days ago`;
     return fmtDate(iso);
   }
-  // Two distinct, independent PR types instead of one generic badge: a Weight PR is
-  // the heaviest weight ever lifted for this exercise (reps irrelevant); a Rep PR is
-  // the most reps ever done at one *specific* weight (a brand-new weight has no prior
-  // reps record to beat, so it can only earn a Weight PR, not also a Rep PR). Both
-  // beforeCreatedAt-scanning helpers below are shared by the live in-workout marker
-  // (called with no cutoff, since an in-progress session's own sets aren't in
-  // state.workouts yet) and the finished-workout detail page (called with that
-  // workout's own createdAt, so a badge reflects "was this a record at the time"
-  // rather than being retroactively invalidated by workouts logged since).
-  function priorBestWeightOnly(exerciseName, beforeCreatedAt) {
+  // A single, app-wide PR definition: rank working (non-warmup, completed) sets by
+  // weight first, then reps at equal weight; the first set to reach the best
+  // combination wins ties, so a badge never jumps to a later, merely-equal set.
+  // Bodyweight/zero-weight sets are excluded entirely — pure-reps PR tracking for
+  // those is a deliberate V1 gap, not a bug. `s.completed === false` (rather than
+  // truthiness) is the exclusion check so this works both for a live session's
+  // ex.sets (which carry a completed flag) and a finished entry's flattened sets
+  // (which don't have one at all, since only completed sets are ever stored there).
+  function bestWorkingSet(sets) {
     let best = null;
-    state.workouts.forEach(w => {
-      if (w.exercise !== exerciseName || (beforeCreatedAt !== undefined && w.createdAt >= beforeCreatedAt)) return;
-      w.sets.forEach(s => {
-        if (s.type === 'warmup' || !s.weight) return;
-        if (best === null || s.weight > best) best = s.weight;
-      });
+    sets.forEach((s, i) => {
+      if (s.type === 'warmup' || s.completed === false) return;
+      const weight = parseFloat(s.weight) || 0;
+      const reps = parseInt(s.reps) || 0;
+      if (!weight) return;
+      if (!best || weight > best.weight || (weight === best.weight && reps > best.reps)) {
+        best = { weight, reps, index: i };
+      }
     });
     return best;
   }
-  function priorBestRepsAtWeight(exerciseName, weight, beforeCreatedAt) {
-    let best = null;
-    state.workouts.forEach(w => {
-      if (w.exercise !== exerciseName || (beforeCreatedAt !== undefined && w.createdAt >= beforeCreatedAt)) return;
-      w.sets.forEach(s => {
-        if (s.type === 'warmup' || !s.weight || s.weight !== weight) return;
-        const reps = s.reps || 0;
-        if (best === null || reps > best) best = reps;
-      });
-    });
-    return best;
-  }
-  // Baseline PR: highest working-set weight ever logged for this exercise, from past
-  // finished workouts only (state.workouts) — deliberately excludes today's in-progress
-  // session, so this number always means "best before today's workout began."
-  function personalBestFor(exerciseName) {
+  // The best working set ever logged for this exercise across finished workouts.
+  // beforeCreatedAt (used by the post-hoc, finished-workout views) cuts the scan off
+  // at that workout's own createdAt, so a PR reflects "was this a record at the time"
+  // rather than being retroactively invalidated by workouts logged since. Called with
+  // no cutoff for the live in-progress session, since its own sets aren't in
+  // state.workouts yet anyway.
+  function historicalBestSet(exerciseName, beforeCreatedAt) {
     let best = null;
     state.workouts.forEach(w => {
       if (w.exercise !== exerciseName) return;
-      w.sets.forEach(s => {
-        if (s.type === 'warmup' || !s.weight) return;
-        if (!best || s.weight > best.weight) best = { weight: s.weight, reps: s.reps, date: w.date };
-      });
+      if (beforeCreatedAt !== undefined && w.createdAt >= beforeCreatedAt) return;
+      const candidate = bestWorkingSet(w.sets);
+      if (candidate && (!best || candidate.weight > best.weight || (candidate.weight === best.weight && candidate.reps > best.reps))) {
+        best = { weight: candidate.weight, reps: candidate.reps, date: w.date };
+      }
     });
     return best;
   }
-  // Highest weight among sets already completed in the current, still-active session.
-  function sessionBestFor(ex) {
-    let best = null;
-    ex.sets.forEach(s => {
-      if (!s.completed || s.type === 'warmup') return;
-      const w = parseFloat(s.weight) || 0;
-      if (!w) return;
-      if (!best || w > best.weight) best = { weight: w, reps: parseInt(s.reps) || 0 };
-    });
-    return best;
+  // Whether set `a` beats set `b` under the same weight-then-reps ranking (a missing
+  // `b` means there's nothing to beat, so any real `a` wins; a missing `a` never wins).
+  function setBeats(a, b) {
+    if (!a) return false;
+    if (!b) return true;
+    if (a.weight !== b.weight) return a.weight > b.weight;
+    return a.reps > b.reps;
   }
-  // Which set (if any) currently holds this exercise's Weight PR mid-workout — only
-  // one set at a time. A later set only takes over if it's strictly heavier than
-  // both the pre-workout baseline and whichever set currently holds it; a later set
-  // at the same weight doesn't move it (that's the Rep PR's job, not this one's).
-  function liveWeightPRSetIdx(ex) {
-    const baseline = priorBestWeightOnly(ex.exercise);
-    let idx = -1;
-    ex.sets.forEach((s, i) => {
-      if (!s.completed || s.type === 'warmup') return;
-      const weight = parseFloat(s.weight) || 0;
-      if (!weight) return;
-      if (baseline !== null && weight <= baseline) return;
-      if (idx === -1 || weight > (parseFloat(ex.sets[idx].weight) || 0)) idx = i;
-    });
-    return idx === -1 ? null : idx;
+  // A completed exercise earns at most one PR: today's best working set compared
+  // against the historical best. Deliberately not evaluated until the exercise is
+  // fully complete — no live/creeping PR calculation while sets are still being
+  // logged, so a badge only ever appears once, fully formed.
+  function sessionPRSetIdx(ex) {
+    if (!isExerciseComplete(ex)) return null;
+    const today = bestWorkingSet(ex.sets);
+    const baseline = historicalBestSet(ex.exercise);
+    return setBeats(today, baseline) ? today.index : null;
   }
-  // Which set (if any, per distinct weight) currently holds this exercise's Rep PR
-  // mid-workout — a Map of weight -> set index, since different weights each earn
-  // their own independent Rep PR in the same workout (e.g. a new best at 135 and a
-  // separate new best at 145 can both be active at once). The record to beat at a
-  // given weight starts from real prior history if there is any, but also updates
-  // as the workout goes — so at a weight with no history at all (a brand-new
-  // exercise, say), the first set there sets the initial bar with no badge of its
-  // own, and a later set at that same weight that beats it earns the Rep PR. A tie
-  // never moves the badge.
-  function liveRepPRSetIndices(ex) {
-    const holders = new Map();
-    const runningBestReps = new Map(); // weight -> best reps seen so far (real history or -1 if none yet)
-    ex.sets.forEach((s, i) => {
-      if (!s.completed || s.type === 'warmup') return;
-      const weight = parseFloat(s.weight) || 0;
-      const reps = parseInt(s.reps) || 0;
-      if (!weight || !reps) return;
-      if (!runningBestReps.has(weight)) {
-        const baseline = priorBestRepsAtWeight(ex.exercise, weight);
-        runningBestReps.set(weight, baseline === null ? -1 : baseline);
-      }
-      const currentBest = runningBestReps.get(weight);
-      if (reps > currentBest) {
-        if (currentBest !== -1) holders.set(weight, i);
-        runningBestReps.set(weight, reps);
-      }
-    });
-    return holders;
+  // Post-hoc equivalent of sessionPRSetIdx, for a finished workout's flattened
+  // per-exercise entry (state.workouts) rather than a live session's ex.sets.
+  function entryPRSetIdx(entry) {
+    const today = bestWorkingSet(entry.sets);
+    const baseline = historicalBestSet(entry.exercise, entry.createdAt);
+    return setBeats(today, baseline) ? today.index : null;
   }
-  // Compares today's completed sets against the historical baseline without persisting
-  // anything — the baseline itself only updates once the workout is finished and its
-  // sets land in state.workouts, same as every other history-derived number here.
+  function entryHasPR(entry) {
+    return entryPRSetIdx(entry) !== null;
+  }
+  // The Best info card's data: while an exercise is in progress (or complete without
+  // a new PR), it shows the unchanged historical best. It only ever switches to
+  // "New PR" once the exercise is complete and today's best set actually beats it —
+  // the same single PR definition as everywhere else in the app.
   function personalBestStatusFor(ex) {
-    const baseline = personalBestFor(ex.exercise);
-    const today = sessionBestFor(ex);
-    if (!baseline && !today) return null;
-    if (today && (!baseline || today.weight > baseline.weight)) {
-      return { weight: today.weight, reps: today.reps, date: null, status: 'new' };
+    const baseline = historicalBestSet(ex.exercise);
+    if (isExerciseComplete(ex)) {
+      const today = bestWorkingSet(ex.sets);
+      if (setBeats(today, baseline)) return { weight: today.weight, reps: today.reps, isPR: true };
     }
-    if (today && baseline && today.weight === baseline.weight) {
-      return { weight: baseline.weight, reps: baseline.reps, date: baseline.date, status: 'matched' };
-    }
-    return { weight: baseline.weight, reps: baseline.reps, date: baseline.date, status: 'historical' };
+    return baseline ? { weight: baseline.weight, reps: baseline.reps, date: baseline.date, isPR: false } : null;
   }
   // Machine Setup belongs to the exercise itself (keyed by name), not the workout
   // template or session — a saved Chest Press setup should show up automatically
@@ -3684,7 +3909,7 @@
     return {
       id: uid(), exercise: name || '', equipment: '',
       sets: Array.from({ length: count }, (_, i) => {
-        const hist = lastSets ? lastSets[i] : null;
+        const hist = lastSets ? (lastSets[i] || lastSets[lastSets.length - 1]) : null;
         return { type: 'working', targetReps: '', weight: hist ? hist.weight : '', reps: hist ? hist.reps : '', rpe: null, completed: false };
       })
     };
@@ -3698,8 +3923,8 @@
     };
     state.sessions.push(session);
     state.activeSessionId = session.id;
-    exOpenOverrides = {};
-    lastCurrentExId = null;
+    activeExerciseId = null;
+    justCompletedExId = null;
     save();
     startTrainTimer();
     renderTrainView();
@@ -3748,7 +3973,6 @@
     } else {
       document.getElementById('trainStart').style.display = 'block';
       document.getElementById('trainActive').style.display = 'none';
-      document.getElementById('trainFinishBar').style.display = 'none';
       document.body.classList.remove('train-session-active');
       stopTrainTimer();
       renderTrainStart();
@@ -3780,9 +4004,10 @@
     if (plan.type === 'template') {
       accentBg = routineIconBg(plan.template).bg;
       const { exerciseCount, setCount, mins } = routineStats(plan.template.exercises);
+      const todayMuscleGroups = routineMuscleGroups(plan.template.exercises);
       body = `
-        <div class="train-today-pill"><span class="train-today-pill-dot"></span>Planned Workout</div>
         <div class="train-today-name">${escapeHtml(plan.template.name)}</div>
+        ${todayMuscleGroups.length ? `<div class="train-today-muscles">${todayMuscleGroups.join(' • ')}</div>` : ''}
         ${plan.template.description ? `<div class="train-today-desc">${escapeHtml(plan.template.description)}</div>` : ''}
         <div class="train-today-metrics">
           ${trainTodayMetricHtml(ICON_SVGS.dumbbell, exerciseCount, `Exercise${exerciseCount === 1 ? '' : 's'}`)}
@@ -3882,6 +4107,10 @@
     workoutDetailsRoutineId = routineId;
     document.getElementById('wdSetTodayBtn').style.display = (opts && opts.hideSetToday) ? 'none' : 'block';
     document.getElementById('wdTitle').textContent = r.name;
+    const muscleGroupsEl = document.getElementById('wdMuscleGroups');
+    const muscleGroups = routineMuscleGroups(r.exercises);
+    if (muscleGroups.length) { muscleGroupsEl.textContent = muscleGroups.join(' • '); muscleGroupsEl.style.display = 'block'; }
+    else { muscleGroupsEl.style.display = 'none'; }
     const descEl = document.getElementById('wdDescription');
     if (r.description) { descEl.textContent = r.description; descEl.style.display = 'block'; }
     else { descEl.style.display = 'none'; }
@@ -4036,44 +4265,8 @@
     entries.forEach(e => e.sets.forEach(s => { total += (s.weight || 0) * (s.reps || 0); }));
     return total;
   }
-  // Post-hoc equivalents of liveWeightPRSetIdx/liveRepPRSetIndices, evaluated as of
-  // the moment this workout finished (baseline cut off at entry.createdAt) rather
-  // than live against right now — same two independent PR types, same rules.
-  function exerciseWeightPRInfo(entry) {
-    const baseline = priorBestWeightOnly(entry.exercise, entry.createdAt);
-    let idx = -1;
-    entry.sets.forEach((s, i) => {
-      if (s.type === 'warmup' || !s.weight) return;
-      if (baseline !== null && s.weight <= baseline) return;
-      if (idx === -1 || s.weight > entry.sets[idx].weight) idx = i;
-    });
-    return idx === -1 ? null : idx;
-  }
-  function exerciseRepPRIndices(entry) {
-    const holders = new Map();
-    const runningBestReps = new Map();
-    entry.sets.forEach((s, i) => {
-      if (s.type === 'warmup' || !s.weight || !s.reps) return;
-      if (!runningBestReps.has(s.weight)) {
-        const baseline = priorBestRepsAtWeight(entry.exercise, s.weight, entry.createdAt);
-        runningBestReps.set(s.weight, baseline === null ? -1 : baseline);
-      }
-      const currentBest = runningBestReps.get(s.weight);
-      if (s.reps > currentBest) {
-        if (currentBest !== -1) holders.set(s.weight, i);
-        runningBestReps.set(s.weight, s.reps);
-      }
-    });
-    return holders;
-  }
-  // Whether this exercise earned a PR at all (either type) — the collapsed exercise
-  // card and workout-level count deliberately don't distinguish type or count
-  // multiple badges, only the expanded set list does.
-  function exerciseHasPR(entry) {
-    return exerciseWeightPRInfo(entry) !== null || exerciseRepPRIndices(entry).size > 0;
-  }
   function sessionPRCount(entries) {
-    return entries.filter(e => exerciseHasPR(e)).length;
+    return entries.filter(e => entryHasPR(e)).length;
   }
   function relativeWorkoutDate(dateStr) {
     const days = Math.round((new Date(todayStr() + 'T00:00:00') - new Date(dateStr + 'T00:00:00')) / 86400000);
@@ -4194,7 +4387,7 @@
       <span class="cwd-summary-item">${ICON_SVGS.trendingUp} ${Math.round(volume).toLocaleString()} lbs</span>
     `;
 
-    const prNames = entries.filter(e => exerciseHasPR(e)).map(e => e.exercise);
+    const prNames = entries.filter(e => entryHasPR(e)).map(e => e.exercise);
     const prCardEl = document.getElementById('completedDetailPRCard');
     if (prNames.length) {
       prCardEl.innerHTML = `
@@ -4221,9 +4414,8 @@
     const el = document.getElementById('completedDetailExercises');
     el.innerHTML = completedDetailEntries.map((e, i) => {
       const volume = e.sets.reduce((sum, s) => sum + (s.weight || 0) * (s.reps || 0), 0);
-      const weightPRIdx = exerciseWeightPRInfo(e);
-      const repPRSetIndices = new Set(exerciseRepPRIndices(e).values());
-      const hasPR = weightPRIdx !== null || repPRSetIndices.size > 0;
+      const prIdx = entryPRSetIdx(e);
+      const hasPR = prIdx !== null;
       const isOpen = !!completedDetailCollapsed[i];
       return `
       <div class="routine-ex-card cwd-ex-card ${isOpen ? 'open' : ''} ${hasPR ? 'has-pr' : ''}" data-idx="${i}">
@@ -4242,20 +4434,15 @@
         </div>
         <div class="cwd-ex-body" style="display:${isOpen ? 'block' : 'none'};">
           ${e.sets.map((s, si) => {
-            const isWeightPR = si === weightPRIdx;
-            const isRepPR = repPRSetIndices.has(si);
+            const isPR = si === prIdx;
             return `
-            <div class="cwd-set-line ${(isWeightPR || isRepPR) ? 'is-pr' : ''}">
+            <div class="cwd-set-line ${isPR ? 'is-pr' : ''}">
               <span class="cwd-set-val">
                 <span class="cwd-set-weight">${s.weight || 0} lbs</span>
                 <span class="cwd-set-times">×</span>
                 <span class="cwd-set-reps">${s.reps || 0}</span>
               </span>
-              ${(isWeightPR || isRepPR) ? `
-              <span class="cwd-set-pr-labels">
-                ${isWeightPR ? `<span class="cwd-set-pr-label">${ICON_SVGS.trophy} Weight PR</span>` : ''}
-                ${isRepPR ? `<span class="cwd-set-pr-label">${ICON_SVGS.star} Rep PR</span>` : ''}
-              </span>` : ''}
+              ${isPR ? `<span class="cwd-set-pr-labels"><span class="cwd-set-pr-label">${ICON_SVGS.trophy} PR</span></span>` : ''}
             </div>`;
           }).join('')}
         </div>
@@ -4282,14 +4469,24 @@
   // (the same rows other exercises' PR/last-logged lookups scan) — otherwise a
   // "deleted" workout would keep counting toward PRs and prefill elsewhere.
   function deleteCompletedWorkout(sessionId) {
-    if (!confirm('Delete this completed workout? This cannot be undone.')) return;
-    state.sessions = state.sessions.filter(s => s.id !== sessionId);
-    state.workouts = state.workouts.filter(w => w.sessionId !== sessionId);
-    save();
-    closeCompletedWorkoutDetail();
-    renderHeaderStreak();
-    renderStreaks();
-    showToast('Workout deleted', 'success');
+    showConfirmDialog({
+      icon: ICON_SVGS.trash,
+      theme: 'danger',
+      title: 'Delete Workout?',
+      desc: 'This will permanently delete this completed workout and cannot be undone.',
+      primaryLabel: 'Delete Workout',
+      primaryDanger: true,
+      secondaryLabel: 'Cancel',
+      onPrimary: () => {
+        state.sessions = state.sessions.filter(s => s.id !== sessionId);
+        state.workouts = state.workouts.filter(w => w.sessionId !== sessionId);
+        save();
+        closeCompletedWorkoutDetail();
+        renderHeaderStreak();
+        renderStreaks();
+        showToast('Workout deleted', 'success');
+      }
+    });
   }
   document.getElementById('completedDetailDeleteBtn').addEventListener('click', () => {
     deleteCompletedWorkout(document.getElementById('completedDetailDeleteBtn').dataset.sessionId);
@@ -4322,38 +4519,35 @@
   function isExerciseComplete(ex) {
     return ex.sets.length > 0 && ex.sets.every(s => s.completed);
   }
-  // Which exercise is "current" — normally the first one that isn't fully done yet,
-  // but skipping an exercise (machine was taken, moved on to the next one) shouldn't
-  // leave it permanently flagged "current" once you've made progress past it. So:
-  // find the last exercise with any completed set, then the first incomplete one
-  // after that becomes current. Only falls back to the plain first-incomplete rule
-  // once nothing after that point is left — i.e. the skipped exercise really is the
-  // only thing remaining, so it's correct for it to be current again.
+  // Which exercise is "current" when nothing is explicitly selected — simply the
+  // first one that isn't fully done yet. (An earlier version of this skipped ahead
+  // past any exercise with at least one completed set, which made sense for the old
+  // multi-open-card design; in the accordion, manual navigation is already handled
+  // separately by activeExerciseId, so a partially-logged exercise — e.g. 1 of 7
+  // sets done — must stay current here, not immediately hand off to the next one.)
   function currentExerciseId(session) {
     const exercises = session.exercises;
-    let lastTouchedIdx = -1;
-    exercises.forEach((ex, i) => { if (ex.sets.some(s => s.completed)) lastTouchedIdx = i; });
-    for (let i = lastTouchedIdx + 1; i < exercises.length; i++) {
-      if (!isExerciseComplete(exercises[i])) return exercises[i].id;
-    }
     const firstIncomplete = exercises.find(ex => !isExerciseComplete(ex));
     if (firstIncomplete) return firstIncomplete.id;
     return exercises.length ? exercises[exercises.length - 1].id : null;
   }
-  // Manual open/closed overrides per exercise card, so a tap always wins over the
-  // auto-focus default. Cleared whenever a session starts/ends so the next workout
-  // begins fresh.
-  let exOpenOverrides = {};
-  // Tracks which exercise was "current" as of the last render. When focus moves to a
-  // new exercise (a set completed, or the current one got removed), any stale manual
-  // override on the newly-current card is cleared so it reliably auto-expands — a
-  // leftover "collapsed" tap from when it was just an upcoming card shouldn't be able
-  // to block it once it's actually up next.
-  let lastCurrentExId = null;
+  // Which single exercise card is expanded — an explicit user selection when set,
+  // otherwise falls back to currentExerciseId()'s natural next-up pick. At most one
+  // exercise is ever expanded at a time; tapping any card (completed, current, or
+  // upcoming) expands it and collapses whatever was open before. The sentinel value
+  // below additionally lets the user collapse whichever card is open — including the
+  // natural current one — by tapping its own header a second time, so tapping either
+  // "a different card" or "the same card again" both work as a way to collapse it.
+  const NOTHING_EXPANDED = '__none__';
+  let activeExerciseId = null;
+  // The exercise that was completed most recently, still expanded and not yet
+  // navigated away from. Gates the Machine Setup block's edit affordances (the save
+  // nudge, the clickable summary) — those stay available in this fresh moment, but
+  // once the user moves on and reopens a finished exercise later, it's view-only.
+  let justCompletedExId = null;
   // Machine Setup UI state — in-memory only (resets on reload), so a dismissed
   // "save this for next time?" nudge doesn't nag again this session, but also
   // doesn't need a persisted flag cluttering the saved data.
-  let machineSetupExpanded = {};
   let machineSetupPromptDismissed = {};
   let machineSetupEditingExId = null;
   // Set instead of machineSetupEditingExId when the sheet is opened from the Workout
@@ -4367,9 +4561,29 @@
   // bottom instead of back where the user actually was. Restoring it explicitly after
   // the rebuild fixes that regardless of what the keyboard/layout timing does.
   let machineSetupScrollY = 0;
-  function isExerciseOpen(session, ex) {
-    if (Object.prototype.hasOwnProperty.call(exOpenOverrides, ex.id)) return exOpenOverrides[ex.id];
-    return ex.id === currentExerciseId(session);
+  function getExpandedExerciseId(session) {
+    if (activeExerciseId === NOTHING_EXPANDED) return null;
+    return activeExerciseId || currentExerciseId(session);
+  }
+  // The only way the expanded card changes. Tapping whichever card is currently
+  // expanded — the natural current one or a manually-opened one — collapses it, full
+  // stop; tapping any other card expands that one instead, collapsing whatever was
+  // open before. So both "tap a different exercise" and "tap the open one again"
+  // collapse it, matching how the rest of the accordion already behaves.
+  function selectExercise(id) {
+    const session = getActiveSession();
+    if (!session) return;
+    if (id === getExpandedExerciseId(session)) {
+      activeExerciseId = NOTHING_EXPANDED;
+    } else {
+      activeExerciseId = id;
+      if (id !== justCompletedExId) justCompletedExId = null;
+    }
+    renderTrainActive();
+  }
+  function hasMoreIncompleteExercises(excludeId) {
+    const session = getActiveSession();
+    return !!session && session.exercises.some(ex => ex.id !== excludeId && !isExerciseComplete(ex));
   }
 
   function renderTrainActive() {
@@ -4377,113 +4591,58 @@
     if (!session) return;
     document.getElementById('trainActiveName').textContent = session.name;
     updateTrainMeta();
-    document.getElementById('trainFinishBar').style.display = session.exercises.length ? 'block' : 'none';
 
     const cardsEl = document.getElementById('trainExerciseCards');
     document.getElementById('trainNoExercisesHint').style.display = session.exercises.length === 0 ? 'block' : 'none';
-    const currentId = currentExerciseId(session);
-    if (currentId !== lastCurrentExId) {
-      delete exOpenOverrides[currentId];
-      lastCurrentExId = currentId;
-    }
+    const finishBelowBtn = document.getElementById('trainFinishBelowBtn');
+    finishBelowBtn.style.display = session.exercises.length ? 'block' : 'none';
+    finishBelowBtn.textContent = hasMoreIncompleteExercises(null) ? 'Finish Workout Early' : 'Finish Workout';
+    const expandedId = getExpandedExerciseId(session);
 
     cardsEl.innerHTML = session.exercises.map((ex, i) => {
-      const setsDone = ex.sets.filter(s => s.completed).length;
       const complete = isExerciseComplete(ex);
-      const isCurrent = ex.id === currentId;
-      const open = isExerciseOpen(session, ex);
-      const stateClass = complete ? 'ex-completed' : (isCurrent ? 'ex-current' : 'ex-upcoming');
+      const isExpanded = ex.id === expandedId;
+      const stateClass = complete ? 'ex-completed' : (isExpanded ? 'ex-current' : 'ex-upcoming');
+      const setsDone = ex.sets.filter(s => s.completed).length;
       const badgeContent = complete ? ICON_SVGS.check : String(i + 1);
-      const subtitle = complete
-        ? `Completed · ${setsDone}/${ex.sets.length} sets`
-        : `${ex.equipment ? escapeHtml(ex.equipment) + ' · ' : ''}${setsDone} of ${ex.sets.length} sets`;
+      const muscleGroup = EXERCISE_TO_GROUP[ex.exercise];
+      const metaParts = [ex.equipment, muscleGroup].filter(Boolean);
+      const subtitle = (isExpanded && !complete)
+        ? metaParts.join(' • ')
+        : `${metaParts.length ? metaParts.join(' • ') + ' • ' : ''}${setsDone}/${ex.sets.length} sets`;
+      let body = '';
+      if (isExpanded) {
+        // Same layout whether the exercise just finished or is being reopened later
+        // for review — only the trailing control changes (live set entry vs. the
+        // Next Exercise/Finish Workout action), per the completed-exercise-review spec.
+        body = `
+          ${renderExerciseInfoGrid(ex)}
+          ${renderMachineSetupBlock(ex)}
+          ${renderCompletedSetsBlock(ex)}
+          ${complete ? renderCompletedExerciseFooter(ex) : renderCurrentSetArea(ex)}
+        `;
+      }
       return `
-      <div class="routine-ex-card train-ex-card ${stateClass} ${open ? 'open' : ''}" data-exid="${ex.id}">
+      <div class="routine-ex-card train-ex-card ${stateClass} ${isExpanded ? 'open' : ''}" data-exid="${ex.id}">
         <div class="ex-card-header trainExCardHeader">
           <div class="ex-number-badge">${badgeContent}</div>
           <div class="ex-card-title-wrap">
             <div class="ex-card-title">${escapeHtml(ex.exercise || '(unnamed exercise)')}</div>
             <div class="ex-card-subtitle">${subtitle}</div>
           </div>
-          <div class="ex-card-right">
-            <div class="template-menu">
-              <button class="template-menu-btn trainExMenuBtn" type="button" title="More options" data-exid="${ex.id}">${ICON_SVGS.dots}</button>
-              <div class="template-menu-dropdown" data-menu-for="${ex.id}" style="display:none;">
-                <button type="button" class="menuDeleteBtn trainRemoveExBtn" data-exid="${ex.id}">Remove Exercise</button>
-              </div>
-            </div>
-            <svg class="ex-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-          </div>
+          <svg class="ex-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
         </div>
-        <div class="ex-card-body" style="display:${open ? 'block' : 'none'};">
-          ${renderExerciseInfoGrid(ex)}
-          ${renderMachineSetupBlock(ex)}
-          <div id="trainSetRows-${ex.id}"></div>
-          <button type="button" class="link-btn trainAddSetBtn" data-exid="${ex.id}">
-            <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            Add Set
-          </button>
-        </div>
+        <div class="ex-card-body" style="display:${isExpanded ? 'block' : 'none'};">${body}</div>
       </div>`;
     }).join('');
 
-    session.exercises.forEach(ex => renderTrainSetRows(session, ex));
-
     cardsEl.querySelectorAll('.trainExCardHeader').forEach(header => {
-      header.addEventListener('click', (e) => {
-        if (e.target.closest('.template-menu')) return;
-        const card = header.closest('.routine-ex-card');
-        exOpenOverrides[card.dataset.exid] = !card.classList.contains('open');
-        renderTrainActive();
+      header.addEventListener('click', () => {
+        selectExercise(header.closest('.routine-ex-card').dataset.exid);
       });
     });
-    cardsEl.querySelectorAll('.trainExMenuBtn').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const dropdown = cardsEl.querySelector(`.template-menu-dropdown[data-menu-for="${btn.dataset.exid}"]`);
-        const isOpen = dropdown.style.display === 'block';
-        cardsEl.querySelectorAll('.template-menu-dropdown').forEach(d => d.style.display = 'none');
-        dropdown.style.display = isOpen ? 'none' : 'block';
-      });
-    });
-    cardsEl.querySelectorAll('.trainRemoveExBtn').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const s = getActiveSession();
-        if (!s) return;
-        s.exercises = s.exercises.filter(x => x.id !== btn.dataset.exid);
-        delete exOpenOverrides[btn.dataset.exid];
-        save();
-        renderTrainActive();
-      });
-    });
-    cardsEl.querySelectorAll('.trainAddSetBtn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const s = getActiveSession();
-        const ex = s.exercises.find(x => x.id === btn.dataset.exid);
-        if (!ex) return;
-        const last = ex.sets[ex.sets.length - 1];
-        ex.sets.push({
-          type: last ? last.type : 'working', targetReps: last ? last.targetReps : '',
-          weight: last ? last.weight : '', reps: last ? last.reps : '',
-          rpe: null, completed: false
-        });
-        save();
-        renderTrainActive();
-      });
-    });
-    cardsEl.querySelectorAll('.ms-row-saved, .ms-row-expanded').forEach(row => {
-      row.addEventListener('click', (e) => {
-        if (e.target.closest('.ms-edit-btn')) return;
-        machineSetupExpanded[row.dataset.exid] = !machineSetupExpanded[row.dataset.exid];
-        renderTrainActive();
-      });
-    });
-    cardsEl.querySelectorAll('.ms-edit-btn, .ms-add-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        openMachineSetupSheet(btn.dataset.exid);
-      });
+    cardsEl.querySelectorAll('.ms-simple-row:not(.ms-simple-row-static), .ms-add-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => { e.stopPropagation(); openMachineSetupSheet(btn.dataset.exid); });
     });
     cardsEl.querySelectorAll('.ms-dismiss-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
@@ -4492,53 +4651,166 @@
         renderTrainActive();
       });
     });
+    cardsEl.querySelectorAll('.lwd-view-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => { e.stopPropagation(); openLastWorkoutDetails(btn.dataset.exercise); });
+    });
+    cardsEl.querySelectorAll('.cur-set-input').forEach(input => {
+      input.addEventListener('change', () => {
+        const wrap = input.closest('.train-ex-card');
+        const s = getActiveSession();
+        const ex = s && s.exercises.find(x => x.id === wrap.dataset.exid);
+        if (!ex) return;
+        const idx = ex.sets.findIndex(st => !st.completed);
+        if (idx === -1) return;
+        ex.sets[idx][input.dataset.field] = input.value;
+        save();
+      });
+    });
+    cardsEl.querySelectorAll('.cur-set-log-btn').forEach(btn => {
+      btn.addEventListener('click', () => logCurrentSet(btn.dataset.exid));
+    });
+    cardsEl.querySelectorAll('.ex-complete-next-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const exId = btn.dataset.exid;
+        if (hasMoreIncompleteExercises(exId)) {
+          activeExerciseId = null;
+          justCompletedExId = null;
+          renderTrainActive();
+          const nextCard = cardsEl.querySelector('.routine-ex-card.open');
+          if (nextCard) nextCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        } else {
+          confirmFinishWorkout();
+        }
+      });
+    });
+  }
+  // Reads the live DOM input values (not just the last-saved ex.sets value) so a
+  // stepper tap or a still-focused, not-yet-blurred typed value is never lost.
+  function logCurrentSet(exId) {
+    const session = getActiveSession();
+    if (!session) return;
+    const ex = session.exercises.find(x => x.id === exId);
+    if (!ex) return;
+    const idx = ex.sets.findIndex(s => !s.completed);
+    if (idx === -1) return;
+    const card = document.querySelector(`.routine-ex-card[data-exid="${exId}"]`);
+    const weightInput = card && card.querySelector('.cur-set-input[data-field="weight"]');
+    const repsInput = card && card.querySelector('.cur-set-input[data-field="reps"]');
+    const set = ex.sets[idx];
+    set.weight = parseFloat((weightInput && weightInput.value) || set.weight) || 0;
+    set.reps = parseInt((repsInput && repsInput.value) || set.reps, 10) || 0;
+    set.completed = true;
+    ex.sets.forEach((s, i) => {
+      if (i > idx && !s.completed) { s.weight = set.weight; s.reps = set.reps; }
+    });
+    if (isExerciseComplete(ex)) {
+      justCompletedExId = ex.id;
+      activeExerciseId = ex.id;
+    }
+    save();
+    renderTrainActive();
+  }
+  // Current Set — one big control at a time, not a table. The +/- buttons reuse the
+  // app-wide delegated .stepper-btn handler (adjusts the sibling <input> by
+  // data-delta and dispatches 'change'); .cur-stepper-btn only restyles them bigger.
+  function renderCurrentSetArea(ex) {
+    const idx = ex.sets.findIndex(s => !s.completed);
+    if (idx === -1) return '';
+    const s = ex.sets[idx];
+    return `
+      <div class="cur-set-label">Current Set ${idx + 1} of ${ex.sets.length}</div>
+      <div class="cur-set-field">
+        <div class="cur-set-field-label">Weight (lb)</div>
+        <div class="cur-set-stepper">
+          <button type="button" class="stepper-btn cur-stepper-btn" data-delta="-5">−</button>
+          <input type="number" class="cur-set-input" data-field="weight" value="${s.weight}" placeholder="0">
+          <button type="button" class="stepper-btn cur-stepper-btn" data-delta="5">+</button>
+        </div>
+      </div>
+      <div class="cur-set-field">
+        <div class="cur-set-field-label">Reps</div>
+        <div class="cur-set-stepper">
+          <button type="button" class="stepper-btn cur-stepper-btn" data-delta="-1">−</button>
+          <input type="number" class="cur-set-input" data-field="reps" value="${s.reps}" placeholder="0">
+          <button type="button" class="stepper-btn cur-stepper-btn" data-delta="1">+</button>
+        </div>
+      </div>
+      <button type="button" class="btn cur-set-log-btn" data-exid="${ex.id}">Log Set ${idx + 1}</button>`;
+  }
+  // A completed exercise's footer action, replacing the live set controls once
+  // every set is logged. Reads "Finish Workout" instead of "Next Exercise" when
+  // this was the last incomplete exercise in the session.
+  function renderCompletedExerciseFooter(ex) {
+    const label = hasMoreIncompleteExercises(ex.id) ? 'Next Exercise →' : 'Finish Workout';
+    return `<button type="button" class="btn ex-complete-next-btn" data-exid="${ex.id}">${label}</button>`;
+  }
+  // Completed-set rows — read-only, no swipe/edit affordance by design (once logged,
+  // a set is history here). Shared by the current exercise's "Completed Sets (N)" list
+  // and a reopened already-finished exercise's full read-only review. isPR is omitted
+  // by callers (like the Last Workout bottom sheet) that don't track PRs at all.
+  function completedSetRowHtml(label, isWarmup, weight, reps, isPR) {
+    const val = `<span class="cwd-set-val"><span class="cwd-set-weight">${weight || 0} lb</span><span class="cwd-set-times">×</span><span>${reps || 0}</span></span>`;
+    return `
+    <div class="train-completed-set-row ${isPR ? 'is-pr' : ''}">
+      <span class="tcs-check">${ICON_SVGS.check}</span>
+      <span class="tcs-label">${label}</span>
+      ${isPR
+        ? `<span class="tcs-pr-value"><span class="tcs-pr-icon">${ICON_SVGS.trophy}</span>${val}</span>`
+        : val}
+    </div>`;
+  }
+  function completedSetRows(ex) {
+    const prIdx = sessionPRSetIdx(ex);
+    return ex.sets.map((s, i) => {
+      if (!s.completed) return '';
+      const isWarmup = s.type === 'warmup';
+      return completedSetRowHtml(isWarmup ? 'Warm-up' : `Set ${i + 1}`, isWarmup, s.weight, s.reps, i === prIdx);
+    }).join('');
+  }
+  function renderCompletedSetsBlock(ex) {
+    const doneCount = ex.sets.filter(s => s.completed).length;
+    if (!doneCount) return '';
+    return `<div class="train-completed-sets-label">Completed Sets (${doneCount})</div>${completedSetRows(ex)}`;
   }
 
-  // Machine Setup — optional, contextual info that "belongs" to an exercise. Renders one
-  // of five states: hidden entirely (bodyweight exercise, nothing saved), a lightweight
-  // post-completion nudge, a first-time hint with a short explanation, a quiet one-line
-  // "+ Save machine setup" prompt, or the saved summary (collapsed or expanded). It's
-  // never a large empty card — the empty states are a single subtle line, not a form.
+  // Machine Setup — optional, contextual info that "belongs" to an exercise. Saved
+  // state is one compact, fully tappable card that opens the edit sheet directly (no
+  // inline expand step); unsaved state stays a single quiet line, not an empty card.
   function renderMachineSetupBlock(ex) {
     const setup = getMachineSetup(ex.exercise);
     const saved = hasMachineSetup(ex.exercise);
     if (!saved && (ex.equipment || '') === 'Bodyweight') return '';
+    // Editing affordances (the clickable summary, the save nudge, "+ Add setup")
+    // are only offered while the exercise is still live, or in the moment right
+    // after its last set logs — reopening a completed exercise later for review is
+    // view-only, per the read-only rules for completed exercises.
+    const readOnly = isExerciseComplete(ex) && ex.id !== justCompletedExId;
 
     if (saved) {
-      const expanded = !!machineSetupExpanded[ex.id];
-      const fields = setup.fields || [];
-      // Equipment (the specific machine/piece) is the headline; gym is context, shown
-      // alongside it only when both are set.
       const headline = setup.equipment || setup.gym || 'Saved';
-      const subline = (setup.equipment && setup.gym) ? setup.gym : '';
-      if (!expanded) {
-        const previewFields = fields.slice(0, (setup.equipment || setup.gym) ? 2 : 3);
-        return `
-        <div class="ms-row ms-row-saved ms-card" data-exid="${ex.id}">
-          <div class="ms-card-top">
-            ${exinfoHeader('dumbbell', 'Machine Setup')}
-            <button type="button" class="link-btn ms-view-all-btn" data-exid="${ex.id}">View all ›</button>
-          </div>
-          <div class="ms-card-body">
-            <div>
-              <div class="ms-card-value">${escapeHtml(headline)}</div>
-              ${subline ? `<div class="ms-card-sub">${escapeHtml(subline)}</div>` : ''}
-            </div>
-            <div class="ms-card-fields">
-              ${previewFields.map(f => `<div class="ms-card-field"><span class="ms-card-field-label">${escapeHtml(f.label)}</span><span class="ms-card-field-value">${escapeHtml(f.value)}</span></div>`).join('')}
-            </div>
-          </div>
-        </div>`;
+      const detailParts = [];
+      if (setup.equipment && setup.gym) detailParts.push(setup.gym);
+      const firstField = (setup.fields || [])[0];
+      if (firstField) detailParts.push(`${firstField.label} ${firstField.value}`);
+      const detail = detailParts.join(' • ');
+      const inner = `
+          <div class="ms-simple-main">
+            <div class="ms-simple-label">Machine Setup</div>
+            <div class="ms-simple-name">${escapeHtml(headline)}</div>
+            ${detail ? `<div class="ms-simple-detail">${escapeHtml(detail)}</div>` : ''}
+          </div>`;
+      if (readOnly) {
+        return `<div class="ms-row"><div class="ms-simple-row ms-simple-row-static">${inner}</div></div>`;
       }
-      const lines = fields.map(f => `<div class="ms-detail-line"><span>${escapeHtml(f.label)}</span><span>${escapeHtml(f.value)}</span></div>`).join('');
       return `
-      <div class="ms-row ms-row-expanded ms-card" data-exid="${ex.id}">
-        ${exinfoHeader('dumbbell', 'Machine Setup')}
-        ${(setup.equipment || setup.gym) ? `<div class="ms-machine-name">${escapeHtml(headline)}${subline ? ' · ' + escapeHtml(subline) : ''}</div>` : ''}
-        <div class="ms-detail-list">${lines}</div>
-        <button type="button" class="link-btn ms-edit-btn" data-exid="${ex.id}">Edit setup</button>
+      <div class="ms-row">
+        <button type="button" class="ms-simple-row" data-exid="${ex.id}">
+          ${inner}
+          <span class="ms-simple-chevron">${ICON_SVGS.chevronRight}</span>
+        </button>
       </div>`;
     }
+    if (readOnly) return '';
 
     // Nothing saved yet. Right after finishing the exercise is the best moment to ask,
     // since the settings are fresh in mind — but only once per session per exercise.
@@ -4562,166 +4834,87 @@
       </div>`;
     }
     return `
-    <div class="ms-row ms-row-empty" data-exid="${ex.id}">
-      <button type="button" class="link-btn ms-add-btn" data-exid="${ex.id}">+ Save machine setup</button>
+    <div class="ms-row">
+      <button type="button" class="ms-mini-row ms-add-btn" data-exid="${ex.id}">
+        <span class="ms-mini-label">Machine Setup</span>
+        <span class="ms-mini-add">+ Add</span>
+      </button>
     </div>`;
   }
 
-  // Three compact context cards shown above Machine Setup while an exercise card is
-  // open: what today's plan calls for, what happened last time, and the standing PR
-  // (live-checked against sets completed so far this session). Deliberately plain
-  // numbers/short lines, no progress bars or large empty states — same "quietest
-  // version that satisfies the requirement" rule as Machine Setup follows.
+  // Compact three-column context strip shown above Machine Setup while an exercise
+  // card is open: what today's plan calls for, what happened last time, and the
+  // standing PR (live-checked against sets completed so far this session).
+  // Deliberately plain numbers/short lines, no progress bars or large empty states —
+  // same "quietest version that satisfies the requirement" rule as Machine Setup
+  // follows. One shared row divided by hairlines, not three separate cards.
   function renderExerciseInfoGrid(ex) {
-    return `<div class="exinfo-grid">
+    return `<div class="exinfo-row">
       ${renderTodaysPlanBlock(ex)}
       ${renderLastWorkoutBlock(ex)}
       ${renderPersonalBestBlock(ex)}
     </div>`;
   }
-  // Shared icon + uppercase label row used by every info block, so the icon set
+  // Shared icon + uppercase label row used by every info column, so the icon set
   // (target/clock/trophy) stays consistent with the ICON_SVGS convention instead of
-  // one-off inline SVGs per block. A theme ('accent'/'gold') tints icon+label where
-  // the card carries real meaning (the plan, a record) — left neutral otherwise.
-  function exinfoHeader(iconKey, label, theme) {
+  // one-off inline SVGs per block. Plan and Best each carry a theme (accent/gold);
+  // Last stays neutral since its color comes from being the tappable one, not a tint.
+  function exinfoHeader(iconKey, label, theme, chevron) {
     const cls = theme ? ` exinfo-header-${theme}` : '';
-    return `<div class="exinfo-header${cls}"><span class="exinfo-icon">${ICON_SVGS[iconKey]}</span><span class="exinfo-label">${label}</span></div>`;
+    const chevronHtml = chevron ? `<span class="exinfo-chevron">${ICON_SVGS.chevronRight}</span>` : '';
+    return `<div class="exinfo-header${cls}"><span class="exinfo-icon">${ICON_SVGS[iconKey]}</span><span class="exinfo-label">${label}</span>${chevronHtml}</div>`;
   }
   function renderTodaysPlanBlock(ex) {
     const total = ex.sets.length;
-    const complete = isExerciseComplete(ex);
-    const idx = ex.sets.findIndex(s => !s.completed);
-    // The rep range describes the plan overall, so it should reflect the working
-    // sets specifically — not whichever set happens to be current, which might be
-    // a warm-up with a different (and less relevant) target.
-    const planSet = ex.sets.find(s => s.type !== 'warmup') || ex.sets[0];
+    const workingSets = ex.sets.filter(s => s.type !== 'warmup');
+    // The rep range describes the plan overall, so it reflects the working sets
+    // specifically — not whichever set happens to be current, which might be a
+    // warm-up with a different (and less relevant) target.
+    const planSet = workingSets[0] || ex.sets[0];
     const repRange = (planSet && planSet.targetReps) ? `${escapeHtml(planSet.targetReps)} reps` : '—';
-    const progress = complete ? 'All sets complete' : `Set ${idx + 1} of ${total}`;
-    const pct = complete ? 100 : Math.round((idx / total) * 100);
     return `
-    <div class="exinfo-card">
-      ${exinfoHeader('target', "Today's Plan", 'accent')}
+    <div class="exinfo-col">
+      ${exinfoHeader('target', 'Plan', 'accent')}
       <div class="exinfo-value">${total} set${total === 1 ? '' : 's'}</div>
       <div class="exinfo-sub">${repRange}</div>
-      <div class="exinfo-sub">${progress}</div>
-      <div class="exinfo-progress-track"><div class="exinfo-progress-fill" style="width:${pct}%"></div></div>
     </div>`;
   }
   function renderLastWorkoutBlock(ex) {
     const entry = lastLoggedEntryFor(ex.exercise);
     if (!entry) {
       return `
-      <div class="exinfo-card exinfo-card-empty">
-        ${exinfoHeader('clock', 'Last Workout')}
+      <div class="exinfo-col exinfo-col-empty">
+        ${exinfoHeader('clock', 'Last')}
         <div class="exinfo-empty-text">No history yet</div>
       </div>`;
     }
-    const working = entry.sets.find(s => s.type !== 'warmup') || entry.sets[0];
-    const summary = `${working.weight || 0} lb × ${working.reps || 0}`;
+    const best = bestWorkingSet(entry.sets);
+    const valueText = best ? `${best.weight} lb × ${best.reps}` : `${entry.sets.length} set${entry.sets.length === 1 ? '' : 's'}`;
     return `
-    <div class="exinfo-card">
-      ${exinfoHeader('clock', 'Last Workout')}
-      <div class="exinfo-value">${escapeHtml(summary)}</div>
-      <div class="exinfo-sub" title="${fmtDate(entry.date)}">${formatRelativeDate(entry.date)}</div>
-      <span class="exinfo-chip">${entry.sets.length} total set${entry.sets.length === 1 ? '' : 's'}</span>
-    </div>`;
+    <button type="button" class="exinfo-col exinfo-col-clickable lwd-view-btn" data-exercise="${escapeHtml(ex.exercise)}">
+      ${exinfoHeader('clock', 'Last', null, true)}
+      <div class="exinfo-value">${valueText}</div>
+      <div class="exinfo-sub">${formatRelativeDate(entry.date)}</div>
+    </button>`;
   }
   function renderPersonalBestBlock(ex) {
     const info = personalBestStatusFor(ex);
     if (!info) {
       return `
-      <div class="exinfo-card exinfo-card-empty">
-        ${exinfoHeader('trophy', 'Personal Best', 'gold')}
+      <div class="exinfo-col exinfo-col-empty">
+        ${exinfoHeader('trophy', 'Best', 'gold')}
         <div class="exinfo-empty-text">No history yet</div>
       </div>`;
     }
-    const tag = info.status === 'new' ? 'New PR today' : info.status === 'matched' ? 'PR matched today' : 'Weight PR';
-    const pillClass = info.status === 'historical' ? 'exinfo-pill-accent' : 'exinfo-pill-success';
     return `
-    <div class="exinfo-card">
-      ${exinfoHeader('trophy', 'Personal Best', 'gold')}
+    <div class="exinfo-col">
+      ${exinfoHeader('trophy', 'Best', 'gold')}
       <div class="exinfo-value">${info.weight} lb × ${info.reps}</div>
-      ${info.date ? `<div class="exinfo-sub" title="${fmtDate(info.date)}">${formatRelativeDate(info.date)}</div>` : ''}
-      <span class="exinfo-pill ${pillClass}">${tag}</span>
+      ${info.isPR
+        ? `<span class="exinfo-pill exinfo-pill-gold">New PR</span>`
+        : (info.date ? `<div class="exinfo-sub" title="${fmtDate(info.date)}">${formatRelativeDate(info.date)}</div>` : '')}
     </div>`;
   }
-  // Swipe-left-to-reveal-delete for a set row, iOS-list style, unified across touch
-  // and mouse via Pointer Events. A drag can start anywhere on the row, including on
-  // top of a stepper/checkmark button — a tap (no meaningful movement) still reaches
-  // that button normally, while a horizontal drag takes over and suppresses the click
-  // that would otherwise fire underneath it. Pointer capture keeps the drag tracking
-  // even if the cursor strays outside the row's bounds mid-gesture (common with a
-  // mouse, less so with a finger), which is what made mouse-based swiping unreliable.
-  function attachSwipeToDelete(wrapEl, onDelete) {
-    const row = wrapEl.querySelector('.train-set-row');
-    const deleteBtn = wrapEl.querySelector('.tsr-swipe-delete');
-    const OPEN_X = -76;
-    let startX = 0, startY = 0, baseX = 0, dragging = false, decided = false, horizontal = false, open = false, justDragged = false;
-
-    function setX(x, animate) {
-      row.style.transition = animate ? 'transform .2s ease' : 'none';
-      row.style.transform = `translateX(${x}px)`;
-    }
-    function onDown(e) {
-      // Only touch actually swipes. A mouse click has nowhere near zero pixel drift
-      // between down and up — that's normal, not a gesture — but this state machine
-      // used to treat any of it as the start of a drag, capture the pointer, and then
-      // swallow the click that should have reached the stepper/checkmark button
-      // underneath. Desktop gets a CSS hover-reveal delete button instead (below).
-      if (e.pointerType !== 'touch') return;
-      dragging = true; decided = false; horizontal = false;
-      startX = e.clientX; startY = e.clientY;
-      baseX = open ? OPEN_X : 0;
-      row.style.transition = 'none';
-      try { row.setPointerCapture(e.pointerId); } catch (err) {}
-    }
-    function onMove(e) {
-      if (!dragging) return;
-      const dx = e.clientX - startX;
-      const dy = e.clientY - startY;
-      if (!decided) {
-        if (Math.abs(dx) < 6 && Math.abs(dy) < 6) return;
-        decided = true;
-        horizontal = Math.abs(dx) > Math.abs(dy);
-        if (horizontal) justDragged = true;
-        if (!horizontal) { dragging = false; return; }
-      }
-      if (!horizontal) return;
-      e.preventDefault();
-      const x = Math.max(OPEN_X, Math.min(0, baseX + dx));
-      setX(x, false);
-    }
-    function onUp(e) {
-      try { row.releasePointerCapture(e.pointerId); } catch (err) {}
-      // justDragged is normally cleared by the click handler right below, which fires
-      // immediately after a real drag. But if the browser never sends that click (a
-      // pointercancel, or certain touch gesture edge cases), it would otherwise stay
-      // stuck true forever — and the capturing click listener below would then treat
-      // every future tap on this row, including the completion checkmark, as a ghost
-      // click to suppress. This guarantees it clears on the next tick regardless.
-      if (justDragged) setTimeout(() => { justDragged = false; }, 400);
-      if (!dragging) return;
-      dragging = false;
-      if (!horizontal) return;
-      const dx = e.clientX - startX;
-      const finalX = Math.max(OPEN_X, Math.min(0, baseX + dx));
-      open = finalX < OPEN_X / 2;
-      setX(open ? OPEN_X : 0, true);
-    }
-    row.addEventListener('pointerdown', onDown);
-    row.addEventListener('pointermove', onMove);
-    row.addEventListener('pointerup', onUp);
-    row.addEventListener('pointercancel', onUp);
-    // Suppress the synthetic click that follows a horizontal drag (so the
-    // stepper/checkmark button underneath doesn't also fire), and treat a tap
-    // on an already-open row as "close" rather than reaching the control beneath it.
-    row.addEventListener('click', (e) => {
-      if (justDragged) { justDragged = false; e.preventDefault(); e.stopPropagation(); return; }
-      if (open) { e.preventDefault(); e.stopPropagation(); setX(0, true); open = false; }
-    }, true);
-    deleteBtn.addEventListener('click', onDelete);
-  }
-
   // Machine Setup edit sheet — one static overlay reused for whichever exercise is being
   // edited (same pattern as the Day-assign sheet), rather than a modal built fresh per
   // exercise. Fields are a flexible label/value list (not a fixed form) so only what's
@@ -4879,224 +5072,409 @@
     });
   }
 
-  function renderTrainSetRows(session, ex) {
-    const el = document.getElementById(`trainSetRows-${ex.id}`);
-    if (!el) return;
-    // The first not-yet-completed set is "current" — the one we want to visually pull
-    // focus toward, same idea as the current-exercise focus but one level down.
-    const currentSetIdx = ex.sets.findIndex(s => !s.completed);
-    const liveWeightPRIdx = liveWeightPRSetIdx(ex);
-    const liveRepPRIndices = new Set(liveRepPRSetIndices(ex).values());
-    const head = `
-      <div class="train-set-rows-head">
-        <span class="tsrh-num">Set</span>
-        <span class="tsrh-field">Weight</span>
-        <span class="tsrh-field">Reps</span>
-        <span class="tsrh-spacer"></span>
-      </div>`;
-    el.innerHTML = head + ex.sets.map((s, i) => {
-      const isWarmup = s.type === 'warmup';
-      const isSpecial = !isWarmup && s.type !== 'working';
-      const badgeText = isWarmup ? 'W' : String(i + 1);
-      const repsPlaceholder = s.targetReps ? escapeHtml(s.targetReps) : '0';
-      const isWeightPR = i === liveWeightPRIdx;
-      const isRepPR = liveRepPRIndices.has(i);
-      const isLivePR = isWeightPR || isRepPR;
-      return `
-      <div class="train-set-row-wrap" data-exid="${ex.id}" data-setidx="${i}">
-        <button type="button" class="tsr-swipe-delete" title="Remove set">Delete</button>
-        <div class="train-set-row ${s.completed ? 'completed' : ''} ${i === currentSetIdx ? 'current' : ''} ${isLivePR ? 'is-pr' : ''}">
-          <div class="tsr-num ${isWarmup ? 'warmup' : ''}">
-            ${badgeText}
-            ${isSpecial ? `<span class="tsr-type-tag">${escapeHtml(typeLabel(s.type))}</span>` : ''}
-          </div>
-          <div class="tsr-field">
-            <div class="stepper-row">
-              <input type="number" class="trainSetWeight" step="0.5" placeholder="0" value="${s.weight}">
-              <button type="button" class="stepper-btn" data-delta="-2.5">−</button>
-              <button type="button" class="stepper-btn" data-delta="2.5">+</button>
-            </div>
-          </div>
-          <div class="tsr-field">
-            <div class="stepper-row">
-              <input type="number" class="trainSetReps" placeholder="${repsPlaceholder}" value="${s.reps}">
-              <button type="button" class="stepper-btn" data-delta="-1">−</button>
-              <button type="button" class="stepper-btn" data-delta="1">+</button>
-            </div>
-          </div>
-          <button type="button" class="train-set-complete-btn" title="${s.completed ? (isWeightPR ? 'Weight PR — reopen set' : isRepPR ? 'Rep PR — reopen set' : 'Reopen set') : 'Mark complete'}">
-            ${s.completed ? (isWeightPR ? ICON_SVGS.trophy : isRepPR ? ICON_SVGS.star : ICON_SVGS.check) : ''}
-          </button>
-          <button type="button" class="tsr-delete-btn" title="Remove set">${ICON_SVGS.x}</button>
-        </div>
-      </div>`;
-    }).join('');
-
-    el.querySelectorAll('.train-set-row-wrap').forEach(wrap => {
-      const idx = parseInt(wrap.dataset.setidx);
-      const row = wrap.querySelector('.train-set-row');
-      const weightInput = row.querySelector('.trainSetWeight');
-      const repsInput = row.querySelector('.trainSetReps');
-      // With no logged history for this exercise, sets start blank and typing the same
-      // number into every row is tedious — use the first set's value as a starting point
-      // for the rest, leaving any set the user already filled in alone. Once real history
-      // exists, sessionExerciseFromTemplateEx/sessionExerciseBlank prefill from it instead,
-      // so this only ever kicks in before that history exists. Sibling inputs are updated
-      // directly (not via a full renderTrainActive() re-render) so it can't yank focus or
-      // destroy the input the user is mid-interaction with, e.g. tabbing from weight to reps.
-      function autofillFromFirstSet(field, value) {
-        if (idx !== 0 || value === '' || lastLoggedSetsFor(ex.exercise)) return;
-        el.querySelectorAll('.train-set-row-wrap').forEach(otherWrap => {
-          const otherIdx = parseInt(otherWrap.dataset.setidx);
-          if (otherIdx === 0 || ex.sets[otherIdx][field] !== '') return;
-          ex.sets[otherIdx][field] = value;
-          const otherInput = otherWrap.querySelector(field === 'weight' ? '.trainSetWeight' : '.trainSetReps');
-          if (otherInput) otherInput.value = value;
-        });
-      }
-      weightInput.addEventListener('change', () => {
-        ex.sets[idx].weight = weightInput.value;
-        autofillFromFirstSet('weight', weightInput.value);
-        save();
-      });
-      repsInput.addEventListener('change', () => {
-        ex.sets[idx].reps = repsInput.value;
-        autofillFromFirstSet('reps', repsInput.value);
-        save();
-      });
-      row.querySelector('.train-set-complete-btn').addEventListener('click', () => {
-        const set = ex.sets[idx];
-        set.completed = !set.completed;
-        if (set.completed) {
-          set.weight = parseFloat(weightInput.value) || 0;
-          set.reps = parseInt(repsInput.value) || 0;
-        }
-        // Once this exercise is fully done, let auto-focus re-derive its open state
-        // (collapses it and moves on). Otherwise keep it explicitly open — the user
-        // is actively working on it right now, even if an earlier skipped exercise
-        // is still technically "current" under the first-incomplete rule, which
-        // would otherwise auto-collapse this one back in favor of that one.
-        if (isExerciseComplete(ex)) {
-          delete exOpenOverrides[ex.id];
-        } else {
-          exOpenOverrides[ex.id] = true;
-        }
-        save();
-        renderTrainActive();
-      });
-      const deleteSet = () => {
-        ex.sets.splice(idx, 1);
-        delete exOpenOverrides[ex.id];
-        save();
-        renderTrainActive();
-      };
-      attachSwipeToDelete(wrap, deleteSet);
-      row.querySelector('.tsr-delete-btn').addEventListener('click', (e) => { e.stopPropagation(); deleteSet(); });
-    });
-  }
-
   document.getElementById('trainBlankBtn').addEventListener('click', startBlankWorkout);
-  document.getElementById('trainCancelBtn').addEventListener('click', () => {
-    if (!confirm('Cancel this workout? Nothing from it will be saved.')) return;
-    const session = getActiveSession();
-    if (session) state.sessions = state.sessions.filter(s => s.id !== session.id);
-    state.activeSessionId = null;
-    exOpenOverrides = {};
-    lastCurrentExId = null;
-    save();
-    renderTrainView();
-    showToast('Workout cancelled', 'success');
+
+  // ---------- CONFIRM DIALOG — one reusable centered dialog for every
+  // "are you sure" moment in an active workout (cancel / finish early / finish).
+  // Content, icon, button labels and the primary/secondary actions are all set
+  // per call by showConfirmDialog(), so there's exactly one dialog to style and
+  // three call sites that each describe their own moment. ----------
+  let confirmPrimaryAction = null;
+  let confirmSecondaryAction = null;
+  function showConfirmDialog({ icon, theme, title, desc, primaryLabel, primaryDanger, onPrimary, secondaryLabel, onSecondary }) {
+    const iconEl = document.getElementById('confirmIcon');
+    iconEl.className = `confirm-icon confirm-icon-${theme}`;
+    iconEl.innerHTML = icon;
+    document.getElementById('confirmTitle').textContent = title;
+    document.getElementById('confirmDesc').textContent = desc;
+    const primaryBtn = document.getElementById('confirmPrimaryBtn');
+    primaryBtn.textContent = primaryLabel;
+    primaryBtn.className = `btn confirm-primary-btn${primaryDanger ? ' danger' : ''}`;
+    document.getElementById('confirmSecondaryBtn').textContent = secondaryLabel;
+    confirmPrimaryAction = onPrimary;
+    confirmSecondaryAction = onSecondary || null;
+    document.getElementById('confirmOverlay').style.display = 'flex';
+  }
+  function closeConfirmDialog() {
+    document.getElementById('confirmOverlay').style.display = 'none';
+    confirmPrimaryAction = null;
+    confirmSecondaryAction = null;
+  }
+  document.getElementById('confirmPrimaryBtn').addEventListener('click', () => {
+    const action = confirmPrimaryAction;
+    closeConfirmDialog();
+    if (action) action();
+  });
+  document.getElementById('confirmSecondaryBtn').addEventListener('click', () => {
+    const action = confirmSecondaryAction;
+    closeConfirmDialog();
+    if (action) action();
+  });
+  document.getElementById('confirmOverlay').addEventListener('click', (e) => {
+    if (e.target.id === 'confirmOverlay') closeConfirmDialog();
   });
 
-  document.getElementById('trainAddExerciseBtn').addEventListener('click', () => {
-    const row = document.getElementById('trainAddExerciseRow');
-    const opening = row.style.display === 'none';
-    row.style.display = opening ? 'block' : 'none';
-    if (opening) {
-      document.getElementById('trainAddExerciseInput').value = '';
-      document.getElementById('trainAddExerciseInput').focus();
-    }
-  });
-  attachExerciseCombobox(document.getElementById('trainAddExerciseInput'));
-  document.getElementById('trainAddExerciseInput').addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      const name = e.target.value.trim();
-      if (!name) return;
-      const session = getActiveSession();
-      if (!session) return;
-      session.exercises.push(sessionExerciseBlank(name));
-      save();
-      document.getElementById('trainAddExerciseRow').style.display = 'none';
-      renderTrainActive();
-      const newCard = document.querySelector(`.routine-ex-card[data-exid="${session.exercises[session.exercises.length - 1].id}"]`);
-      if (newCard) toggleExCard(newCard, true);
-    }
-  });
-  document.addEventListener('click', (e) => {
-    const opt = e.target.closest('#trainAddExerciseList .combobox-option');
-    if (!opt) return;
-    const session = getActiveSession();
-    if (!session) return;
-    session.exercises.push(sessionExerciseBlank(opt.dataset.name));
-    save();
-    document.getElementById('trainAddExerciseRow').style.display = 'none';
-    renderTrainActive();
-    const newCard = document.querySelector(`.routine-ex-card[data-exid="${session.exercises[session.exercises.length - 1].id}"]`);
-    if (newCard) toggleExCard(newCard, true);
+  document.getElementById('trainCancelBtn').addEventListener('click', () => {
+    showConfirmDialog({
+      icon: ICON_SVGS.trash,
+      theme: 'danger',
+      title: 'Cancel Workout?',
+      desc: 'All logged data will be permanently discarded and cannot be recovered.',
+      primaryLabel: 'Discard Workout',
+      primaryDanger: true,
+      secondaryLabel: 'Continue Workout',
+      onPrimary: () => {
+        const session = getActiveSession();
+        if (session) state.sessions = state.sessions.filter(s => s.id !== session.id);
+        state.activeSessionId = null;
+        activeExerciseId = null;
+        justCompletedExId = null;
+        save();
+        renderTrainView();
+        showToast('Workout cancelled', 'success');
+      }
+    });
   });
 
   // ---------- FINISH WORKOUT ----------
-  document.getElementById('trainFinishBtn').addEventListener('click', () => {
+  // Always gated behind a confirm dialog — which one depends on whether every
+  // planned exercise is actually done, so a mis-tap can't quietly end a workout
+  // early or lose progress. Available both from the header's "Finish" link (the
+  // early-exit path) and the current exercise's own "Finish Workout" button once
+  // everything's complete — confirmFinishWorkout() picks the right dialog either way.
+  function confirmFinishWorkout() {
     const session = getActiveSession();
     if (!session) return;
-    const { total, done } = sessionSetsCompletedCount(session);
-    const exercisesLogged = session.exercises.filter(ex => ex.sets.some(s => s.completed)).length;
-    document.getElementById('finishStats').innerHTML = `
-      <div class="stat"><div class="num">${formatElapsed(Date.now() - session.startedAt)}</div><div class="lbl">Duration</div></div>
-      <div class="stat"><div class="num">${exercisesLogged} of ${session.exercises.length}</div><div class="lbl">Exercises logged</div></div>
-      <div class="stat"><div class="num">${done} of ${total}</div><div class="lbl">Sets completed</div></div>
-    `;
-    document.getElementById('finishNotes').value = session.notes || '';
-    document.getElementById('finishOverlay').style.display = 'flex';
-    document.body.style.overflow = 'hidden';
-  });
-  document.getElementById('finishBackBtn').addEventListener('click', closeFinishOverlay);
-  document.getElementById('finishCloseBtn').addEventListener('click', closeFinishOverlay);
-  document.getElementById('finishOverlay').addEventListener('click', (e) => {
-    if (e.target.id === 'finishOverlay') closeFinishOverlay();
-  });
-  function closeFinishOverlay() {
-    document.getElementById('finishOverlay').style.display = 'none';
-    document.body.style.overflow = '';
+    if (hasMoreIncompleteExercises(null)) {
+      showConfirmDialog({
+        icon: ICON_SVGS.flag,
+        theme: 'warn',
+        title: 'Finish Workout Early?',
+        desc: 'Save your current progress and end this workout.',
+        primaryLabel: 'Finish Workout Early',
+        secondaryLabel: 'Continue Workout',
+        onPrimary: finishWorkoutAndShowComplete
+      });
+    } else {
+      showConfirmDialog({
+        icon: ICON_SVGS.check,
+        theme: 'success',
+        title: 'Finish Workout?',
+        desc: 'This will complete and save your workout.',
+        primaryLabel: 'Finish Workout',
+        secondaryLabel: 'Cancel',
+        onPrimary: finishWorkoutAndShowComplete
+      });
+    }
   }
-  document.getElementById('finishSaveBtn').addEventListener('click', () => {
+  document.getElementById('trainFinishBelowBtn').addEventListener('click', confirmFinishWorkout);
+
+  function finishWorkoutAndShowComplete() {
     const session = getActiveSession();
     if (!session) return;
-    session.notes = document.getElementById('finishNotes').value.trim();
     session.finishedAt = Date.now();
-
+    const durationMs = session.finishedAt - session.startedAt;
+    let totalVolume = 0;
+    const exerciseNames = [];
     session.exercises.forEach(ex => {
       const completedSets = ex.sets.filter(s => s.completed).map(s => ({
         weight: parseFloat(s.weight) || 0, reps: parseInt(s.reps) || 0, rpe: s.rpe || null, type: s.type
       })).filter(s => s.weight > 0 || s.reps > 0);
       if (completedSets.length === 0) return;
+      exerciseNames.push(ex.exercise);
+      completedSets.forEach(s => { totalVolume += s.weight * s.reps; });
       state.workouts.push({
         id: uid(), date: session.date, exercise: ex.exercise, machine: ex.equipment || '', unit: 'lb',
         sets: completedSets, notes: '', routine: session.name || null, createdAt: Date.now(), sessionId: session.id
       });
     });
+    const prCount = sessionWorkoutEntries(session).filter(e => entryHasPR(e)).length;
 
     state.activeSessionId = null;
-    exOpenOverrides = {};
-    lastCurrentExId = null;
+    activeExerciseId = null;
+    justCompletedExId = null;
     stopTrainTimer();
     save();
     updateDatalists();
-    closeFinishOverlay();
-    renderTrainView();
     renderHeaderStreak();
+    openWorkoutCompleteScreen({ durationMs, totalVolume, exerciseNames, prCount });
+  }
+
+  function openWorkoutCompleteScreen(data) {
+    document.getElementById('wcStats').innerHTML = `
+      <div class="wc-stat-row">
+        <div class="wc-stat-icon">${ICON_SVGS.clock}</div>
+        <div><div class="wc-stat-value">${formatElapsed(data.durationMs)}</div><div class="wc-stat-label">Workout duration</div></div>
+      </div>
+      <div class="wc-stat-row">
+        <div class="wc-stat-icon">${ICON_SVGS.dumbbell}</div>
+        <div><div class="wc-stat-value">${Math.round(data.totalVolume).toLocaleString()} lb lifted</div><div class="wc-stat-label">Total volume</div></div>
+      </div>
+      <div class="wc-stat-row">
+        <div class="wc-stat-icon">${ICON_SVGS.clipboardCheck}</div>
+        <div><div class="wc-stat-value">${data.exerciseNames.length} exercise${data.exerciseNames.length === 1 ? '' : 's'} completed</div><div class="wc-stat-label">All planned exercises</div></div>
+      </div>
+      ${data.prCount > 0 ? `
+      <div class="wc-stat-row">
+        <div class="wc-stat-icon gold">${ICON_SVGS.trophy}</div>
+        <div><div class="wc-stat-value">${data.prCount} Personal Record${data.prCount === 1 ? '' : 's'}</div><div class="wc-stat-label">New PRs achieved</div></div>
+      </div>` : ''}`;
+    document.getElementById('wcExList').innerHTML = data.exerciseNames.map(name => `
+      <div class="wc-ex-row">
+        <span class="wc-ex-check">${ICON_SVGS.check}</span>
+        <span class="wc-ex-name">${escapeHtml(name)}</span>
+      </div>`).join('');
+    document.getElementById('trainActive').style.display = 'none';
+    document.getElementById('trainWorkoutComplete').style.display = 'block';
+    document.body.classList.add('workout-complete-active');
+    window.scrollTo(0, 0);
+  }
+  function closeWorkoutCompleteScreen() {
+    document.getElementById('trainWorkoutComplete').style.display = 'none';
+    document.body.classList.remove('workout-complete-active');
+    renderTrainView();
     showToast('Workout saved ✓', 'success');
+  }
+  document.getElementById('wcDoneBtn').addEventListener('click', closeWorkoutCompleteScreen);
+
+  // ---------- LAST WORKOUT DETAILS (bottom sheet) ----------
+  function openLastWorkoutDetails(exerciseName) {
+    const entry = lastLoggedEntryFor(exerciseName);
+    document.getElementById('lwdExerciseName').textContent = exerciseName;
+    document.getElementById('lwdMeta').textContent = entry ? `${formatRelativeDate(entry.date)} · ${fmtDate(entry.date)}` : '';
+    const notesEl = document.getElementById('lwdNotes');
+    notesEl.style.display = (entry && entry.notes) ? 'block' : 'none';
+    if (entry && entry.notes) notesEl.textContent = entry.notes;
+    document.getElementById('lwdSetList').innerHTML = entry
+      ? entry.sets.map((s, i) => {
+          const isWarmup = s.type === 'warmup';
+          return completedSetRowHtml(isWarmup ? 'Warm-up' : `Set ${i + 1}`, isWarmup, s.weight, s.reps);
+        }).join('')
+      : '<p class="caption">No history yet.</p>';
+    document.getElementById('lastWorkoutDetailsOverlay').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+  }
+  function closeLastWorkoutDetails() {
+    document.getElementById('lastWorkoutDetailsOverlay').style.display = 'none';
+    document.body.style.overflow = '';
+  }
+  document.getElementById('lwdCloseBtn').addEventListener('click', closeLastWorkoutDetails);
+  document.getElementById('lastWorkoutDetailsOverlay').addEventListener('click', (e) => {
+    if (e.target.id === 'lastWorkoutDetailsOverlay') closeLastWorkoutDetails();
+  });
+
+  // ---------- EDIT WORKOUT (session-scoped: reorder/add/remove — never the saved
+  // routine). Reuses the Workout Builder's exercise-row chrome and drag-to-reorder. ----------
+  function openEditWorkout() {
+    renderEditWorkoutList();
+    document.getElementById('trainActive').style.display = 'none';
+    document.getElementById('trainEditWorkout').style.display = 'block';
+    document.body.classList.add('train-edit-active');
+    window.scrollTo(0, 0);
+  }
+  function closeEditWorkout() {
+    document.getElementById('trainEditWorkout').style.display = 'none';
+    document.body.classList.remove('train-edit-active');
+    document.getElementById('trainActive').style.display = 'block';
+    renderTrainActive();
+  }
+  function renderEditWorkoutList() {
+    const session = getActiveSession();
+    if (!session) return;
+    const listEl = document.getElementById('tewExerciseList');
+    document.getElementById('tewEmptyHint').style.display = session.exercises.length ? 'none' : 'flex';
+    listEl.innerHTML = session.exercises.map((ex, i) => {
+      const sets = ex.sets || [];
+      const firstWorking = sets.find(s => s.type !== 'warmup') || sets[0];
+      const parts = [`${sets.length} set${sets.length === 1 ? '' : 's'}`];
+      if (firstWorking && firstWorking.targetReps) parts.push(`${firstWorking.targetReps} reps`);
+      return `
+      <div class="routine-ex-card" data-exid="${ex.id}">
+        <div class="ex-card-header">
+          <span class="drag-handle" title="Drag to reorder">${ICON_SVGS.dragHandle}</span>
+          <div class="ex-number-badge ex-number-plain">${i + 1}</div>
+          <div class="ex-card-title-wrap tewOpenSets" data-exid="${ex.id}">
+            <div class="ex-card-title">${escapeHtml(ex.exercise || 'Exercise')}</div>
+            <div class="ex-card-subtitle">${parts.join(' • ')}</div>
+          </div>
+          <div class="ex-card-right">
+            <span class="ex-chevron tewOpenSets" data-exid="${ex.id}">${ICON_SVGS.chevronRight}</span>
+            <div class="template-menu">
+              <button type="button" class="template-menu-btn tewMenuBtn" title="More options" data-exid="${ex.id}">${ICON_SVGS.dots}</button>
+              <div class="template-menu-dropdown" data-menu-for="${ex.id}" style="display:none;">
+                <button type="button" class="tewDuplicateBtn" data-exid="${ex.id}">Duplicate</button>
+                <button type="button" class="danger tewRemoveBtn" data-exid="${ex.id}">Delete</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+
+    listEl.querySelectorAll('.drag-handle').forEach(handle => {
+      initDragHandle(handle, () => {
+        const newOrder = [...listEl.querySelectorAll('.routine-ex-card')].map(c => c.dataset.exid);
+        session.exercises.sort((a, b) => newOrder.indexOf(a.id) - newOrder.indexOf(b.id));
+        save();
+        renderEditWorkoutList();
+        renderTrainActive();
+      });
+    });
+    listEl.querySelectorAll('.tewOpenSets').forEach(el => {
+      el.addEventListener('click', () => openEditSets(el.dataset.exid));
+    });
+    listEl.querySelectorAll('.tewMenuBtn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const dropdown = listEl.querySelector(`.template-menu-dropdown[data-menu-for="${btn.dataset.exid}"]`);
+        const isOpen = dropdown.style.display === 'block';
+        listEl.querySelectorAll('.template-menu-dropdown').forEach(d => d.style.display = 'none');
+        dropdown.style.display = isOpen ? 'none' : 'block';
+      });
+    });
+    listEl.querySelectorAll('.tewDuplicateBtn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const idx = session.exercises.findIndex(x => x.id === btn.dataset.exid);
+        if (idx === -1) return;
+        const original = session.exercises[idx];
+        const copy = {
+          id: uid(), exercise: original.exercise, equipment: original.equipment,
+          sets: original.sets.map(s => ({ type: s.type, targetReps: s.targetReps, weight: '', reps: '', rpe: null, completed: false }))
+        };
+        session.exercises.splice(idx + 1, 0, copy);
+        save();
+        renderEditWorkoutList();
+        renderTrainActive();
+      });
+    });
+    listEl.querySelectorAll('.tewRemoveBtn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const exId = btn.dataset.exid;
+        const ex = session.exercises.find(x => x.id === exId);
+        const hasCompletedSets = ex && ex.sets.some(s => s.completed);
+        const removeExercise = () => {
+          session.exercises = session.exercises.filter(x => x.id !== exId);
+          if (activeExerciseId === exId) activeExerciseId = null;
+          if (justCompletedExId === exId) justCompletedExId = null;
+          save();
+          renderEditWorkoutList();
+          renderTrainActive();
+        };
+        if (hasCompletedSets) {
+          showConfirmDialog({
+            icon: ICON_SVGS.trash,
+            theme: 'danger',
+            title: 'Delete Exercise?',
+            desc: 'This exercise has logged sets. Deleting it will permanently remove that data from today’s workout.',
+            primaryLabel: 'Delete Exercise',
+            primaryDanger: true,
+            secondaryLabel: 'Cancel',
+            onPrimary: removeExercise
+          });
+        } else {
+          removeExercise();
+        }
+      });
+    });
+  }
+  document.getElementById('trainEditWorkoutBtn').addEventListener('click', openEditWorkout);
+  document.getElementById('tewBackBtn').addEventListener('click', closeEditWorkout);
+  document.getElementById('tewAddExerciseBtn').addEventListener('click', () => openAddExercisePage('editWorkout'));
+
+  // ---------- EDIT SETS (trimmed Exercise Detail — view/add/remove uncompleted sets,
+  // edit planned rep target only; no training style, weight, warm-up config, or
+  // rest time — that's Workout Builder territory). ----------
+  let editSetsExId = null;
+  function openEditSets(exId) {
+    editSetsExId = exId;
+    renderEditSetsPage();
+    document.getElementById('trainEditWorkout').style.display = 'none';
+    document.getElementById('trainEditSets').style.display = 'block';
+    window.scrollTo(0, 0);
+  }
+  function closeEditSets() {
+    editSetsExId = null;
+    document.getElementById('trainEditSets').style.display = 'none';
+    document.getElementById('trainEditWorkout').style.display = 'block';
+    renderEditWorkoutList();
+  }
+  function renderEditSetsPage() {
+    const session = getActiveSession();
+    const ex = session && session.exercises.find(x => x.id === editSetsExId);
+    if (!ex) return;
+    document.getElementById('tesExerciseName').textContent = ex.exercise || 'Exercise';
+    const el = document.getElementById('tesSetRows');
+    el.innerHTML = ex.sets.map((s, i) => {
+      const isWarmup = s.type === 'warmup';
+      const label = isWarmup ? 'Warm-up' : `Set ${i + 1}`;
+      if (s.completed) {
+        return `
+        <div class="tes-set-row tes-set-row-locked" data-idx="${i}">
+          <span class="tcs-check">${ICON_SVGS.check}</span>
+          <span class="tes-set-label">${label}</span>
+          <span class="tes-set-value">Logged</span>
+        </div>`;
+      }
+      return `
+      <div class="tes-set-row" data-idx="${i}">
+        <button type="button" class="tes-type-toggle ${isWarmup ? 'warmup' : ''}" data-idx="${i}" title="Tap to switch between warm-up and working">
+          ${label}${ICON_SVGS.chevronDown}
+        </button>
+        <input type="text" class="tes-target-reps" data-idx="${i}" value="${escapeHtml(s.targetReps || '')}" placeholder="reps">
+        <button type="button" class="icon-btn tes-duplicate-btn" data-idx="${i}" title="Duplicate set">${ICON_SVGS.copy}</button>
+        <button type="button" class="icon-btn tes-remove-btn" data-idx="${i}" title="Remove set">${ICON_SVGS.x}</button>
+      </div>`;
+    }).join('');
+
+    el.querySelectorAll('.tes-type-toggle').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const set = ex.sets[+btn.dataset.idx];
+        set.type = set.type === 'warmup' ? 'working' : 'warmup';
+        save();
+        renderEditSetsPage();
+        renderTrainActive();
+      });
+    });
+    el.querySelectorAll('.tes-target-reps').forEach(input => {
+      input.addEventListener('change', () => {
+        ex.sets[+input.dataset.idx].targetReps = input.value;
+        save();
+      });
+    });
+    el.querySelectorAll('.tes-duplicate-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const idx = +btn.dataset.idx;
+        const s = ex.sets[idx];
+        ex.sets.splice(idx + 1, 0, { type: s.type, targetReps: s.targetReps, weight: s.weight, reps: '', rpe: null, completed: false });
+        save();
+        renderEditSetsPage();
+        renderTrainActive();
+      });
+    });
+    el.querySelectorAll('.tes-remove-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        ex.sets.splice(+btn.dataset.idx, 1);
+        save();
+        renderEditSetsPage();
+        renderTrainActive();
+      });
+    });
+  }
+  document.getElementById('tesBackBtn').addEventListener('click', closeEditSets);
+  document.getElementById('tesAddSetBtn').addEventListener('click', () => {
+    const session = getActiveSession();
+    const ex = session && session.exercises.find(x => x.id === editSetsExId);
+    if (!ex) return;
+    const last = ex.sets[ex.sets.length - 1];
+    ex.sets.push({
+      type: last ? last.type : 'working', targetReps: last ? last.targetReps : '',
+      weight: last ? last.weight : '', reps: '', rpe: null, completed: false
+    });
+    save();
+    renderEditSetsPage();
+    renderTrainActive();
   });
 
   // ---------- TEMPLATES ----------
@@ -5107,7 +5485,7 @@
 
   // ---------- Drag-to-reorder (pointer events so it works with touch on mobile) ----------
   let dragState = null;
-  function initDragHandle(handle) {
+  function initDragHandle(handle, onReorder) {
     handle.addEventListener('pointerdown', (e) => {
       const card = handle.closest('.routine-ex-card');
       if (!card) return;
@@ -5117,7 +5495,7 @@
       placeholder.className = 'drag-placeholder';
       placeholder.style.height = rect.height + 'px';
       card.parentNode.insertBefore(placeholder, card.nextSibling);
-      dragState = { card, placeholder, startY: e.clientY };
+      dragState = { card, placeholder, startY: e.clientY, onReorder };
       card.style.width = rect.width + 'px';
       card.classList.add('dragging');
       document.addEventListener('pointermove', onDragMove);
@@ -5125,20 +5503,24 @@
       document.addEventListener('pointercancel', onDragEnd);
     });
   }
+  // Container-agnostic by design — reads the list to reorder from card.parentNode
+  // rather than a hardcoded element, so the same drag logic serves both the Workout
+  // Builder's #routineExRows and Edit Workout's #tewExerciseList.
   function onDragMove(e) {
     if (!dragState) return;
     const { card, placeholder, startY } = dragState;
+    const container = card.parentNode;
     card.style.transform = `translateY(${e.clientY - startY}px)`;
-    const siblings = [...routineExRows.children].filter(el => el !== card && el !== placeholder);
+    const siblings = [...container.children].filter(el => el !== card && el !== placeholder);
     for (const other of siblings) {
       const r = other.getBoundingClientRect();
       const mid = r.top + r.height / 2;
       const placeholderIsBefore = !!(other.compareDocumentPosition(placeholder) & Node.DOCUMENT_POSITION_PRECEDING);
       if (e.clientY < mid && !placeholderIsBefore) {
-        routineExRows.insertBefore(placeholder, other);
+        container.insertBefore(placeholder, other);
         break;
       } else if (e.clientY > mid && placeholderIsBefore) {
-        routineExRows.insertBefore(placeholder, other.nextSibling);
+        container.insertBefore(placeholder, other.nextSibling);
         break;
       }
     }
@@ -5146,7 +5528,7 @@
   function onDragEnd() {
     if (!dragState) return;
     const { card, placeholder } = dragState;
-    routineExRows.insertBefore(card, placeholder);
+    placeholder.parentNode.insertBefore(card, placeholder);
     placeholder.remove();
     card.style.transform = '';
     card.style.width = '';
@@ -5154,6 +5536,7 @@
     document.removeEventListener('pointermove', onDragMove);
     document.removeEventListener('pointerup', onDragEnd);
     document.removeEventListener('pointercancel', onDragEnd);
+    if (dragState.onReorder) dragState.onReorder();
     dragState = null;
   }
 
@@ -5172,6 +5555,9 @@
   }
   function refreshEditorStats() {
     const cards = [...routineExRows.querySelectorAll('.routine-ex-card')];
+    // Runs after every add/remove/reorder, so this is also the one place that keeps
+    // each row's position badge in sync with its actual place in the list.
+    cards.forEach((c, i) => { const badge = c.querySelector('.ex-number-badge'); if (badge) badge.textContent = i + 1; });
     const { exerciseCount: exCount, setCount, mins } = routineStats(cards.map(c => c.exData));
     document.getElementById('editorStats').innerHTML = `
       <div class="wb-summary-metric"><div class="num">${exCount}</div><div class="lbl">Exercise${exCount === 1 ? '' : 's'}</div></div>
@@ -5181,13 +5567,6 @@
       <div class="wb-summary-metric"><div class="num">~${mins} min</div><div class="lbl">Duration</div></div>`;
     document.getElementById('noExercisesHint').style.display = exCount === 0 ? 'flex' : 'none';
     document.getElementById('addRoutineExBtn').style.display = exCount === 0 ? 'none' : 'flex';
-  }
-  // Still used by the Train tab's own (unrelated) collapsible exercise cards.
-  function toggleExCard(card, forceOpen) {
-    const isOpen = card.classList.contains('open');
-    const open = forceOpen !== undefined ? forceOpen : !isOpen;
-    card.classList.toggle('open', open);
-    card.querySelector('.ex-card-body').style.display = open ? 'block' : 'none';
   }
 
   // A brand-new exercise (added via Add Exercise, arriving with no sets) is never
@@ -5208,6 +5587,7 @@
     card.innerHTML = `
       <div class="ex-card-header">
         <span class="drag-handle" title="Drag to reorder">${ICON_SVGS.dragHandle}</span>
+        <div class="ex-number-badge ex-number-plain"></div>
         <div class="ex-card-title-wrap">
           <div class="ex-card-title"></div>
           <div class="ex-card-subtitle"></div>
@@ -5217,14 +5597,14 @@
           <div class="template-menu">
             <button type="button" class="template-menu-btn ex-menu-btn" title="More options">${ICON_SVGS.dots}</button>
             <div class="template-menu-dropdown ex-menu-dropdown" style="display:none;">
-              <button type="button" class="ex-remove-btn">Delete</button>
+              <button type="button" class="danger ex-remove-btn">Delete</button>
             </div>
           </div>
         </div>
       </div>
     `;
     routineExRows.appendChild(card);
-    initDragHandle(card.querySelector('.drag-handle'));
+    initDragHandle(card.querySelector('.drag-handle'), refreshEditorStats);
 
     const header = card.querySelector('.ex-card-header');
     header.addEventListener('click', (e) => {
@@ -5392,14 +5772,19 @@
     btn.style.display = count > 0 ? 'block' : 'none';
     btn.textContent = `Add ${count} Exercise${count === 1 ? '' : 's'}`;
   }
-  function openAddExercisePage() {
+  // Reused by both the Workout Builder and Edit Workout (a session, not a saved
+  // routine) — aeReturnContext decides which page to hide/restore and where a
+  // confirmed selection actually gets added.
+  let aeReturnContext = 'builder';
+  function openAddExercisePage(context) {
+    aeReturnContext = context || 'builder';
     aeQuery = '';
     aeCategory = 'All';
     aeSelectedOrder = [];
     document.getElementById('aeSearchInput').value = '';
     renderAddExerciseList();
     updateAddExerciseHeader();
-    document.getElementById('workoutBuilderPage').style.display = 'none';
+    document.getElementById(aeReturnContext === 'editWorkout' ? 'trainEditWorkout' : 'workoutBuilderPage').style.display = 'none';
     document.getElementById('addExercisePage').style.display = 'block';
     document.body.classList.add('add-exercise-active');
     window.scrollTo(0, 0);
@@ -5409,19 +5794,29 @@
     // closeRoutineEditor() calls this first, then unconditionally hides
     // workoutBuilderPage right after — so restoring it here unconditionally is
     // safe even when closing the whole flow, not just this sub-screen.
-    document.getElementById('workoutBuilderPage').style.display = 'block';
+    document.getElementById(aeReturnContext === 'editWorkout' ? 'trainEditWorkout' : 'workoutBuilderPage').style.display = 'block';
     document.body.classList.remove('add-exercise-active');
   }
-  document.getElementById('addRoutineExBtn').addEventListener('click', openAddExercisePage);
-  document.getElementById('emptyAddExerciseBtn').addEventListener('click', openAddExercisePage);
+  document.getElementById('addRoutineExBtn').addEventListener('click', () => openAddExercisePage('builder'));
+  document.getElementById('emptyAddExerciseBtn').addEventListener('click', () => openAddExercisePage('builder'));
   document.getElementById('aeCloseBtn').addEventListener('click', closeAddExercisePage);
   document.getElementById('aeSearchInput').addEventListener('input', (e) => {
     aeQuery = e.target.value;
     renderAddExerciseList();
   });
   document.getElementById('aeStickyBtn').addEventListener('click', () => {
-    aeSelectedOrder.forEach(name => addRoutineExRow({ exercise: name }));
-    refreshEditorStats();
+    if (aeReturnContext === 'editWorkout') {
+      const session = getActiveSession();
+      if (session) {
+        aeSelectedOrder.forEach(name => session.exercises.push(sessionExerciseBlank(name)));
+        save();
+        renderEditWorkoutList();
+        renderTrainActive();
+      }
+    } else {
+      aeSelectedOrder.forEach(name => addRoutineExRow({ exercise: name }));
+      refreshEditorStats();
+    }
     showToast(`${aeSelectedOrder.length} exercise${aeSelectedOrder.length === 1 ? '' : 's'} added`, 'success');
     closeAddExercisePage();
   });
@@ -5454,7 +5849,6 @@
     return `<div class="ed-set-row ${rowClass}" data-idx="${idx}">
         <div class="ed-set-num">${idx + 1}</div>
         <input type="text" class="ed-set-reps" placeholder="${repsPlaceholder}" value="${escapeHtml(s.reps || '')}">
-        <input type="text" class="ed-set-weight" placeholder="Optional" value="${escapeHtml(s.weight || '')}">
         <button type="button" class="ed-set-remove-btn" title="Remove set">${ICON_SVGS.x}</button>
       </div>`;
   }
@@ -5470,8 +5864,6 @@
     rowsEl.querySelectorAll('.ed-set-row').forEach(row => {
       const idx = Number(row.dataset.idx);
       row.querySelector('.ed-set-reps').addEventListener('input', (e) => { sets[idx].reps = e.target.value.trim(); });
-      const weightInput = row.querySelector('.ed-set-weight');
-      if (weightInput) weightInput.addEventListener('input', (e) => { sets[idx].weight = e.target.value.trim(); });
       row.querySelector('.ed-set-remove-btn').addEventListener('click', () => {
         edDraft.sets.splice(edDraft.sets.indexOf(sets[idx]), 1);
         edRenderGroup(group);
@@ -5482,9 +5874,9 @@
     if (group === 'warmup') {
       let insertAt = 0;
       while (insertAt < edDraft.sets.length && edDraft.sets[insertAt].type === 'warmup') insertAt++;
-      edDraft.sets.splice(insertAt, 0, { type: 'warmup', reps: '', weight: '' });
+      edDraft.sets.splice(insertAt, 0, { type: 'warmup', reps: '' });
     } else {
-      edDraft.sets.push({ type: 'working', reps: '', weight: '' });
+      edDraft.sets.push({ type: 'working', reps: '' });
     }
     edRenderGroup(group);
   }
@@ -6332,8 +6724,8 @@
       state.weeklyGoal = null;
       state.sessions = [];
       state.activeSessionId = null;
-      exOpenOverrides = {};
-      lastCurrentExId = null;
+      activeExerciseId = null;
+      justCompletedExId = null;
       stopTrainTimer();
       save();
       updateDatalists();
