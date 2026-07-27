@@ -1260,7 +1260,6 @@
   .link-btn svg { width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-width: 2.3; stroke-linecap: round; stroke-linejoin: round; }
   .link-btn:hover { filter: brightness(1.15); }
   .link-btn-danger { color: var(--danger); }
-  .ms-remove-link { display: flex; justify-content: center; width: 100%; margin-top: 10px; }
 
   .exercises-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
   .exercises-header label { margin: 0; }
@@ -1317,43 +1316,47 @@
   .train-ex-card.ex-upcoming { opacity: .85; }
   .ex-card-body { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); }
 
-  /* Machine Setup — must never read as a form to fill out before lifting, and must
-     never compete with the workout for attention. Saved state is a plain inline row
-     (no icon, no card box, no button chrome) framed by hairline dividers like any
-     other list row in the app — metadata to glance at, not a CTA. Unsaved state
-     stays a single quiet line, not an empty card. */
-  .ms-row { margin: 4px 0 14px; }
-  .ms-simple-row {
-    display: flex; align-items: center; gap: 10px; width: 100%; text-align: left;
+  /* Gym System: the Equipment section on an exercise card. Must never read as a
+     form to fill out before lifting — resolved equipment is a plain tappable row
+     (glanceable metadata, not a CTA); an unresolved one is a single quiet prompt. */
+  .eq-row { margin: 4px 0 14px; }
+  .eq-section-label {
+    font-size: var(--fs-caption); font-weight: 800; color: var(--muted); text-transform: uppercase;
+    letter-spacing: .04em; margin-bottom: 6px;
+  }
+  .eq-select-btn {
+    display: flex; align-items: flex-start; gap: 10px; width: 100%; text-align: left;
+    background: none; border: 1px dashed var(--border-light); border-radius: var(--radius-sm);
+    padding: 12px 14px; cursor: pointer;
+  }
+  .eq-select-icon {
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    width: 22px; height: 22px; margin-top: 1px; color: var(--accent);
+  }
+  .eq-select-icon svg { width: 15px; height: 15px; }
+  .eq-select-body { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+  .eq-select-title { color: var(--accent); font-size: var(--fs-body); font-weight: 700; }
+  .eq-select-desc { color: var(--muted); font-size: var(--fs-secondary); font-weight: 500; line-height: 1.35; }
+  .eq-card {
+    display: flex; align-items: flex-start; gap: 10px; width: 100%; text-align: left;
     background: none; border: none; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
     padding: 12px 0; cursor: pointer;
   }
-  .ms-simple-row-static { cursor: default; }
-  .ms-simple-main { flex: 1; min-width: 0; }
-  .ms-simple-label {
-    font-size: var(--fs-caption); font-weight: 800; color: var(--muted); text-transform: uppercase;
-    letter-spacing: .04em; margin-bottom: 4px;
+  .eq-card-static { cursor: default; }
+  /* Neutral dumbbell icon, not a checkmark — this is identifying which equipment
+     is selected, not marking anything as complete/done. */
+  .eq-icon {
+    width: 22px; height: 22px; border-radius: 50%; flex-shrink: 0; margin-top: 1px;
+    background: var(--panel); color: var(--muted);
+    display: flex; align-items: center; justify-content: center;
   }
-  .ms-simple-name { font-size: var(--fs-body); font-weight: 700; color: var(--text); margin-bottom: 2px; }
-  .ms-simple-detail { font-size: var(--fs-secondary); color: var(--muted); }
-  .ms-simple-chevron { color: var(--muted); flex-shrink: 0; display: flex; }
-  .ms-simple-chevron svg { width: 18px; height: 18px; }
-  .ms-label { font-size: var(--fs-caption); font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
-  .ms-mini-row {
-    display: flex; align-items: center; justify-content: space-between; width: 100%;
-    background: none; border: none; padding: 4px 0; margin-bottom: 8px; cursor: pointer;
-  }
-  .ms-mini-label { font-size: var(--fs-caption); font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
-  .ms-mini-add { font-size: var(--fs-caption); font-weight: 700; color: var(--accent); }
-  .ms-row-empty-first { margin-bottom: 12px; padding: 10px 10px 8px; background: var(--panel-2); border-radius: 10px; }
-  .ms-row-empty-first .ms-label { text-transform: none; font-size: var(--fs-secondary); font-weight: 700; color: var(--text); letter-spacing: normal; }
-  .ms-hint { font-size: var(--fs-caption); color: var(--muted); margin: 3px 0 4px; }
-  .ms-row-prompt {
-    display: flex; align-items: center; justify-content: space-between; gap: 10px;
-    padding: 9px 10px; margin-bottom: 12px; background: rgba(109,140,255,.08); border-radius: 10px;
-  }
-  .ms-prompt-text { font-size: var(--fs-secondary); font-weight: 600; min-width: 0; }
-  .ms-prompt-actions { display: flex; gap: 2px; flex-shrink: 0; }
+  .eq-icon svg { width: 13px; height: 13px; }
+  .eq-card-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+  .eq-card-name { font-size: var(--fs-body); font-weight: 700; color: var(--text); }
+  .eq-card-preview { font-size: var(--fs-secondary); color: var(--muted); }
+  .eq-card-preview-empty { font-style: italic; }
+  .eq-card-chevron { color: var(--muted); flex-shrink: 0; display: flex; margin-top: 2px; }
+  .eq-card-chevron svg { width: 18px; height: 18px; }
 
   /* Exercise info section: Plan / Last / Best — one compact row, three columns
      divided by hairlines rather than three separate bordered cards. The exercise
@@ -1391,43 +1394,6 @@
      value (dropdown-of-presets or free text) flush right, remove button. The label
      is chosen once via "+ Add detail" and isn't re-editable in place, so the row
      always reads as "icon + name : value" rather than two competing dropdowns. */
-  .ms-settings-label {
-    font-size: var(--fs-caption); font-weight: 800; color: var(--muted); text-transform: uppercase;
-    letter-spacing: .04em; margin: 18px 0 8px;
-  }
-  .ms-field-row {
-    display: flex; align-items: center; gap: 12px; margin-bottom: 10px;
-    padding: 13px 14px; background: var(--panel-2); border: 1px solid rgba(255,255,255,.08); border-radius: var(--radius-sm);
-  }
-  .ms-field-icon { display: flex; align-items: center; justify-content: center; width: 20px; height: 20px; color: var(--muted); flex-shrink: 0; }
-  .ms-field-icon svg { width: 18px; height: 18px; }
-  .ms-field-label-text { flex: 1; min-width: 0; font-size: var(--fs-body); font-weight: 600; color: var(--text); line-height: 1.25; }
-  .ms-field-row .ms-field-value-input, .ms-field-row .ms-field-value-select {
-    flex: 0 1 auto; width: auto; max-width: 118px; min-height: auto;
-    background: none; border: none; padding: 0 14px 0 0; color: var(--muted);
-    font-size: var(--fs-secondary); font-weight: 600; text-align: right;
-  }
-  .ms-field-row .ms-field-value-input::placeholder { color: var(--muted); opacity: .6; }
-  /* Gym/Equipment reuse the exact same row as Setup Details (icon + fixed label +
-     right-aligned value) instead of the old labeled-box-with-icon form fields, so
-     the whole sheet reads as one consistent settings list — but their values can be
-     much longer strings ("Life Fitness Chest Press"), so they get the full width
-     instead of Setup Details' compact 118px cap. */
-  .ms-field-value-input.ms-field-value-wide { max-width: none; flex: 1; }
-  /* Native <select> rendering ignores text-align on several mobile browsers, so its
-     selected value ends up left-aligned while the text input beside it (e.g. a custom
-     numeric value) is properly right-aligned — visually misaligned even though both
-     use text-align:right. Stripping the native appearance and drawing our own chevron
-     makes text-align actually take effect, so both controls line up the same way. */
-  .ms-field-row .ms-field-value-select {
-    appearance: none; -webkit-appearance: none; -moz-appearance: none;
-    text-align-last: right;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238b93a3' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right center;
-    background-size: 12px 12px;
-  }
-  .ms-field-remove-btn svg { width: 14px; height: 14px; }
   /* A plain text link, not a dashed empty-box CTA — matches "+ Add Exercise" /
      "+ Add Set" elsewhere, so adding a detail reads as a lightweight action within
      the list rather than another bordered form control. */
@@ -1437,22 +1403,92 @@
     color: var(--accent); font-size: var(--fs-secondary); font-weight: 700; cursor: pointer;
   }
   .ms-add-detail-link svg { width: 15px; height: 15px; }
-  .ms-detail-picker { display: none; flex-wrap: wrap; gap: 6px; margin: 0 0 10px; }
-  .ms-preset-btn {
-    display: inline-flex; align-items: center; gap: 7px; min-height: 44px;
-    background: var(--panel-2); border: 1px solid var(--border-light); color: var(--text);
-    font-size: var(--fs-caption); font-weight: 600; padding: 10px 16px; border-radius: 999px; cursor: pointer;
-  }
-  .ms-preset-btn:hover { border-color: var(--accent); color: var(--accent); }
-  .ms-preset-icon { display: inline-flex; }
-  .ms-preset-icon svg { width: 13px; height: 13px; }
-  .ms-preset-custom { color: var(--muted); }
   .ms-custom-label-row { display: flex; gap: 8px; margin-top: 10px; }
   .ms-custom-label-row input { flex: 1; min-width: 0; }
   .ms-custom-label-row .btn { flex-shrink: 0; padding: 0 16px; min-height: 44px; }
-  .ms-exercise-caption { display: flex; align-items: center; gap: 6px; }
-  .ms-exercise-icon { display: inline-flex; color: var(--muted); }
-  .ms-exercise-icon svg { width: 15px; height: 15px; }
+
+  /* Gym System: Equipment Overview sheet (opened from an exercise card's Equipment
+     row) and the Equipment Picker (Select/Change Equipment). */
+  .eqov-selected-line {
+    display: flex; align-items: center; gap: 6px; margin: -8px 0 16px;
+    font-size: var(--fs-secondary); font-weight: 600; color: var(--accent-2);
+  }
+  .eqov-check-icon { display: inline-flex; }
+  .eqov-check-icon svg { width: 15px; height: 15px; }
+  .eqov-section-label {
+    display: flex; align-items: center; justify-content: space-between;
+    font-size: var(--fs-caption); font-weight: 800; color: var(--muted); text-transform: uppercase;
+    letter-spacing: .04em; margin: 4px 0 8px;
+  }
+  .eqov-section-label .link-btn { padding: 0; min-height: auto; font-size: var(--fs-caption); }
+  .eqov-field-row {
+    display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    padding: 12px 0; border-bottom: 1px solid var(--border); font-size: var(--fs-body); color: var(--text);
+  }
+  .eqov-field-row:last-child { border-bottom: none; }
+  /* Every row is directly tappable — an iOS-Settings-style value + chevron, tap
+     to edit in place, no separate edit mode or Save step. */
+  .eqov-field-row-tappable {
+    width: 100%; text-align: left; background: none; border: none; border-bottom: 1px solid var(--border);
+    padding: 12px 0; cursor: pointer; font-size: var(--fs-body); color: var(--text); font-weight: 600;
+  }
+  .eqov-field-value-btn { display: flex; align-items: center; gap: 4px; color: var(--muted); font-weight: 500; }
+  .eqov-field-value-btn svg { width: 16px; height: 16px; transition: transform .15s ease; }
+  .eqov-field-row-expanded { border-bottom: none; padding-bottom: 0; }
+  .eqov-field-row-expanded .eqov-field-value-btn svg { transform: rotate(180deg); }
+  /* An expanded field row's value list — its own dropdown-equivalent (a vertical
+     stack of option rows, not a native <select>), matching the app's own UI
+     instead of the browser's. One row expanded at a time, accordion-style. */
+  /* Capped and internally scrollable rather than letting the whole sheet grow —
+     several fields (Pin Position, Rack Height…) have up to a dozen options. */
+  .eqov-value-list {
+    display: flex; flex-direction: column; gap: 8px; padding: 10px 4px 16px;
+    max-height: 240px; overflow-y: auto;
+  }
+  .eqov-value-option {
+    display: flex; align-items: center; justify-content: space-between; width: 100%; text-align: left;
+    background: var(--panel-2); border: 1px solid var(--border-light); border-radius: var(--radius-sm);
+    padding: 12px 14px; color: var(--text); font-size: var(--fs-body); font-weight: 600; cursor: pointer;
+  }
+  .eqov-value-option.selected { border-color: var(--accent); color: var(--accent); }
+  .eqov-value-option-check { display: flex; color: var(--accent); }
+  .eqov-value-option-check svg { width: 16px; height: 16px; }
+  .eqov-value-option-custom { color: var(--muted); }
+  .eqov-value-option-custom span { display: flex; align-items: center; gap: 6px; }
+  .eqov-value-option-custom svg { width: 14px; height: 14px; }
+  .eqov-value-list input {
+    width: 100%; background: var(--panel-2); border: 1px solid var(--border-light); border-radius: var(--radius-sm);
+    padding: 12px 14px; color: var(--text); font-size: var(--fs-body); font-weight: 600; min-height: auto;
+  }
+  .eqov-updated { font-size: var(--fs-caption); color: var(--muted); margin: 6px 0 18px; }
+  .eqov-change-btn { width: 100%; margin-top: 22px; }
+
+  .eqpk-search-wrap { position: relative; margin-bottom: 16px; }
+  .eqpk-search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--muted); display: flex; }
+  .eqpk-search-icon svg { width: 16px; height: 16px; }
+  .eqpk-search-wrap input {
+    width: 100%; padding: 11px 12px 11px 36px; background: var(--panel-2); border: 1px solid var(--border-light);
+    border-radius: var(--radius-sm); color: var(--text); font-size: var(--fs-body); min-height: 44px;
+  }
+  #eqpkExistingRows, #eqpkTemplateRows { margin-bottom: 18px; }
+  .eqpk-row {
+    display: flex; flex-direction: column; align-items: flex-start; gap: 2px; width: 100%; text-align: left;
+    background: none; border: none; border-bottom: 1px solid var(--border); padding: 10px 2px; cursor: pointer;
+  }
+  .eqpk-row:last-child { border-bottom: none; }
+  .eqpk-row-name { font-size: var(--fs-body); font-weight: 700; color: var(--text); }
+  .eqpk-row-sub { font-size: var(--fs-caption); color: var(--muted); }
+  .eqpk-custom-row { margin-top: 4px; }
+  .eqpk-custom-row input {
+    width: 100%; padding: 11px 12px; background: var(--panel-2); border: 1px solid var(--border-light);
+    border-radius: var(--radius-sm); color: var(--text); font-size: var(--fs-body); min-height: 44px; margin-bottom: 10px;
+  }
+  .eqpk-custom-categories { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+  .eqpk-cat-chip {
+    background: var(--panel-2); border: 1px solid var(--border-light); color: var(--text);
+    font-size: var(--fs-caption); font-weight: 600; padding: 8px 14px; border-radius: 999px; cursor: pointer;
+  }
+  .eqpk-cat-chip.selected { border-color: var(--accent); color: var(--accent); background: rgba(109,140,255,.1); }
 
   /* Per-set table inside an expanded exercise card */
   .set-table-head {
@@ -1719,6 +1755,53 @@
   .wd-insight-text { min-width: 0; }
   .wd-insight-label { font-size: var(--fs-caption); color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .wd-insight-value { font-size: var(--fs-body); font-weight: 800; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  /* Gym System: the Training At row on Workout Details — a gym is required before
+     the first workout ever starts (a single Gym Name field), and a tappable row
+     opening the app's own gym-picker sheet to switch gyms once more than one
+     exists (not a native <select>, so it matches the rest of the app's UI). */
+  .wd-gym-section { margin: 0 0 22px; }
+  .wd-gym-row {
+    display: flex; align-items: center; gap: 10px; width: 100%; text-align: left;
+    background: var(--panel-2); border: none; border-radius: var(--radius-sm); padding: 12px 14px; cursor: pointer;
+  }
+  .wd-gym-empty-row {
+    display: flex; align-items: center; gap: 10px;
+    background: var(--panel-2); border-radius: var(--radius-sm); padding: 12px 14px;
+  }
+  .wd-gym-pin { display: flex; color: var(--accent); flex-shrink: 0; }
+  .wd-gym-pin svg { width: 17px; height: 17px; }
+  .wd-gym-name { flex: 1; min-width: 0; color: var(--text); font-size: var(--fs-body); font-weight: 700; }
+  .wd-gym-chevron { display: flex; color: var(--muted); flex-shrink: 0; }
+  .wd-gym-chevron svg { width: 16px; height: 16px; }
+  .wd-gym-empty-row input {
+    flex: 1; min-width: 0; background: none; border: none; color: var(--text);
+    font-size: var(--fs-body); font-weight: 700;
+  }
+  .wd-gym-empty-row input::placeholder { color: var(--muted); font-weight: 600; }
+  .wd-gym-caption { font-size: var(--fs-caption); color: var(--muted); margin: 6px 2px 0; }
+  .gympk-row {
+    display: flex; align-items: center; justify-content: space-between; width: 100%; text-align: left;
+    background: none; border: none; border-bottom: 1px solid var(--border); padding: 12px 2px; cursor: pointer;
+    font-size: var(--fs-body); font-weight: 700; color: var(--text);
+  }
+  .gympk-row:last-child { border-bottom: none; }
+  .gympk-check { display: flex; color: var(--accent-2); }
+  .gympk-check svg { width: 16px; height: 16px; }
+
+  /* Add Setup Detail sheet — opened from within the still-open Equipment sheet, so
+     it needs to stack above it regardless of DOM order (same reasoning as
+     .confirm-overlay's z-index). A plain vertical list, no section header — the
+     list is self-explanatory. */
+  #addDetailOverlay { z-index: 450; }
+  .add-detail-row {
+    display: block; width: 100%; text-align: left; background: none; border: none;
+    border-bottom: 1px solid var(--border); padding: 14px 2px; cursor: pointer;
+    font-size: var(--fs-body); font-weight: 600; color: var(--text);
+  }
+  .add-detail-row:last-child { border-bottom: none; }
+  .add-detail-divider { height: 1px; background: var(--border); margin: 4px 0; }
+  .add-detail-custom-row { color: var(--accent); font-weight: 700; border-bottom: none; padding-top: 14px; }
 
   /* Train: active workout, V2 — a scrolling accordion of exercise cards (completed /
      current / upcoming) instead of a compact all-visible table. Only the current
@@ -2039,7 +2122,11 @@
      "are you sure" moments in an active workout. Deliberately its own layout
      rather than .modal-panel, since those choices are made by reading a couple
      of lines, not scrolling a sheet. */
-  .confirm-overlay { align-items: center; padding: 24px; }
+  /* Always stacks above any other sheet — same z-index as .modal-overlay would
+     otherwise mean pure DOM order decides who's on top, and this dialog can be
+     triggered from within an already-open sheet (e.g. Delete inside Equipment
+     Overview), so it needs to win regardless of where it sits in the markup. */
+  .confirm-overlay { align-items: center; padding: 24px; z-index: 500; }
   .confirm-panel {
     background: var(--panel); border: 1px solid var(--border); border-radius: 20px;
     width: 100%; max-width: 360px; padding: 28px 24px 20px; text-align: center;
@@ -2260,10 +2347,6 @@
             <button type="button" class="ed-advanced-row" id="edEquipmentRow">
               <span>Equipment</span>
               <span class="ed-advanced-row-right"><span class="ed-advanced-value" id="edEquipmentValue"></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></span>
-            </button>
-            <button type="button" class="ed-advanced-row" id="edMachineRow">
-              <span>Machine Settings</span>
-              <span class="ed-advanced-row-right"><span class="ed-advanced-value" id="edMachineValue">Default</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></span>
             </button>
           </div>
         </div>
@@ -2589,6 +2672,9 @@
 
       <div class="wd-insights" id="wdInsights"></div>
 
+      <div class="wb-section-label">Training At</div>
+      <div id="wdGymSection" class="wd-gym-section"></div>
+
       <div class="wb-section-label">Exercises</div>
       <div id="wdExerciseList" class="wb-exercise-list"></div>
     </div>
@@ -2799,48 +2885,125 @@
 
 </main>
 
-<!-- Machine Setup sheet lives outside every .view — it's opened both from the Train
-     tab (a session exercise) and from the Workout Builder's Exercise Detail screen (by
-     exercise name, no session involved), and .view elements are display:none unless
-     active, which would silently no-op this overlay when opened from an inactive tab. -->
-<div class="modal-overlay" id="machineSetupOverlay" style="display:none;">
+<!-- GYM SYSTEM — Equipment Setup (field editor), Equipment Overview (the bottom
+     sheet opened from an exercise card's Equipment section), and Equipment Picker
+     (select existing / create new equipment). All three live outside every .view
+     since they're opened from the Train tab's active session. -->
+<div class="modal-overlay" id="equipmentOverviewOverlay" style="display:none;">
   <div class="modal-panel">
     <div class="modal-header">
-      <h2>Machine Setup</h2>
-      <button class="modal-close-btn" id="machineSetupCloseBtn" type="button" title="Close">
-        <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      </button>
+      <h2 id="eqovTitle">Equipment</h2>
+      <div class="wb-header-right">
+        <div class="wb-more">
+          <button type="button" class="wb-more-btn" id="eqovMoreBtn" title="More options">
+            <svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/></svg>
+          </button>
+          <div class="wb-more-dropdown" id="eqovMoreDropdown" style="display:none;">
+            <button type="button" id="eqovRemoveBtn" class="danger">Delete</button>
+          </div>
+        </div>
+        <button class="modal-close-btn" id="eqovCloseBtn" type="button" title="Close">
+          <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
     </div>
-    <p class="caption ms-exercise-caption" id="machineSetupExerciseLabel"></p>
+    <p class="eqov-selected-line" id="eqovSelectedLine"><span class="eqov-check-icon" id="eqovCheckIcon"></span>Selected for this exercise</p>
 
-    <div class="ms-field-row">
-      <span class="ms-field-icon" id="machineSetupGymIcon"></span>
-      <span class="ms-field-label-text">Gym</span>
-      <input type="text" id="machineSetupGym" list="machineSetupGymList" class="ms-field-value-input ms-field-value-wide" placeholder="Optional">
-      <datalist id="machineSetupGymList"></datalist>
+    <div class="eqov-section-label">
+      <span>Machine Setup</span>
     </div>
-    <div class="ms-field-row">
-      <span class="ms-field-icon" id="machineSetupEquipmentIcon"></span>
-      <span class="ms-field-label-text">Equipment</span>
-      <input type="text" id="machineSetupEquipment" list="machineSetupEquipmentList" class="ms-field-value-input ms-field-value-wide" placeholder="Optional">
-      <datalist id="machineSetupEquipmentList"></datalist>
-    </div>
-
-    <div class="ms-settings-label">Setup Details</div>
-    <div id="machineSetupFieldRows"></div>
-    <button type="button" class="ms-add-detail-link" id="machineSetupAddDetailBtn">
+    <div id="eqovFieldRows"></div>
+    <button type="button" class="ms-add-detail-link" id="eqovAddDetailBtn">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
       Add detail
     </button>
-    <div class="ms-detail-picker" id="machineSetupDetailPicker" style="display:none;"></div>
-    <div class="ms-custom-label-row" id="machineSetupCustomLabelRow" style="display:none;">
-      <input type="text" id="machineSetupCustomLabelInput" placeholder="Setting name">
-      <button type="button" class="btn" id="machineSetupCustomLabelAddBtn">Add</button>
+    <div class="ms-custom-label-row" id="eqovCustomLabelRow" style="display:none;">
+      <input type="text" id="eqovCustomLabelInput" placeholder="Setting name">
+      <button type="button" class="btn" id="eqovCustomLabelAddBtn">Add</button>
     </div>
+    <p class="eqov-updated" id="eqovUpdated"></p>
 
-    <div style="margin-top:18px;">
-      <button class="btn" id="machineSetupSaveBtn" type="button" style="width:100%;">Save Machine Setup</button>
-      <button type="button" class="link-btn link-btn-danger ms-remove-link" id="machineSetupRemoveBtn" style="display:none;">Remove Setup</button>
+    <button type="button" class="btn secondary eqov-change-btn" id="eqovChangeBtn">Change Equipment</button>
+  </div>
+</div>
+
+<!-- Add Setup Detail — a plain vertical list in its own sheet (not inline chips),
+     so picking a new Machine Setup field doesn't shift the Equipment sheet's
+     layout underneath it. Stacks above the Equipment Overview sheet it's opened
+     from, same as the confirm dialog does. -->
+<div class="modal-overlay" id="addDetailOverlay" style="display:none;">
+  <div class="modal-panel">
+    <div class="modal-header">
+      <h2>Add Setup Detail</h2>
+      <button class="modal-close-btn" id="addDetailCloseBtn" type="button" title="Close">
+        <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div id="addDetailRows"></div>
+    <div class="add-detail-divider"></div>
+    <button type="button" class="add-detail-row add-detail-custom-row" id="addDetailCustomBtn">Custom Detail</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="equipmentPickerOverlay" style="display:none;">
+  <div class="modal-panel">
+    <div class="modal-header">
+      <h2>Select Equipment</h2>
+      <button class="modal-close-btn" id="eqpkCloseBtn" type="button" title="Close">
+        <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="eqpk-search-wrap">
+      <span class="eqpk-search-icon" id="eqpkSearchIcon"></span>
+      <input type="text" id="eqpkSearchInput" placeholder="Search equipment…">
+    </div>
+    <div id="eqpkExistingSection">
+      <div class="eqov-section-label"><span>At This Gym</span></div>
+      <div id="eqpkExistingRows"></div>
+    </div>
+    <div class="eqov-section-label"><span>Create New</span></div>
+    <div id="eqpkTemplateRows"></div>
+    <button type="button" class="link-btn" id="eqpkCustomBtn">+ Can't find it? Add custom equipment</button>
+    <div class="eqpk-custom-row" id="eqpkCustomRow" style="display:none;">
+      <input type="text" id="eqpkCustomNameInput" placeholder="Equipment name">
+      <div class="eqpk-custom-categories" id="eqpkCustomCategories"></div>
+      <button type="button" class="btn" id="eqpkCustomAddBtn" style="width:100%;">Add Equipment</button>
+    </div>
+  </div>
+</div>
+
+<!-- First-gym prompt — shown before the very first workout ever starts. A single
+     name field, no other setup; the gym is created the moment Start Workout is
+     tapped, not silently as a side effect of picking equipment later. -->
+<div class="modal-overlay" id="firstGymOverlay" style="display:none;">
+  <div class="modal-panel">
+    <div class="modal-header">
+      <h2>Where are you training?</h2>
+      <button class="modal-close-btn" id="firstGymCloseBtn" type="button" title="Close">
+        <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <p class="caption" style="margin:-8px 0 14px;">This helps us remember your equipment and machine setups.</p>
+    <input type="text" id="firstGymNameInput" placeholder="Gym Name (e.g. Apartment Gym)">
+    <button type="button" class="btn" id="firstGymStartBtn" style="width:100%; margin-top:14px;">Start Workout</button>
+  </div>
+</div>
+
+<!-- Gym picker — the Training At row's own dropdown-equivalent (a sheet, not a
+     native <select>, so it matches the rest of the app's UI). -->
+<div class="modal-overlay" id="gymPickerOverlay" style="display:none;">
+  <div class="modal-panel">
+    <div class="modal-header">
+      <h2>Select Gym</h2>
+      <button class="modal-close-btn" id="gymPickerCloseBtn" type="button" title="Close">
+        <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div id="gymPickerRows"></div>
+    <button type="button" class="link-btn" id="gymPickerAddBtn">+ Add New Gym</button>
+    <div class="eqpk-custom-row" id="gymPickerAddRow" style="display:none;">
+      <input type="text" id="gymPickerNewNameInput" placeholder="Gym Name">
+      <button type="button" class="btn" id="gymPickerAddSaveBtn" style="width:100%;">Add Gym</button>
     </div>
   </div>
 </div>
@@ -2979,6 +3142,64 @@
     { label: 'Rack Height', icon: null },
     { label: 'Attachment', icon: null }
   ];
+  // Short labels for the exercise-card preview line — a glance while walking to
+  // the machine, not a full field readout, so labels compress to one word.
+  const SETUP_FIELD_SHORT_LABELS = {
+    'Seat Position': 'Seat', 'Back Pad': 'Back', 'Chest Pad': 'Chest', 'Bench Angle': 'Bench',
+    'Foot Placement': 'Foot', 'Handle Position': 'Handle', 'Cable Height': 'Cable',
+    'Pin Position': 'Pin', 'Rack Height': 'Rack'
+  };
+  function shortFieldLabel(label) { return SETUP_FIELD_SHORT_LABELS[label] || label; }
+
+  // ---------- GYM SYSTEM ----------
+  // Equipment Category — user-facing, drives Gym Detail grouping (Machines/Cable/
+  // Free Weights/Bodyweight/Other). Kept separate from Equipment Template (below),
+  // which is internal and drives suggested setup fields — a Chest Press Machine and
+  // a Leg Press are both "Machine" category but shouldn't get identical field
+  // suggestions, which a single flat type couldn't express.
+  const EQUIPMENT_CATEGORIES = ['Machine', 'Cable', 'Free Weights', 'Bodyweight', 'Other'];
+  // Equipment Template catalog — searched by name when adding equipment ("+ Add
+  // Equipment" / the in-workout equipment picker). Picking one sets category and
+  // suggested setup fields automatically; the user never picks category directly.
+  // Field label strings match SETUP_DETAIL_PRESETS exactly so the existing
+  // per-field value-suggestion logic (setupDetailIcon, common-values dropdowns)
+  // keeps working unmodified for equipment setup fields.
+  const EQUIPMENT_TEMPLATES = [
+    { name: 'Chest Press Machine', category: 'Machine', fields: ['Seat Position', 'Back Pad', 'Handle Position', 'Grip'] },
+    { name: 'Incline Chest Press Machine', category: 'Machine', fields: ['Seat Position', 'Back Pad', 'Handle Position', 'Grip'] },
+    { name: 'Shoulder Press Machine', category: 'Machine', fields: ['Seat Position', 'Back Pad', 'Handle Position'] },
+    { name: 'Pec Deck', category: 'Machine', fields: ['Seat Position', 'Back Pad'] },
+    { name: 'Lat Pulldown', category: 'Cable', fields: ['Seat Position', 'Chest Pad', 'Attachment', 'Grip'] },
+    { name: 'Seated Row', category: 'Cable', fields: ['Seat Position', 'Chest Pad', 'Attachment', 'Grip'] },
+    { name: 'Cable Tower', category: 'Cable', fields: ['Cable Height', 'Attachment', 'Grip'] },
+    { name: 'Leg Press', category: 'Machine', fields: ['Seat Position', 'Back Pad', 'Foot Placement'] },
+    { name: 'Leg Extension', category: 'Machine', fields: ['Seat Position', 'Back Pad'] },
+    { name: 'Leg Curl', category: 'Machine', fields: ['Seat Position', 'Back Pad'] },
+    { name: 'Hack Squat', category: 'Machine', fields: ['Foot Placement', 'Back Pad'] },
+    { name: 'Smith Machine', category: 'Machine', fields: ['Rack Height', 'Bench Angle'] },
+    { name: 'Hip Abductor', category: 'Machine', fields: ['Seat Position'] },
+    { name: 'Hip Adductor', category: 'Machine', fields: ['Seat Position'] },
+    { name: 'Calf Raise Machine', category: 'Machine', fields: ['Seat Position', 'Foot Placement'] },
+    { name: 'Assisted Dip/Pull-up Machine', category: 'Machine', fields: ['Pin Position'] },
+    { name: 'Adjustable Bench', category: 'Free Weights', fields: ['Bench Angle'] },
+    { name: 'Squat Rack', category: 'Free Weights', fields: ['Rack Height'] },
+    { name: 'Dumbbell Rack', category: 'Free Weights', fields: [] },
+    { name: 'EZ Curl Bar', category: 'Free Weights', fields: [] },
+    { name: 'Barbell', category: 'Free Weights', fields: [] },
+    { name: 'Pull-up Bar', category: 'Bodyweight', fields: [] },
+    { name: 'Dip Station', category: 'Bodyweight', fields: [] }
+  ];
+  // Best-effort category guess for a free-typed custom equipment name (used only
+  // when the user's search doesn't match a catalog entry and they add a custom
+  // one without picking a category), and for migrating old free-text data.
+  function guessEquipmentCategory(name) {
+    const n = (name || '').toLowerCase();
+    if (/cable|tower/.test(n)) return 'Cable';
+    if (/bench|dumbbell|barbell|rack|kettlebell/.test(n)) return 'Free Weights';
+    if (/bodyweight|pull-?up bar|dip station/.test(n)) return 'Bodyweight';
+    if (/machine|press|extension|curl|deck|squat|abductor|adductor/.test(n)) return 'Machine';
+    return 'Other';
+  }
   // Returns an icon key, or null for a known preset with no icon, or 'pencil' for a
   // fully custom (not-in-the-list) label — so custom fields stay visually flagged as
   // "user-created" even though most presets around them go icon-less.
@@ -3102,7 +3323,9 @@
     chevronRight: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>',
     dragHandle: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg>',
     sparkle: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6.5 6.5l2 2M15.5 15.5l2 2M17.5 6.5l-2 2M6.5 17.5l2-2"/><circle cx="12" cy="12" r="3"/></svg>',
-    clipboardCheck: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M9 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-3"/><path d="m9 14 2 2 4-4"/></svg>'
+    clipboardCheck: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M9 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-3"/><path d="m9 14 2 2 4-4"/></svg>',
+    mapPin: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>',
+    search: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>'
   };
   const EXERCISE_TYPE = {
     'Bench Press': 'Compound', 'Incline Bench Press': 'Compound', 'Decline Bench Press': 'Compound', 'Dumbbell Bench Press': 'Compound', 'Incline Dumbbell Press': 'Compound', 'Chest Fly': 'Isolation', 'Cable Crossover': 'Isolation', 'Push-Up': 'Compound', 'Chest Dip': 'Compound', 'Chest Press': 'Compound',
@@ -3285,7 +3508,45 @@
     schedule[2] = routines[1].id; // Tue: Pull
     schedule[3] = routines[2].id; // Wed: Legs
     schedule[5] = routines[0].id; // Fri: Push
-    return { workouts: [], feelings: [], routines, schedule, plannedWorkouts: {}, weeklyGoal: null, sessions: [], activeSessionId: null, machineSetups: {} };
+    return { workouts: [], feelings: [], routines, schedule, plannedWorkouts: {}, weeklyGoal: null, sessions: [], activeSessionId: null, gyms: [], equipment: [], activeGymId: null };
+  }
+
+  // Migrates the old exercise-keyed Machine Setup data (state.machineSetups, free-
+  // text gym/equipment labels) into the Gym System's Equipment objects, run once
+  // when a save from before the Gym System is first loaded. Equipment is identified
+  // by its Template name only (no custom Display Name in V1) — the old free-text
+  // `equipment` label becomes the Template, grouped under one Gym per old `gym`
+  // label (falling back to a single shared "My Gym" for entries with no gym text).
+  function migrateMachineSetups(s, machineSetups) {
+    const entries = Object.entries(machineSetups || {});
+    if (!entries.length) return;
+    const gymByName = {};
+    function gymFor(name) {
+      const key = (name || '').trim() || 'My Gym';
+      if (!gymByName[key]) {
+        const gym = { id: uid(), name: key, createdAt: Date.now(), lastVisited: Date.now() };
+        s.gyms.push(gym);
+        gymByName[key] = gym;
+      }
+      return gymByName[key];
+    }
+    entries.forEach(([exerciseName, setup]) => {
+      const gym = gymFor(setup.gym);
+      const templateName = (setup.equipment || '').trim() || exerciseName;
+      let equipment = s.equipment.find(e => e.gymId === gym.id && e.template === templateName);
+      if (!equipment) {
+        equipment = {
+          id: uid(), gymId: gym.id, template: templateName, category: guessEquipmentCategory(templateName),
+          fields: (setup.fields || []).map(f => ({ label: f.label, value: f.value })),
+          setupUpdatedAt: setup.updatedAt || Date.now(),
+          mappings: [], createdAt: Date.now()
+        };
+        s.equipment.push(equipment);
+      }
+      if (!equipment.mappings.find(m => m.exercise === exerciseName)) {
+        equipment.mappings.push({ exercise: exerciseName, lastUsedAt: setup.updatedAt || Date.now() });
+      }
+    });
   }
 
   function load() {
@@ -3305,17 +3566,16 @@
       if (s.weeklyGoal === undefined) s.weeklyGoal = null;
       if (!s.sessions) s.sessions = [];
       if (s.activeSessionId === undefined) s.activeSessionId = null;
-      if (!s.machineSetups) s.machineSetups = {};
+      const hadGymSystem = !!s.gyms;
+      if (!s.gyms) s.gyms = [];
+      if (!s.equipment) s.equipment = [];
+      if (s.activeGymId === undefined) s.activeGymId = null;
+      if (!hadGymSystem && s.machineSetups) {
+        migrateMachineSetups(s, s.machineSetups);
+        if (s.gyms.length && !s.activeGymId) s.activeGymId = s.gyms[0].id;
+      }
+      delete s.machineSetups;
     }
-    // Machine Setup used to have one combined "machine / gym" text field. It's now
-    // two separate fields (gym + equipment) so each can get its own autocomplete list.
-    // The old value reads more like a specific piece of equipment ("Technogym Chest
-    // Press") than a gym name, so it migrates to `equipment`, leaving `gym` blank.
-    Object.values(s.machineSetups).forEach(setup => {
-      if (setup.equipment === undefined) setup.equipment = setup.machine || '';
-      if (setup.gym === undefined) setup.gym = '';
-      delete setup.machine;
-    });
     s.routines.forEach(r => {
       r.exercises = (r.exercises || []).map(migrateExercise);
       // The template color palette was renamed to keep personalization colors distinct
@@ -3596,74 +3856,10 @@
     if (e.key === 'Escape' && document.getElementById('quickLogOverlay').style.display === 'flex') closeQuickLogOverlay();
   });
 
-  // ---------- MACHINE SETUP SHEET ----------
-  document.getElementById('machineSetupCloseBtn').addEventListener('click', closeMachineSetupSheet);
-  document.getElementById('machineSetupOverlay').addEventListener('click', (e) => {
-    if (e.target.id === 'machineSetupOverlay') closeMachineSetupSheet();
-  });
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && document.getElementById('machineSetupOverlay').style.display === 'flex') closeMachineSetupSheet();
-  });
-  document.getElementById('machineSetupAddDetailBtn').addEventListener('click', () => {
-    const picker = document.getElementById('machineSetupDetailPicker');
-    document.getElementById('machineSetupCustomLabelRow').style.display = 'none';
-    if (picker.style.display === 'flex') { picker.style.display = 'none'; return; }
-    renderMachineSetupDetailPicker();
-    picker.style.display = 'flex';
-  });
-  function addCustomMachineSetupDetail() {
-    const input = document.getElementById('machineSetupCustomLabelInput');
-    const label = input.value.trim();
-    if (!label) return;
-    machineSetupDraftFields.push({ label, value: '' });
-    document.getElementById('machineSetupCustomLabelRow').style.display = 'none';
-    renderMachineSetupDraftRows();
-    // Same "stays open for rapid adding" behavior as the preset chips.
-    renderMachineSetupDetailPicker();
-    document.getElementById('machineSetupDetailPicker').style.display = 'flex';
-  }
-  document.getElementById('machineSetupCustomLabelAddBtn').addEventListener('click', addCustomMachineSetupDetail);
-  document.getElementById('machineSetupCustomLabelInput').addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') { e.preventDefault(); addCustomMachineSetupDetail(); }
-  });
-  document.getElementById('machineSetupSaveBtn').addEventListener('click', () => {
-    const session = getActiveSession();
-    const ex = session && session.exercises.find(x => x.id === machineSetupEditingExId);
-    const exerciseName = machineSetupEditingExName || (ex && ex.exercise);
-    if (!exerciseName) return;
-    if (document.activeElement) document.activeElement.blur();
-    const gym = document.getElementById('machineSetupGym').value.trim();
-    const equipment = document.getElementById('machineSetupEquipment').value.trim();
-    const fields = machineSetupDraftFields
-      .map(f => ({ label: f.label.trim(), value: f.value.trim() }))
-      .filter(f => f.label && f.value);
-    if (!gym && !equipment && !fields.length) {
-      delete state.machineSetups[exerciseName];
-    } else {
-      state.machineSetups[exerciseName] = { gym, equipment, fields, updatedAt: Date.now() };
-    }
-    if (ex) delete machineSetupPromptDismissed[ex.id];
-    save();
-    closeMachineSetupSheet();
-    if (ex) renderTrainActive();
-    if (edDraft) edRenderAdvanced();
-    window.scrollTo(0, machineSetupScrollY);
-    showToast('Machine setup saved');
-  });
-  document.getElementById('machineSetupRemoveBtn').addEventListener('click', () => {
-    const session = getActiveSession();
-    const ex = session && session.exercises.find(x => x.id === machineSetupEditingExId);
-    const exerciseName = machineSetupEditingExName || (ex && ex.exercise);
-    if (document.activeElement) document.activeElement.blur();
-    if (exerciseName) delete state.machineSetups[exerciseName];
-    save();
-    closeMachineSetupSheet();
-    if (ex) renderTrainActive();
-    if (edDraft) edRenderAdvanced();
-    window.scrollTo(0, machineSetupScrollY);
-    showToast('Machine setup removed');
-  });
-
+  // ---------- GYM SYSTEM: EQUIPMENT SETUP SHEET (field editor, scoped to one
+  // Equipment rather than an exercise name — see the render/open functions further
+  // down for compatibleEquipmentFor / resolveEquipmentForExercise / the overview and
+  // picker sheets that call into this one). ----------
   function addSetRow(weight, reps, type) {
     const row = document.createElement('div');
     row.className = 'set-row';
@@ -3881,15 +4077,44 @@
     }
     return baseline ? { weight: baseline.weight, reps: baseline.reps, date: baseline.date, isPR: false } : null;
   }
-  // Machine Setup belongs to the exercise itself (keyed by name), not the workout
-  // template or session — a saved Chest Press setup should show up automatically
-  // any time Chest Press appears, in any workout.
-  function getMachineSetup(exerciseName) {
-    return (exerciseName && state.machineSetups[exerciseName]) || null;
+  // ---------- GYM SYSTEM: core lookups ----------
+  function getGymById(gymId) {
+    return state.gyms.find(g => g.id === gymId) || null;
   }
-  function hasMachineSetup(exerciseName) {
-    const setup = getMachineSetup(exerciseName);
-    return !!(setup && (setup.equipment || setup.gym || (setup.fields && setup.fields.length)));
+  function getEquipmentById(equipmentId) {
+    return state.equipment.find(e => e.id === equipmentId) || null;
+  }
+  // Equipment at `gymId` that has already been used for `exerciseName`, most
+  // recently used first — this is the "compatible equipment" the Equipment
+  // Selection Rules resolve against. Mappings are learned, never pre-seeded, so
+  // "compatible" simply means "has been picked for this exercise before."
+  function compatibleEquipmentFor(exerciseName, gymId) {
+    return state.equipment
+      .filter(e => e.gymId === gymId && e.mappings.some(m => m.exercise === exerciseName))
+      .sort((a, b) => {
+        const am = a.mappings.find(m => m.exercise === exerciseName).lastUsedAt;
+        const bm = b.mappings.find(m => m.exercise === exerciseName).lastUsedAt;
+        return bm - am;
+      });
+  }
+  // Resolves (and remembers) which equipment a session exercise should use: none
+  // compatible -> leave unresolved (needs a manual pick); exactly one -> silently
+  // auto-select; multiple -> auto-select the most recently used one, though the
+  // user can still change it. Never overwrites an equipmentId already set.
+  function resolveEquipmentForExercise(ex, gymId) {
+    if (ex.equipmentId && getEquipmentById(ex.equipmentId)) return;
+    const compatible = compatibleEquipmentFor(ex.exercise, gymId);
+    if (compatible.length) ex.equipmentId = compatible[0].id;
+  }
+  // Selecting or creating equipment for an exercise both assigns it and learns (or
+  // refreshes) the exercise<->equipment mapping — the one place mappings are
+  // created, matching "mappings are created automatically" from the spec.
+  function assignEquipmentToExercise(ex, equipment) {
+    ex.equipmentId = equipment.id;
+    const mapping = equipment.mappings.find(m => m.exercise === ex.exercise);
+    if (mapping) mapping.lastUsedAt = Date.now();
+    else equipment.mappings.push({ exercise: ex.exercise, lastUsedAt: Date.now() });
+    save();
   }
   function sessionExerciseFromTemplateEx(ex) {
     const lastSets = lastLoggedSetsFor(ex.exercise);
@@ -3914,34 +4139,57 @@
       })
     };
   }
-  function startSession(name, source, templateId, exercises) {
+  function startSession(name, source, templateId, exercises, gymId) {
     if (state.activeSessionId) return; // one active session at a time in Phase 1
     const session = {
       id: uid(), name, source, templateId: templateId || null,
       date: todayStr(), startedAt: Date.now(), finishedAt: null,
-      exercises, notes: ''
+      exercises, notes: '', gymId: gymId || null
     };
     state.sessions.push(session);
     state.activeSessionId = session.id;
+    if (gymId) {
+      state.activeGymId = gymId;
+      const gym = getGymById(gymId);
+      if (gym) gym.lastVisited = Date.now();
+    }
     activeExerciseId = null;
     justCompletedExId = null;
     save();
     startTrainTimer();
     renderTrainView();
   }
+  // Every workout belongs to a gym. If any gyms already exist, the sticky active one
+  // is reused silently — no interruption. The very first workout ever is the one
+  // exception: a single Gym Name prompt, created the moment Start Workout is tapped
+  // (not silently as a side effect of picking equipment or saving a setup later).
+  let pendingWorkoutStart = null;
+  function beginWorkoutWithGym(startFn) {
+    if (state.gyms.length === 0) {
+      pendingWorkoutStart = startFn;
+      document.getElementById('firstGymNameInput').value = '';
+      document.getElementById('firstGymOverlay').style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+      document.getElementById('firstGymNameInput').focus();
+      return;
+    }
+    startFn(state.activeGymId || state.gyms[0].id);
+  }
   function startTodaysPlannedWorkout() {
     const plan = getPlanForDate(todayStr());
     if (plan.type === 'template') {
-      startSession(plan.template.name, 'planned', plan.template.id, plan.template.exercises.map(sessionExerciseFromTemplateEx));
+      beginWorkoutWithGym(gymId => startSession(plan.template.name, 'planned', plan.template.id, plan.template.exercises.map(sessionExerciseFromTemplateEx), gymId));
     }
   }
-  function startFromTemplate(templateId) {
+  // gymId is resolved by the caller — Workout Details has its own "Training At"
+  // picker (or first-gym inline field) rather than the shared first-gym overlay.
+  function startFromTemplate(templateId, gymId) {
     const t = state.routines.find(r => r.id === templateId);
     if (!t) return;
-    startSession(t.name, 'template', t.id, t.exercises.map(sessionExerciseFromTemplateEx));
+    startSession(t.name, 'template', t.id, t.exercises.map(sessionExerciseFromTemplateEx), gymId);
   }
   function startBlankWorkout() {
-    startSession('Quick Workout', 'blank', null, []);
+    beginWorkoutWithGym(gymId => startSession('Quick Workout', 'blank', null, [], gymId));
   }
 
   let trainTimerHandle = null;
@@ -4099,12 +4347,82 @@
     ];
   }
   let workoutDetailsRoutineId = null;
+  // Which gym Start Workout will use, chosen via the Training At row — defaults to
+  // the sticky active gym so re-opening Workout Details never surprises anyone.
+  let wdSelectedGymId = null;
+  function renderWdGymSection() {
+    const el = document.getElementById('wdGymSection');
+    if (!state.gyms.length) {
+      el.innerHTML = `
+        <div class="wd-gym-empty-row">
+          <span class="wd-gym-pin">${ICON_SVGS.mapPin}</span>
+          <input type="text" id="wdGymNameInput" placeholder="e.g. Apartment Gym">
+        </div>
+        <p class="wd-gym-caption">This is where your workout and equipment will be saved.</p>`;
+      return;
+    }
+    if (!wdSelectedGymId || !getGymById(wdSelectedGymId)) wdSelectedGymId = state.activeGymId || state.gyms[0].id;
+    el.innerHTML = `
+      <button type="button" class="wd-gym-row" id="wdGymPickerBtn">
+        <span class="wd-gym-pin">${ICON_SVGS.mapPin}</span>
+        <span class="wd-gym-name">${escapeHtml(getGymById(wdSelectedGymId).name)}</span>
+        <span class="wd-gym-chevron">${ICON_SVGS.chevronDown}</span>
+      </button>
+      <p class="wd-gym-caption">This is where your workout and equipment will be saved.</p>`;
+    document.getElementById('wdGymPickerBtn').addEventListener('click', openGymPickerSheet);
+  }
+  // The Training At row's own picker — a sheet matching the app's UI (list rows +
+  // an inline "+ Add New Gym" field), not a native <select>.
+  function renderGymPickerRows() {
+    document.getElementById('gymPickerRows').innerHTML = state.gyms.map(g => `
+      <button type="button" class="gympk-row" data-gym-id="${g.id}">
+        <span>${escapeHtml(g.name)}</span>
+        ${g.id === wdSelectedGymId ? `<span class="gympk-check">${ICON_SVGS.check}</span>` : ''}
+      </button>`).join('');
+    document.getElementById('gymPickerRows').querySelectorAll('.gympk-row').forEach(btn => {
+      btn.addEventListener('click', () => {
+        wdSelectedGymId = btn.dataset.gymId;
+        closeGymPickerSheet();
+        renderWdGymSection();
+      });
+    });
+  }
+  function openGymPickerSheet() {
+    renderGymPickerRows();
+    document.getElementById('gymPickerAddRow').style.display = 'none';
+    document.getElementById('gymPickerNewNameInput').value = '';
+    document.getElementById('gymPickerOverlay').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+  }
+  function closeGymPickerSheet() {
+    document.getElementById('gymPickerOverlay').style.display = 'none';
+    document.body.style.overflow = '';
+  }
+  document.getElementById('gymPickerCloseBtn').addEventListener('click', closeGymPickerSheet);
+  document.getElementById('gymPickerOverlay').addEventListener('click', (e) => {
+    if (e.target.id === 'gymPickerOverlay') closeGymPickerSheet();
+  });
+  document.getElementById('gymPickerAddBtn').addEventListener('click', () => {
+    document.getElementById('gymPickerAddRow').style.display = 'block';
+    document.getElementById('gymPickerNewNameInput').focus();
+  });
+  document.getElementById('gymPickerAddSaveBtn').addEventListener('click', () => {
+    const name = document.getElementById('gymPickerNewNameInput').value.trim();
+    if (!name) return;
+    const gym = { id: uid(), name, createdAt: Date.now(), lastVisited: Date.now() };
+    state.gyms.push(gym);
+    wdSelectedGymId = gym.id;
+    closeGymPickerSheet();
+    renderWdGymSection();
+  });
   // hideSetToday: true when opened from the Today's Workout card itself — "Set as
   // Today's Workout" doesn't make sense for a workout that's already today's plan.
   function openWorkoutDetails(routineId, opts) {
     const r = state.routines.find(x => x.id === routineId);
     if (!r) return;
     workoutDetailsRoutineId = routineId;
+    wdSelectedGymId = state.activeGymId;
+    renderWdGymSection();
     document.getElementById('wdSetTodayBtn').style.display = (opts && opts.hideSetToday) ? 'none' : 'block';
     document.getElementById('wdTitle').textContent = r.name;
     const muscleGroupsEl = document.getElementById('wdMuscleGroups');
@@ -4159,8 +4477,21 @@
   document.getElementById('wdStartBtn').addEventListener('click', () => {
     if (!workoutDetailsRoutineId) return;
     const id = workoutDetailsRoutineId;
+    let gymId = wdSelectedGymId;
+    // Only the true zero-gyms case still needs resolving here — once any gym
+    // exists, wdSelectedGymId is always valid (the gym picker sheet handles
+    // "+ Add New Gym" itself and sets it directly).
+    if (!gymId) {
+      const nameInput = document.getElementById('wdGymNameInput');
+      const name = nameInput ? nameInput.value.trim() : '';
+      if (!name) { if (nameInput) nameInput.focus(); return; }
+      const gym = { id: uid(), name, createdAt: Date.now(), lastVisited: Date.now() };
+      state.gyms.push(gym);
+      state.activeGymId = gym.id;
+      gymId = gym.id;
+    }
     closeWorkoutDetails();
-    startFromTemplate(id);
+    startFromTemplate(id, gymId);
   });
   document.getElementById('wdSetTodayBtn').addEventListener('click', () => {
     if (!workoutDetailsRoutineId) return;
@@ -4545,22 +4876,10 @@
   // nudge, the clickable summary) — those stay available in this fresh moment, but
   // once the user moves on and reopens a finished exercise later, it's view-only.
   let justCompletedExId = null;
-  // Machine Setup UI state — in-memory only (resets on reload), so a dismissed
-  // "save this for next time?" nudge doesn't nag again this session, but also
-  // doesn't need a persisted flag cluttering the saved data.
-  let machineSetupPromptDismissed = {};
-  let machineSetupEditingExId = null;
-  // Set instead of machineSetupEditingExId when the sheet is opened from the Workout
-  // Builder's Exercise Detail screen, which has an exercise name but no session/exId.
-  let machineSetupEditingExName = null;
-  let machineSetupDraftFields = [];
-  // The page behind the sheet keeps its own scroll position while the sheet is open,
-  // but saving/removing closes the sheet, blurs whatever text field still has focus
-  // (dismissing the mobile keyboard) and rebuilds the whole exercise card list all at
-  // once — on a phone that combination reliably lands the browser scrolled to the
-  // bottom instead of back where the user actually was. Restoring it explicitly after
-  // the rebuild fixes that regardless of what the keyboard/layout timing does.
-  let machineSetupScrollY = 0;
+  // Gym System UI state — in-memory only (resets on reload). Which exercise
+  // (session-exercise id) and equipment the overview/picker sheets are currently
+  // open for, so "Change Equipment" and field edits both know where to write back.
+  let equipmentOverviewCtx = { exId: null, equipmentId: null };
   function getExpandedExerciseId(session) {
     if (activeExerciseId === NOTHING_EXPANDED) return null;
     return activeExerciseId || currentExerciseId(session);
@@ -4591,6 +4910,7 @@
     if (!session) return;
     document.getElementById('trainActiveName').textContent = session.name;
     updateTrainMeta();
+    if (session.gymId) session.exercises.forEach(ex => resolveEquipmentForExercise(ex, session.gymId));
 
     const cardsEl = document.getElementById('trainExerciseCards');
     document.getElementById('trainNoExercisesHint').style.display = session.exercises.length === 0 ? 'block' : 'none';
@@ -4617,7 +4937,7 @@
         // Next Exercise/Finish Workout action), per the completed-exercise-review spec.
         body = `
           ${renderExerciseInfoGrid(ex)}
-          ${renderMachineSetupBlock(ex)}
+          ${renderEquipmentBlock(ex)}
           ${renderCompletedSetsBlock(ex)}
           ${complete ? renderCompletedExerciseFooter(ex) : renderCurrentSetArea(ex)}
         `;
@@ -4641,14 +4961,15 @@
         selectExercise(header.closest('.routine-ex-card').dataset.exid);
       });
     });
-    cardsEl.querySelectorAll('.ms-simple-row:not(.ms-simple-row-static), .ms-add-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => { e.stopPropagation(); openMachineSetupSheet(btn.dataset.exid); });
+    cardsEl.querySelectorAll('.eq-select-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => { e.stopPropagation(); openEquipmentPickerSheet(btn.dataset.exid); });
     });
-    cardsEl.querySelectorAll('.ms-dismiss-btn').forEach(btn => {
+    cardsEl.querySelectorAll('.eq-card').forEach(btn => {
       btn.addEventListener('click', (e) => {
         e.stopPropagation();
-        machineSetupPromptDismissed[btn.dataset.exid] = true;
-        renderTrainActive();
+        const s = getActiveSession();
+        const ex = s && s.exercises.find(x => x.id === btn.dataset.exid);
+        if (ex && ex.equipmentId) openEquipmentOverviewSheet(ex.id, ex.equipmentId);
       });
     });
     cardsEl.querySelectorAll('.lwd-view-btn').forEach(btn => {
@@ -4773,71 +5094,44 @@
     return `<div class="train-completed-sets-label">Completed Sets (${doneCount})</div>${completedSetRows(ex)}`;
   }
 
-  // Machine Setup — optional, contextual info that "belongs" to an exercise. Saved
-  // state is one compact, fully tappable card that opens the edit sheet directly (no
-  // inline expand step); unsaved state stays a single quiet line, not an empty card.
-  function renderMachineSetupBlock(ex) {
-    const setup = getMachineSetup(ex.exercise);
-    const saved = hasMachineSetup(ex.exercise);
-    if (!saved && (ex.equipment || '') === 'Bodyweight') return '';
-    // Editing affordances (the clickable summary, the save nudge, "+ Add setup")
-    // are only offered while the exercise is still live, or in the moment right
-    // after its last set logs — reopening a completed exercise later for review is
-    // view-only, per the read-only rules for completed exercises.
+  // Equipment — quiet context beneath an exercise showing which piece of gym
+  // equipment it's using and a glance at the saved setup. Bodyweight exercises with
+  // no compatible equipment yet don't show a prompt (there's nothing to configure).
+  // Reopening a completed exercise later is view-only, matching every other block's
+  // read-only rule for finished exercises.
+  function renderEquipmentBlock(ex) {
     const readOnly = isExerciseComplete(ex) && ex.id !== justCompletedExId;
-
-    if (saved) {
-      const headline = setup.equipment || setup.gym || 'Saved';
-      const detailParts = [];
-      if (setup.equipment && setup.gym) detailParts.push(setup.gym);
-      const firstField = (setup.fields || [])[0];
-      if (firstField) detailParts.push(`${firstField.label} ${firstField.value}`);
-      const detail = detailParts.join(' • ');
-      const inner = `
-          <div class="ms-simple-main">
-            <div class="ms-simple-label">Machine Setup</div>
-            <div class="ms-simple-name">${escapeHtml(headline)}</div>
-            ${detail ? `<div class="ms-simple-detail">${escapeHtml(detail)}</div>` : ''}
-          </div>`;
-      if (readOnly) {
-        return `<div class="ms-row"><div class="ms-simple-row ms-simple-row-static">${inner}</div></div>`;
-      }
+    const equipment = ex.equipmentId ? getEquipmentById(ex.equipmentId) : null;
+    if (!equipment) {
+      if (readOnly || (ex.equipment || '') === 'Bodyweight') return '';
       return `
-      <div class="ms-row">
-        <button type="button" class="ms-simple-row" data-exid="${ex.id}">
-          ${inner}
-          <span class="ms-simple-chevron">${ICON_SVGS.chevronRight}</span>
+      <div class="eq-row">
+        <button type="button" class="eq-select-btn" data-exid="${ex.id}">
+          <span class="eq-select-icon">${ICON_SVGS.plus}</span>
+          <span class="eq-select-body">
+            <span class="eq-select-title">Set Up Equipment</span>
+            <span class="eq-select-desc">Save machine adjustments like seat position, grip, and cable height.</span>
+          </span>
         </button>
       </div>`;
     }
-    if (readOnly) return '';
-
-    // Nothing saved yet. Right after finishing the exercise is the best moment to ask,
-    // since the settings are fresh in mind — but only once per session per exercise.
-    if (isExerciseComplete(ex) && !machineSetupPromptDismissed[ex.id]) {
-      return `
-      <div class="ms-row ms-row-prompt" data-exid="${ex.id}">
-        <div class="ms-prompt-text">Save this machine setup for next time?</div>
-        <div class="ms-prompt-actions">
-          <button type="button" class="link-btn ms-add-btn" data-exid="${ex.id}">Save</button>
-          <button type="button" class="link-btn ms-dismiss-btn" data-exid="${ex.id}">Not now</button>
-        </div>
-      </div>`;
-    }
-
-    if (!lastLoggedSetsFor(ex.exercise)) {
-      return `
-      <div class="ms-row ms-row-empty-first" data-exid="${ex.id}">
-        <div class="ms-label">No machine setup saved</div>
-        <div class="ms-hint">Save seat positions or equipment settings so they appear automatically next time.</div>
-        <button type="button" class="link-btn ms-add-btn" data-exid="${ex.id}">+ Add setup</button>
-      </div>`;
+    const filledFields = (equipment.fields || []).filter(f => f.value);
+    const preview = filledFields.map(f => `${shortFieldLabel(f.label)} ${f.value}`).join(' • ');
+    const inner = `
+        <span class="eq-icon">${ICON_SVGS.dumbbell}</span>
+        <span class="eq-card-body">
+          <span class="eq-card-name">${escapeHtml(equipment.template)}</span>
+          ${preview ? `<span class="eq-card-preview">${escapeHtml(preview)}</span>` : `<span class="eq-card-preview eq-card-preview-empty">No setup saved yet</span>`}
+        </span>`;
+    if (readOnly) {
+      return `<div class="eq-row"><div class="eq-card eq-card-static">${inner}</div></div>`;
     }
     return `
-    <div class="ms-row">
-      <button type="button" class="ms-mini-row ms-add-btn" data-exid="${ex.id}">
-        <span class="ms-mini-label">Machine Setup</span>
-        <span class="ms-mini-add">+ Add</span>
+    <div class="eq-row">
+      <div class="eq-section-label">Equipment</div>
+      <button type="button" class="eq-card" data-exid="${ex.id}">
+        ${inner}
+        <span class="eq-card-chevron">${ICON_SVGS.chevronRight}</span>
       </button>
     </div>`;
   }
@@ -4915,162 +5209,385 @@
         : (info.date ? `<div class="exinfo-sub" title="${fmtDate(info.date)}">${formatRelativeDate(info.date)}</div>` : '')}
     </div>`;
   }
-  // Machine Setup edit sheet — one static overlay reused for whichever exercise is being
-  // edited (same pattern as the Day-assign sheet), rather than a modal built fresh per
-  // exercise. Fields are a flexible label/value list (not a fixed form) so only what's
-  // relevant to that equipment ends up on screen.
-  function openMachineSetupSheet(exId) {
+  // ---------- GYM SYSTEM: EQUIPMENT OVERVIEW SHEET ----------
+  // Opened by tapping an exercise's Equipment card. Every field row is directly
+  // tappable — tap, edit, done, no separate edit mode or Save step (an iOS
+  // Settings row, not a form) — plus the exercises this equipment supports and
+  // the two exits: Change Equipment (picker) or Remove from Gym.
+  let eqovEditingLabel = null;
+  let eqovCustomInputFor = null;
+  // Rows to show: fields already saved, plus any of the Template's suggested
+  // fields not yet added (shown empty, ready to tap-and-fill) — so filling in
+  // the common settings for this machine never needs a separate add-detail step.
+  function eqovFieldList(equipment) {
+    const existingLabels = (equipment.fields || []).map(f => f.label);
+    const template = EQUIPMENT_TEMPLATES.find(t => t.name === equipment.template);
+    const suggested = template ? template.fields.filter(l => !existingLabels.includes(l)) : [];
+    return [...(equipment.fields || []), ...suggested.map(label => ({ label, value: '' }))];
+  }
+  // Common values render as the app's own chip picker (matching "+ Add detail"'s
+  // preset chips) instead of a native <select>, so choosing a value never drops
+  // into the browser's own dropdown UI. Tapping a chip commits immediately.
+  // Tapping a row expands it in place into a vertical option list (an accordion,
+  // not a native <select>) — the selected value gets a check, tapping any option
+  // commits immediately and collapses back to the compact display. One row open
+  // at a time. Free-text fields (no presets) expand into a plain input instead.
+  function renderEqovFieldRows() {
+    const equipment = getEquipmentById(equipmentOverviewCtx.equipmentId);
+    if (!equipment) return;
+    const el = document.getElementById('eqovFieldRows');
+    const fields = eqovFieldList(equipment);
+    el.innerHTML = fields.map(f => {
+      const isEditing = f.label === eqovEditingLabel;
+      const presets = fieldValuePresets(f.label);
+      const forceInput = eqovCustomInputFor === f.label;
+      const showList = isEditing && presets && !forceInput;
+      const showInput = isEditing && (!presets || forceInput);
+      const header = `
+      <button type="button" class="eqov-field-row eqov-field-row-tappable${isEditing ? ' eqov-field-row-expanded' : ''}" data-label="${escapeHtml(f.label)}">
+        <span>${escapeHtml(f.label)}</span>
+        <span class="eqov-field-value-btn">${f.value ? escapeHtml(f.value) : 'Choose'}${isEditing ? ICON_SVGS.chevronDown : ICON_SVGS.chevronRight}</span>
+      </button>`;
+      if (showList) {
+        return header + `
+        <div class="eqov-value-list">
+          ${presets.map(v => `
+          <button type="button" class="eqov-value-option${f.value === v ? ' selected' : ''}" data-label="${escapeHtml(f.label)}" data-value="${escapeHtml(v)}">
+            <span>${escapeHtml(v)}</span>${f.value === v ? `<span class="eqov-value-option-check">${ICON_SVGS.check}</span>` : ''}
+          </button>`).join('')}
+          <button type="button" class="eqov-value-option eqov-value-option-custom" data-label="${escapeHtml(f.label)}">
+            <span>${ICON_SVGS.pencil}Custom</span>
+          </button>
+        </div>`;
+      }
+      if (showInput) {
+        return header + `
+        <div class="eqov-value-list">
+          <input type="text" class="eqov-field-edit-input" data-label="${escapeHtml(f.label)}" value="${escapeHtml(f.value)}" placeholder="Value">
+        </div>`;
+      }
+      return header;
+    }).join('');
+    el.querySelectorAll('.eqov-field-row-tappable').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const label = btn.dataset.label;
+        eqovEditingLabel = eqovEditingLabel === label ? null : label;
+        eqovCustomInputFor = null;
+        renderEqovFieldRows();
+        const input = el.querySelector('.eqov-field-edit-input');
+        if (input) input.focus();
+      });
+    });
+    el.querySelectorAll('.eqov-value-option:not(.eqov-value-option-custom)').forEach(btn => {
+      btn.addEventListener('click', () => commitEqovField(btn.dataset.label, btn.dataset.value));
+    });
+    el.querySelectorAll('.eqov-value-option-custom').forEach(btn => {
+      btn.addEventListener('click', () => {
+        eqovCustomInputFor = btn.dataset.label;
+        renderEqovFieldRows();
+        const input = el.querySelector('.eqov-field-edit-input');
+        if (input) input.focus();
+      });
+    });
+    el.querySelectorAll('.eqov-field-edit-input').forEach(inp => {
+      inp.addEventListener('blur', () => commitEqovField(inp.dataset.label, inp.value));
+      inp.addEventListener('keydown', (e) => { if (e.key === 'Enter') inp.blur(); });
+    });
+  }
+  // Clearing a value entirely removes that row (no separate remove button needed —
+  // an empty field just isn't shown, same as it never having been added).
+  function commitEqovField(label, value) {
+    const equipment = getEquipmentById(equipmentOverviewCtx.equipmentId);
+    if (!equipment) return;
+    equipment.fields = equipment.fields || [];
+    const trimmed = value.trim();
+    const idx = equipment.fields.findIndex(f => f.label === label);
+    if (trimmed) {
+      if (idx >= 0) equipment.fields[idx].value = trimmed;
+      else equipment.fields.push({ label, value: trimmed });
+      equipment.setupUpdatedAt = Date.now();
+    } else if (idx >= 0) {
+      equipment.fields.splice(idx, 1);
+    }
+    eqovEditingLabel = null;
+    eqovCustomInputFor = null;
+    save();
+    renderEqovFieldRows();
+    document.getElementById('eqovUpdated').textContent = equipment.setupUpdatedAt
+      ? `Last updated ${formatRelativeDate(new Date(equipment.setupUpdatedAt).toISOString().slice(0, 10))}` : '';
+    renderTrainActive();
+  }
+  // "+ Add detail" only needs to offer settings beyond what the Template already
+  // suggests (those show as empty rows automatically) — a fully custom setting
+  // this specific machine has that its type doesn't normally call for.
+  // Add Setup Detail — a plain vertical list in its own sheet (not inline chips),
+  // so picking a new field doesn't shift the Equipment sheet's layout underneath
+  // it. Only offers details not already on this machine; picking one adds it
+  // (blank) and dismisses the sheet immediately.
+  function openAddDetailSheet() {
+    const equipment = getEquipmentById(equipmentOverviewCtx.equipmentId);
+    if (!equipment) return;
+    const used = eqovFieldList(equipment).map(f => f.label.trim().toLowerCase());
+    const available = SETUP_DETAIL_PRESETS.filter(p => !used.includes(p.label.toLowerCase()));
+    const el = document.getElementById('addDetailRows');
+    el.innerHTML = available.map(p =>
+      `<button type="button" class="add-detail-row" data-label="${escapeHtml(p.label)}">${escapeHtml(p.label)}</button>`
+    ).join('');
+    el.querySelectorAll('.add-detail-row').forEach(btn => {
+      btn.addEventListener('click', () => addEqovDetail(btn.dataset.label));
+    });
+    document.getElementById('addDetailOverlay').style.display = 'flex';
+  }
+  function closeAddDetailSheet() {
+    document.getElementById('addDetailOverlay').style.display = 'none';
+  }
+  // Shared by both the preset list and Custom Detail — only fields already in
+  // equipment.fields OR suggested by the Template show up in eqovFieldList, so a
+  // newly picked detail has to be added (blank) before re-rendering, or the row
+  // it's supposed to open has nothing to render.
+  function addEqovDetail(label) {
+    const equipment = getEquipmentById(equipmentOverviewCtx.equipmentId);
+    if (!equipment) return;
+    equipment.fields = equipment.fields || [];
+    if (!equipment.fields.find(f => f.label === label)) equipment.fields.push({ label, value: '' });
+    save();
+    eqovEditingLabel = label;
+    eqovCustomInputFor = null;
+    closeAddDetailSheet();
+    renderEqovFieldRows();
+    const ctrl = document.getElementById('eqovFieldRows').querySelector('.eqov-field-edit-input, .eqov-field-edit-select');
+    if (ctrl) ctrl.focus();
+  }
+  document.getElementById('addDetailCloseBtn').addEventListener('click', closeAddDetailSheet);
+  document.getElementById('addDetailOverlay').addEventListener('click', (e) => {
+    if (e.target.id === 'addDetailOverlay') closeAddDetailSheet();
+  });
+  document.getElementById('addDetailCustomBtn').addEventListener('click', () => {
+    closeAddDetailSheet();
+    const row = document.getElementById('eqovCustomLabelRow');
+    const input = document.getElementById('eqovCustomLabelInput');
+    input.value = '';
+    row.style.display = 'flex';
+    input.focus();
+  });
+  function openEquipmentOverviewSheet(exId, equipmentId) {
+    const equipment = getEquipmentById(equipmentId);
+    if (!equipment) return;
+    equipmentOverviewCtx = { exId, equipmentId };
+    eqovEditingLabel = null;
+    eqovCustomInputFor = null;
+    document.getElementById('eqovTitle').textContent = equipment.template;
+    document.getElementById('eqovCheckIcon').innerHTML = ICON_SVGS.check;
+    renderEqovFieldRows();
+    document.getElementById('eqovCustomLabelRow').style.display = 'none';
+    document.getElementById('eqovUpdated').textContent = equipment.setupUpdatedAt
+      ? `Last updated ${formatRelativeDate(new Date(equipment.setupUpdatedAt).toISOString().slice(0, 10))}` : '';
+    document.getElementById('eqovMoreDropdown').style.display = 'none';
+    document.getElementById('equipmentOverviewOverlay').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+  }
+  function closeEquipmentOverviewSheet() {
+    document.getElementById('equipmentOverviewOverlay').style.display = 'none';
+    document.body.style.overflow = '';
+  }
+  document.getElementById('eqovAddDetailBtn').addEventListener('click', () => {
+    document.getElementById('eqovCustomLabelRow').style.display = 'none';
+    openAddDetailSheet();
+  });
+  document.getElementById('eqovCustomLabelAddBtn').addEventListener('click', () => {
+    const input = document.getElementById('eqovCustomLabelInput');
+    const label = input.value.trim();
+    if (!label) return;
+    const equipment = getEquipmentById(equipmentOverviewCtx.equipmentId);
+    if (!equipment) return;
+    document.getElementById('eqovCustomLabelRow').style.display = 'none';
+    equipment.fields = equipment.fields || [];
+    if (!equipment.fields.find(f => f.label === label)) equipment.fields.push({ label, value: '' });
+    save();
+    eqovEditingLabel = label;
+    eqovCustomInputFor = label;
+    renderEqovFieldRows();
+    const ctrl = document.getElementById('eqovFieldRows').querySelector('.eqov-field-edit-input');
+    if (ctrl) ctrl.focus();
+  });
+  document.getElementById('eqovCustomLabelInput').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') { e.preventDefault(); document.getElementById('eqovCustomLabelAddBtn').click(); }
+  });
+
+  // ---------- GYM SYSTEM: EQUIPMENT PICKER (select existing / create new) ----------
+  function openEquipmentPickerSheet(exId) {
     const session = getActiveSession();
     const ex = session && session.exercises.find(x => x.id === exId);
-    if (!ex) return;
-    machineSetupScrollY = window.scrollY;
-    machineSetupEditingExId = exId;
-    const setup = getMachineSetup(ex.exercise);
-    // Starts empty for a new setup — just "+ Add detail" and the chip picker, no
-    // pre-filled rows to review/delete before you've chosen anything yourself.
-    machineSetupDraftFields = (setup && setup.fields)
-      ? setup.fields.map(f => ({ label: f.label, value: f.value }))
-      : [];
-    document.getElementById('machineSetupGymIcon').innerHTML = ICON_SVGS.building;
-    document.getElementById('machineSetupEquipmentIcon').innerHTML = ICON_SVGS.dumbbell;
-    document.getElementById('machineSetupExerciseLabel').innerHTML =
-      `<span class="ms-exercise-icon">${ICON_SVGS.dumbbell}</span>${escapeHtml(ex.exercise)}${ex.equipment ? ' · ' + escapeHtml(ex.equipment) : ''}`;
-    document.getElementById('machineSetupGym').value = (setup && setup.gym) || '';
-    document.getElementById('machineSetupEquipment').value = (setup && setup.equipment) || '';
-    document.getElementById('machineSetupRemoveBtn').style.display = setup ? 'inline-flex' : 'none';
-    document.getElementById('machineSetupDetailPicker').style.display = 'none';
-    document.getElementById('machineSetupCustomLabelRow').style.display = 'none';
-    updateMachineSetupDatalists();
-    renderMachineSetupDraftRows();
-    document.getElementById('machineSetupOverlay').style.display = 'flex';
+    if (!ex || !session.gymId) return;
+    equipmentOverviewCtx = { exId, equipmentId: ex.equipmentId || null };
+    document.getElementById('eqpkSearchIcon').innerHTML = ICON_SVGS.search;
+    document.getElementById('eqpkSearchInput').value = '';
+    document.getElementById('eqpkCustomRow').style.display = 'none';
+    document.getElementById('eqpkCustomCategories').innerHTML = EQUIPMENT_CATEGORIES.map((c, i) =>
+      `<button type="button" class="eqpk-cat-chip${i === 0 ? ' selected' : ''}" data-category="${escapeHtml(c)}">${escapeHtml(c)}</button>`
+    ).join('');
+    document.getElementById('eqpkCustomCategories').querySelectorAll('.eqpk-cat-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        document.getElementById('eqpkCustomCategories').querySelectorAll('.eqpk-cat-chip').forEach(c => c.classList.remove('selected'));
+        chip.classList.add('selected');
+      });
+    });
+    renderEquipmentPickerLists('');
+    document.getElementById('equipmentPickerOverlay').style.display = 'flex';
     document.body.style.overflow = 'hidden';
   }
-  // Populates the Gym/Equipment autocomplete lists from every value saved across all
-  // exercises' setups, so typing "Planet" once suggests it again for the next exercise.
-  function updateMachineSetupDatalists() {
-    const setups = Object.values(state.machineSetups);
-    const gyms = [...new Set(setups.map(s => s.gym).filter(Boolean))].sort();
-    const equipment = [...new Set(setups.map(s => s.equipment).filter(Boolean))].sort();
-    document.getElementById('machineSetupGymList').innerHTML = gyms.map(g => `<option value="${escapeHtml(g)}">`).join('');
-    document.getElementById('machineSetupEquipmentList').innerHTML = equipment.map(e => `<option value="${escapeHtml(e)}">`).join('');
-  }
-  // Same sheet, opened by exercise name rather than a session exercise id — used by
-  // Exercise Detail, where there's a template exercise but no active session.
-  function openMachineSetupSheetForName(name, equipment) {
-    if (!name) return;
-    machineSetupScrollY = window.scrollY;
-    machineSetupEditingExId = null;
-    machineSetupEditingExName = name;
-    const setup = getMachineSetup(name);
-    machineSetupDraftFields = (setup && setup.fields)
-      ? setup.fields.map(f => ({ label: f.label, value: f.value }))
-      : [];
-    document.getElementById('machineSetupGymIcon').innerHTML = ICON_SVGS.building;
-    document.getElementById('machineSetupEquipmentIcon').innerHTML = ICON_SVGS.dumbbell;
-    document.getElementById('machineSetupExerciseLabel').innerHTML =
-      `<span class="ms-exercise-icon">${ICON_SVGS.dumbbell}</span>${escapeHtml(name)}${equipment ? ' · ' + escapeHtml(equipment) : ''}`;
-    document.getElementById('machineSetupGym').value = (setup && setup.gym) || '';
-    document.getElementById('machineSetupEquipment').value = (setup && setup.equipment) || '';
-    document.getElementById('machineSetupRemoveBtn').style.display = setup ? 'inline-flex' : 'none';
-    document.getElementById('machineSetupDetailPicker').style.display = 'none';
-    document.getElementById('machineSetupCustomLabelRow').style.display = 'none';
-    updateMachineSetupDatalists();
-    renderMachineSetupDraftRows();
-    document.getElementById('machineSetupOverlay').style.display = 'flex';
-    document.body.style.overflow = 'hidden';
-  }
-  function closeMachineSetupSheet() {
-    document.getElementById('machineSetupOverlay').style.display = 'none';
+  function closeEquipmentPickerSheet() {
+    document.getElementById('equipmentPickerOverlay').style.display = 'none';
     document.body.style.overflow = '';
-    machineSetupEditingExId = null;
-    machineSetupEditingExName = null;
   }
-  // A setting's type (icon + label) is fixed once added via "+ Add detail" — only its
-  // value stays editable here, as a dropdown of common values when the label has a
-  // preset list and the current value is either blank or already one of those presets.
-  // Typing an exact custom value (or picking "Custom…") still works, it just drops to
-  // a plain text input rather than fighting a dropdown that doesn't have that option.
-  function renderMachineSetupDraftRows() {
-    const el = document.getElementById('machineSetupFieldRows');
-    el.innerHTML = machineSetupDraftFields.map((f, i) => {
-      const presets = fieldValuePresets(f.label);
-      const useValueSelect = presets && (!f.value || presets.includes(f.value));
-      const valueControl = useValueSelect
-        ? `<select class="ms-field-value-select">
-             <option value="">Choose…</option>
-             ${presets.map(v => `<option value="${escapeHtml(v)}" ${f.value === v ? 'selected' : ''}>${escapeHtml(v)}</option>`).join('')}
-             <option value="__custom__">Custom…</option>
-           </select>`
-        : `<input type="text" class="ms-field-value-input" value="${escapeHtml(f.value)}" placeholder="Value">`;
-      const icon = setupDetailIcon(f.label);
-      return `
-      <div class="ms-field-row" data-idx="${i}">
-        ${icon ? `<span class="ms-field-icon">${ICON_SVGS[icon]}</span>` : ''}
-        <span class="ms-field-label-text">${escapeHtml(f.label)}</span>
-        ${valueControl}
-        <button type="button" class="icon-btn ms-field-remove-btn" data-idx="${i}" title="Remove">${ICON_SVGS.x}</button>
-      </div>`;
-    }).join('');
-    el.querySelectorAll('.ms-field-value-input').forEach(inp => {
-      inp.addEventListener('input', () => {
-        machineSetupDraftFields[+inp.closest('.ms-field-row').dataset.idx].value = inp.value;
+  function pickEquipmentForCurrentExercise(equipment) {
+    const session = getActiveSession();
+    const ex = session && session.exercises.find(x => x.id === equipmentOverviewCtx.exId);
+    if (!ex) return;
+    assignEquipmentToExercise(ex, equipment);
+    closeEquipmentPickerSheet();
+    closeEquipmentOverviewSheet();
+    renderTrainActive();
+  }
+  function renderEquipmentPickerLists(query) {
+    const session = getActiveSession();
+    const gymId = session && session.gymId;
+    const q = query.trim().toLowerCase();
+    const existing = state.equipment.filter(e => e.gymId === gymId && (!q || e.template.toLowerCase().includes(q)));
+    document.getElementById('eqpkExistingSection').style.display = existing.length ? 'block' : 'none';
+    document.getElementById('eqpkExistingRows').innerHTML = existing.map(e => `
+      <button type="button" class="eqpk-row" data-equipment-id="${e.id}">
+        <span class="eqpk-row-name">${escapeHtml(e.template)}</span>
+        <span class="eqpk-row-sub">Supports ${e.mappings.length} exercise${e.mappings.length === 1 ? '' : 's'}</span>
+      </button>`).join('');
+    document.getElementById('eqpkExistingRows').querySelectorAll('.eqpk-row').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const equipment = getEquipmentById(btn.dataset.equipmentId);
+        if (equipment) pickEquipmentForCurrentExercise(equipment);
       });
     });
-    el.querySelectorAll('.ms-field-value-select').forEach(sel => {
-      sel.addEventListener('change', () => {
-        const idx = +sel.closest('.ms-field-row').dataset.idx;
-        if (sel.value === '__custom__') {
-          // Swap just this control for a text input, in place, rather than re-rendering
-          // every row — keeps the rest of the sheet (and any focus in it) undisturbed.
-          machineSetupDraftFields[idx].value = '';
-          const input = document.createElement('input');
-          input.type = 'text';
-          input.className = 'ms-field-value-input';
-          input.placeholder = 'Value';
-          input.addEventListener('input', () => { machineSetupDraftFields[idx].value = input.value; });
-          sel.replaceWith(input);
-          input.focus();
-        } else {
-          machineSetupDraftFields[idx].value = sel.value;
+    const templates = (q ? EQUIPMENT_TEMPLATES.filter(t => t.name.toLowerCase().includes(q)) : EQUIPMENT_TEMPLATES).slice(0, 8);
+    document.getElementById('eqpkTemplateRows').innerHTML = templates.map(t => `
+      <button type="button" class="eqpk-row" data-template="${escapeHtml(t.name)}">
+        <span class="eqpk-row-name">${escapeHtml(t.name)}</span>
+        <span class="eqpk-row-sub">${escapeHtml(t.category)}</span>
+      </button>`).join('');
+    document.getElementById('eqpkTemplateRows').querySelectorAll('.eqpk-row').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const template = EQUIPMENT_TEMPLATES.find(t => t.name === btn.dataset.template);
+        if (!template) return;
+        const equipment = {
+          id: uid(), gymId, template: template.name, category: template.category,
+          fields: [], setupUpdatedAt: null, mappings: [], createdAt: Date.now()
+        };
+        state.equipment.push(equipment);
+        pickEquipmentForCurrentExercise(equipment);
+      });
+    });
+  }
+  document.getElementById('eqpkSearchInput').addEventListener('input', (e) => renderEquipmentPickerLists(e.target.value));
+  document.getElementById('eqpkCustomBtn').addEventListener('click', () => {
+    document.getElementById('eqpkCustomRow').style.display = 'block';
+    document.getElementById('eqpkCustomNameInput').focus();
+  });
+  document.getElementById('eqpkCustomAddBtn').addEventListener('click', () => {
+    const name = document.getElementById('eqpkCustomNameInput').value.trim();
+    if (!name) return;
+    const selectedChip = document.getElementById('eqpkCustomCategories').querySelector('.eqpk-cat-chip.selected');
+    const category = (selectedChip && selectedChip.dataset.category) || guessEquipmentCategory(name);
+    const session = getActiveSession();
+    const equipment = {
+      id: uid(), gymId: session.gymId, template: name, category,
+      fields: [], setupUpdatedAt: null, mappings: [], createdAt: Date.now()
+    };
+    state.equipment.push(equipment);
+    pickEquipmentForCurrentExercise(equipment);
+  });
+  document.getElementById('eqovCloseBtn').addEventListener('click', closeEquipmentOverviewSheet);
+  document.getElementById('equipmentOverviewOverlay').addEventListener('click', (e) => {
+    if (e.target.id === 'equipmentOverviewOverlay') closeEquipmentOverviewSheet();
+  });
+  document.getElementById('eqpkCloseBtn').addEventListener('click', closeEquipmentPickerSheet);
+  document.getElementById('equipmentPickerOverlay').addEventListener('click', (e) => {
+    if (e.target.id === 'equipmentPickerOverlay') closeEquipmentPickerSheet();
+  });
+  document.getElementById('eqovMoreBtn').addEventListener('click', (e) => {
+    e.stopPropagation();
+    const dropdown = document.getElementById('eqovMoreDropdown');
+    dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+  });
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('#eqovMoreBtn')) document.getElementById('eqovMoreDropdown').style.display = 'none';
+  });
+  document.getElementById('eqovChangeBtn').addEventListener('click', () => {
+    closeEquipmentOverviewSheet();
+    openEquipmentPickerSheet(equipmentOverviewCtx.exId);
+  });
+  // "Delete" here only clears THIS exercise's link to the equipment (assignment +
+  // the learned mapping) — it never deletes the Equipment itself from the gym.
+  // The equipment stays available (e.g. via Change Equipment's "At This Gym" list)
+  // for any other exercise still using it. No confirm dialog: unassigning is no
+  // more destructive than picking different equipment, which also doesn't confirm.
+  // "Delete" only clears THIS exercise's link to the equipment (assignment + the
+  // learned mapping) — it never deletes the Equipment itself from the gym, which
+  // stays available for any other exercise still using it. Still worth a confirm
+  // (it's easy to tap "Delete" on the wrong exercise mid-workout), but the confirm
+  // dialog must stay layered on top of this still-open sheet rather than closing
+  // it first — .confirm-overlay's z-index handles the stacking.
+  document.getElementById('eqovRemoveBtn').addEventListener('click', () => {
+    const equipment = getEquipmentById(equipmentOverviewCtx.equipmentId);
+    const session = getActiveSession();
+    const ex = session && session.exercises.find(x => x.id === equipmentOverviewCtx.exId);
+    if (!equipment || !ex) return;
+    document.getElementById('eqovMoreDropdown').style.display = 'none';
+    showConfirmDialog({
+      icon: ICON_SVGS.trash, theme: 'danger', title: 'Delete Setup?',
+      desc: `This clears ${equipment.template} and its setup from ${ex.exercise}. Other exercises using it are unaffected.`,
+      primaryLabel: 'Delete', primaryDanger: true, secondaryLabel: 'Cancel',
+      onPrimary: () => {
+        ex.equipmentId = null;
+        equipment.mappings = equipment.mappings.filter(m => m.exercise !== ex.exercise);
+        // Once no exercise references it anymore, its setup is orphaned — wipe it so
+        // re-picking this same equipment later (for this or any other exercise)
+        // starts from a clean slate instead of resurrecting stale values. Equipment
+        // still mapped to another exercise keeps its setup untouched.
+        if (equipment.mappings.length === 0) {
+          equipment.fields = [];
+          equipment.setupUpdatedAt = null;
         }
-      });
+        save();
+        closeEquipmentOverviewSheet();
+        renderTrainActive();
+      }
     });
-    el.querySelectorAll('.ms-field-remove-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        machineSetupDraftFields.splice(+btn.dataset.idx, 1);
-        renderMachineSetupDraftRows();
-      });
-    });
+  });
+
+  // ---------- GYM SYSTEM: FIRST-GYM PROMPT ----------
+  function closeFirstGymSheet() {
+    document.getElementById('firstGymOverlay').style.display = 'none';
+    document.body.style.overflow = '';
+    pendingWorkoutStart = null;
   }
-  // The "+ Add detail" picker: chips for the universal setting types not already in
-  // use, plus a "+ Custom Detail" chip that reveals a small inline text field (below)
-  // for a fully custom setting name instead of a native prompt() dialog. Tapping a
-  // chip inserts the row immediately and re-renders the picker minus that chip —
-  // deliberately doesn't close, so adding several settings is one continuous tapping
-  // motion instead of reopening "+ Add detail" after every single one.
-  function renderMachineSetupDetailPicker() {
-    const used = machineSetupDraftFields.map(f => f.label.trim().toLowerCase());
-    const available = SETUP_DETAIL_PRESETS.filter(p => !used.includes(p.label.toLowerCase()));
-    const picker = document.getElementById('machineSetupDetailPicker');
-    picker.innerHTML = available.map(p =>
-      `<button type="button" class="ms-preset-btn" data-label="${escapeHtml(p.label)}">${p.icon ? `<span class="ms-preset-icon">${ICON_SVGS[p.icon]}</span>` : ''}${escapeHtml(p.label)}</button>`
-    ).join('') + `<button type="button" class="ms-preset-btn ms-preset-custom" id="machineSetupCustomBtn"><span class="ms-preset-icon">${ICON_SVGS.pencil}</span>+ Custom Detail</button>`;
-    picker.querySelectorAll('.ms-preset-btn:not(.ms-preset-custom)').forEach(btn => {
-      btn.addEventListener('click', () => {
-        machineSetupDraftFields.push({ label: btn.dataset.label, value: '' });
-        renderMachineSetupDraftRows();
-        renderMachineSetupDetailPicker();
-      });
-    });
-    document.getElementById('machineSetupCustomBtn').addEventListener('click', () => {
-      picker.style.display = 'none';
-      const row = document.getElementById('machineSetupCustomLabelRow');
-      const input = document.getElementById('machineSetupCustomLabelInput');
-      input.value = '';
-      row.style.display = 'flex';
-      input.focus();
-    });
+  document.getElementById('firstGymCloseBtn').addEventListener('click', closeFirstGymSheet);
+  document.getElementById('firstGymOverlay').addEventListener('click', (e) => {
+    if (e.target.id === 'firstGymOverlay') closeFirstGymSheet();
+  });
+  function submitFirstGym() {
+    const name = document.getElementById('firstGymNameInput').value.trim();
+    if (!name) return;
+    const gym = { id: uid(), name, createdAt: Date.now(), lastVisited: Date.now() };
+    state.gyms.push(gym);
+    state.activeGymId = gym.id;
+    document.getElementById('firstGymOverlay').style.display = 'none';
+    document.body.style.overflow = '';
+    const fn = pendingWorkoutStart;
+    pendingWorkoutStart = null;
+    if (fn) fn(gym.id);
   }
+  document.getElementById('firstGymStartBtn').addEventListener('click', submitFirstGym);
+  document.getElementById('firstGymNameInput').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') { e.preventDefault(); submitFirstGym(); }
+  });
 
   document.getElementById('trainBlankBtn').addEventListener('click', startBlankWorkout);
 
@@ -5884,7 +6401,6 @@
     const notes = edDraft.notes || '';
     document.getElementById('edNotesValue').textContent = notes ? (notes.length > 26 ? notes.slice(0, 26) + '…' : notes) : 'Add notes…';
     document.getElementById('edEquipmentValue').textContent = edDraft.equipment || 'None';
-    document.getElementById('edMachineValue').textContent = getMachineSetup(edDraft.exercise) ? 'Saved' : 'Default';
   }
 
   function openExerciseDetail(card) {
@@ -6038,12 +6554,6 @@
     edDraft.equipment = document.getElementById('equipmentSheetSelect').value;
     edRenderAdvanced();
     closeEquipmentSheet();
-  });
-
-  // Machine Settings — reuses the existing Machine Setup sheet (built for the Train
-  // tab's session exercises), opened here by exercise name instead of a session id.
-  document.getElementById('edMachineRow').addEventListener('click', () => {
-    openMachineSetupSheetForName(edDraft.exercise, edDraft.equipment);
   });
 
   document.getElementById('cancelRoutineBtn').addEventListener('click', closeRoutineEditor);
