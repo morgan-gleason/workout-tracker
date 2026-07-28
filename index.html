@@ -1824,11 +1824,14 @@
     color: var(--accent); font-weight: 700; font-size: var(--fs-body); padding: 13px; cursor: pointer;
   }
 
-  /* Completed-set read-only rows — shown both under a live in-progress exercise
+  /* Completed-set rows — shown both under a live in-progress exercise
      ("Completed Sets (3)") and inside a reopened, already-finished exercise. Reuses
      the Completed Workout Detail's set-value formatting (.cwd-set-val etc.) so past
-     performance always reads identically wherever it's shown. No delete/edit affordance
-     by design — once logged, a set is history here, not an editable field. */
+     performance always reads identically wherever it's shown. In the active session
+     these are tappable (.tcs-editable) to reopen the exact same weight/rep entry in
+     an edit sheet — mistakes logged mid-workout shouldn't be permanent. The
+     historical Last Workout sheet reuses the same row markup without the editable
+     class, since that's read-only past-session data. */
   .train-completed-sets-label {
     font-size: var(--fs-caption); font-weight: 800; color: var(--muted); text-transform: uppercase;
     letter-spacing: .04em; margin: 18px 0 8px;
@@ -1858,6 +1861,25 @@
   .tcs-pr-value { display: flex; align-items: center; gap: 1px; }
   .tcs-pr-icon { display: inline-flex; color: var(--pr); flex-shrink: 0; }
   .tcs-pr-icon svg { width: 15px; height: 15px; }
+  /* Editable variant — a slightly raised row (its own background + radius, no
+     divider) instead of a flat divided list, plus a trailing chevron, so it reads
+     as tappable without needing a pencil icon. Sits flush against the same PR bar
+     treatment, just inset to the row's own edge instead of the card gutter. */
+  .train-completed-set-row.tcs-editable {
+    cursor: pointer; border-bottom: none; border-radius: var(--radius-sm);
+    background: rgba(255,255,255,.035); margin-bottom: 6px; padding: 10px 10px;
+  }
+  .train-completed-set-row.tcs-editable:last-child { margin-bottom: 0; }
+  .train-completed-set-row.tcs-editable:active { background: rgba(255,255,255,.07); }
+  .train-completed-set-row.tcs-editable.is-pr::before { left: 0; border-radius: var(--radius-sm) 0 0 var(--radius-sm); }
+  .tcs-chevron { display: flex; align-items: center; color: var(--muted); flex-shrink: 0; }
+  .tcs-chevron svg { width: 16px; height: 16px; }
+  .els-type-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(255,255,255,.06); border: none; border-radius: 999px;
+    padding: 8px 18px; font-size: var(--fs-body); font-weight: 700; color: var(--text); cursor: pointer;
+  }
+  .els-type-btn svg { width: 14px; height: 14px; color: var(--muted); }
 
   /* Current Set — large, one-set-at-a-time controls. Deliberately not a table: two
      stacked fields, each a big number flanked by big circular steppers, then one
@@ -3005,6 +3027,45 @@
       <input type="text" id="gymPickerNewNameInput" placeholder="Gym Name">
       <button type="button" class="btn" id="gymPickerAddSaveBtn" style="width:100%;">Add Gym</button>
     </div>
+  </div>
+</div>
+
+<!-- Edit Logged Set — reuses the same big stepper controls as live set entry
+     (.cur-set-stepper), so correcting a mistake feels identical to logging it in
+     the first place. Opened by tapping any already-completed set row directly;
+     no separate edit mode, no pencil icon. -->
+<div class="modal-overlay" id="editLoggedSetOverlay" style="display:none;">
+  <div class="modal-panel">
+    <div class="modal-header">
+      <h2 id="elsTitle">Edit Set</h2>
+      <button class="modal-close-btn" id="elsCloseBtn" type="button" title="Close">
+        <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="cur-set-field">
+      <div class="cur-set-field-label">Set Type</div>
+      <div style="display:flex; justify-content:center;">
+        <button type="button" class="els-type-btn" id="elsTypeToggle" title="Tap to switch between warm-up and working"></button>
+      </div>
+    </div>
+    <div class="cur-set-field">
+      <div class="cur-set-field-label">Weight (lb)</div>
+      <div class="cur-set-stepper">
+        <button type="button" class="stepper-btn cur-stepper-btn" data-delta="-5">−</button>
+        <input type="number" class="cur-set-input" id="elsWeightInput" placeholder="0">
+        <button type="button" class="stepper-btn cur-stepper-btn" data-delta="5">+</button>
+      </div>
+    </div>
+    <div class="cur-set-field">
+      <div class="cur-set-field-label">Reps</div>
+      <div class="cur-set-stepper">
+        <button type="button" class="stepper-btn cur-stepper-btn" data-delta="-1">−</button>
+        <input type="number" class="cur-set-input" id="elsRepsInput" placeholder="0">
+        <button type="button" class="stepper-btn cur-stepper-btn" data-delta="1">+</button>
+      </div>
+    </div>
+    <button type="button" class="btn" id="elsSaveBtn" style="width:100%; margin-top:4px;">Save</button>
+    <button type="button" class="link-btn link-btn-danger" id="elsDeleteBtn" style="display:block; margin:10px auto 0;">Delete Set</button>
   </div>
 </div>
 
@@ -4990,6 +5051,12 @@
     cardsEl.querySelectorAll('.cur-set-log-btn').forEach(btn => {
       btn.addEventListener('click', () => logCurrentSet(btn.dataset.exid));
     });
+    cardsEl.querySelectorAll('.tcs-editable').forEach(row => {
+      row.addEventListener('click', (e) => {
+        e.stopPropagation();
+        openEditSetSheet(row.dataset.exid, +row.dataset.setidx);
+      });
+    });
     cardsEl.querySelectorAll('.ex-complete-next-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         const exId = btn.dataset.exid;
@@ -5065,19 +5132,22 @@
     const label = hasMoreIncompleteExercises(ex.id) ? 'Next Exercise →' : 'Finish Workout';
     return `<button type="button" class="btn ex-complete-next-btn" data-exid="${ex.id}">${label}</button>`;
   }
-  // Completed-set rows — read-only, no swipe/edit affordance by design (once logged,
-  // a set is history here). Shared by the current exercise's "Completed Sets (N)" list
-  // and a reopened already-finished exercise's full read-only review. isPR is omitted
-  // by callers (like the Last Workout bottom sheet) that don't track PRs at all.
-  function completedSetRowHtml(label, isWarmup, weight, reps, isPR) {
+  // Completed-set rows — tappable to edit when exId/setIdx are given (the active
+  // session's own list); read-only otherwise. Shared by the current exercise's
+  // "Completed Sets (N)" list, a reopened already-finished exercise's full review,
+  // and the historical Last Workout sheet (which omits isPR/exId/setIdx entirely,
+  // since past sessions aren't editable here).
+  function completedSetRowHtml(label, isWarmup, weight, reps, isPR, exId, setIdx) {
     const val = `<span class="cwd-set-val"><span class="cwd-set-weight">${weight || 0} lb</span><span class="cwd-set-times">×</span><span>${reps || 0}</span></span>`;
+    const editable = exId != null && setIdx != null;
     return `
-    <div class="train-completed-set-row ${isPR ? 'is-pr' : ''}">
+    <div class="train-completed-set-row ${isPR ? 'is-pr' : ''} ${editable ? 'tcs-editable' : ''}" ${editable ? `data-exid="${exId}" data-setidx="${setIdx}" role="button" tabindex="0"` : ''}>
       <span class="tcs-check">${ICON_SVGS.check}</span>
       <span class="tcs-label">${label}</span>
       ${isPR
         ? `<span class="tcs-pr-value"><span class="tcs-pr-icon">${ICON_SVGS.trophy}</span>${val}</span>`
         : val}
+      ${editable ? `<span class="tcs-chevron">${ICON_SVGS.chevronRight}</span>` : ''}
     </div>`;
   }
   function completedSetRows(ex) {
@@ -5085,7 +5155,7 @@
     return ex.sets.map((s, i) => {
       if (!s.completed) return '';
       const isWarmup = s.type === 'warmup';
-      return completedSetRowHtml(isWarmup ? 'Warm-up' : `Set ${i + 1}`, isWarmup, s.weight, s.reps, i === prIdx);
+      return completedSetRowHtml(isWarmup ? 'Warm-up' : `Set ${i + 1}`, isWarmup, s.weight, s.reps, i === prIdx, ex.id, i);
     }).join('');
   }
   function renderCompletedSetsBlock(ex) {
@@ -5093,6 +5163,80 @@
     if (!doneCount) return '';
     return `<div class="train-completed-sets-label">Completed Sets (${doneCount})</div>${completedSetRows(ex)}`;
   }
+
+  // Edit Logged Set — reopens the exact stepper controls used for live logging in a
+  // bottom sheet, so fixing a mistake mid-workout is one tap in, one tap out. Scoped
+  // to the active session only (see completedSetRowHtml); PR badges recompute for
+  // free on the next render since sessionPRSetIdx is always derived live from
+  // ex.sets, not cached.
+  let editLoggedSetCtx = null;
+  function renderElsTypeToggle(isWarmup) {
+    const btn = document.getElementById('elsTypeToggle');
+    btn.innerHTML = `${isWarmup ? 'Warm-up' : 'Working'}${ICON_SVGS.chevronDown}`;
+    btn.dataset.warmup = isWarmup ? '1' : '';
+  }
+  function openEditSetSheet(exId, setIdx) {
+    const session = getActiveSession();
+    const ex = session && session.exercises.find(x => x.id === exId);
+    const s = ex && ex.sets[setIdx];
+    if (!s) return;
+    editLoggedSetCtx = { exId, setIdx };
+    document.getElementById('elsTitle').textContent = s.type === 'warmup' ? 'Edit Warm-up Set' : `Edit Set ${setIdx + 1}`;
+    document.getElementById('elsWeightInput').value = s.weight || '';
+    document.getElementById('elsRepsInput').value = s.reps || '';
+    renderElsTypeToggle(s.type === 'warmup');
+    document.getElementById('editLoggedSetOverlay').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+  }
+  function closeEditSetSheet() {
+    editLoggedSetCtx = null;
+    document.getElementById('editLoggedSetOverlay').style.display = 'none';
+    document.body.style.overflow = '';
+  }
+  document.getElementById('elsCloseBtn').addEventListener('click', closeEditSetSheet);
+  document.getElementById('editLoggedSetOverlay').addEventListener('click', (e) => {
+    if (e.target.id === 'editLoggedSetOverlay') closeEditSetSheet();
+  });
+  document.getElementById('elsTypeToggle').addEventListener('click', () => {
+    renderElsTypeToggle(document.getElementById('elsTypeToggle').dataset.warmup !== '1');
+  });
+  // Deleting a logged set removes it outright rather than just clearing its
+  // weight/reps — matching the (uncompleted-set) Edit Sets page's remove behavior.
+  // Confirmed first since it's easy to tap on the wrong set mid-workout; the confirm
+  // dialog stacks above this still-open sheet the same way the Equipment delete
+  // confirm does.
+  document.getElementById('elsDeleteBtn').addEventListener('click', () => {
+    if (!editLoggedSetCtx) return;
+    const session = getActiveSession();
+    const ex = session && session.exercises.find(x => x.id === editLoggedSetCtx.exId);
+    const s = ex && ex.sets[editLoggedSetCtx.setIdx];
+    if (!ex || !s) return;
+    const label = s.type === 'warmup' ? 'this warm-up set' : 'this set';
+    showConfirmDialog({
+      icon: ICON_SVGS.trash, theme: 'danger', title: 'Delete Set?',
+      desc: `This permanently removes ${label} (${s.weight || 0} lb × ${s.reps || 0}) from ${ex.exercise}.`,
+      primaryLabel: 'Delete', primaryDanger: true, secondaryLabel: 'Cancel',
+      onPrimary: () => {
+        ex.sets.splice(editLoggedSetCtx.setIdx, 1);
+        save();
+        closeEditSetSheet();
+        renderTrainActive();
+      }
+    });
+  });
+  document.getElementById('elsSaveBtn').addEventListener('click', () => {
+    if (!editLoggedSetCtx) return;
+    const session = getActiveSession();
+    const ex = session && session.exercises.find(x => x.id === editLoggedSetCtx.exId);
+    const s = ex && ex.sets[editLoggedSetCtx.setIdx];
+    if (!s) return;
+    s.weight = parseFloat(document.getElementById('elsWeightInput').value) || 0;
+    s.reps = parseInt(document.getElementById('elsRepsInput').value, 10) || 0;
+    s.type = document.getElementById('elsTypeToggle').dataset.warmup === '1' ? 'warmup' : 'working';
+    save();
+    closeEditSetSheet();
+    renderTrainActive();
+  });
 
   // Equipment — quiet context beneath an exercise showing which piece of gym
   // equipment it's using and a glance at the saved setup. Bodyweight exercises with
